@@ -3,21 +3,25 @@ SurveyMania - EPITA 2016 - MTI PLIC - bourdi_c / sabot_p / lopes_t
 
 #Install and run the application
 
-1) Installation de Node.js et npm
+1) Installation de Git, Node.js et npm
 
-    $ sudo apt-get install nodejs-legacy npm
-  
-2) Installation de MySQL
+    $ sudo apt-get install git nodejs-legacy npm
+    
+2) Installation de bower
+
+    $ sudo npm install -g bower
+    
+3) Installation de MySQL
 
     $ sudo apt-get install mysql-server
   
-3) Récupération du projet
+4) Récupération du projet
 
-    $ svn checkout http://subversion.backelite.com/backelite/bkperfdashboard/
+    $ git clone https://github.com/tommybl/SurveyMania.git
   
-4) Aller à la racine du projet
+5) Aller à la racine du projet
 
-    $ cd bkperfdashboard/trunk
+    $ cd SurveyMania
   
 6) Lancer le server
 
