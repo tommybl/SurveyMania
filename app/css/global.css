@@ -1,0 +1,6 @@
+body {
+    background: url('../img/surveymania.png') center top no-repeat #f5c850;
+    background-size: cover;
+    -webkit-background-size: cover;
+    padding: 20px;
+}
