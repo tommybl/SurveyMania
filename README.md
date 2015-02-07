@@ -2,6 +2,7 @@
 SurveyMania - EPITA 2016 - MTI PLIC - bourdi_c / sabot_p / lopes_t
 
 #Install and run the application
+
 1) Installation de Node.js et npm
   $ sudo apt-get install nodejs-legacy npm
 2) Installation de MySQL
