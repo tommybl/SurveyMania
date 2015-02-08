@@ -1,7 +1,32 @@
 <!DOCTYPE html>
 <div>
-    <label>Name:</label>
-    <input type="text" ng-model="yourName" placeholder="Enter a name here">
+    <h1>Presenting AngularJS basic functionalities</h1>
     <hr>
-    <h1>Hello {{yourName}}!</h1>
+
+    <table style="width: 100%">
+        <tr style="width: 100%">
+            <td style="width: 50%">
+                <label>Name </label>
+                <input type="text" ng-model="yourName" placeholder="Enter a name here" style="margin-left: 10px">
+                <h2>Hello {{yourName}}!</h2>
+            </td>
+            <td style="width: 50%">
+                <h2>Todo</h2>
+                <div ng-controller="TodoController">
+                    <span>{{remaining()}} of {{todos.length}} remaining</span>
+                    [ <a href="" ng-click="archive()">archive</a> ]
+                    <ul class="unstyled">
+                        <li ng-repeat="todo in todos">
+                            <input type="checkbox" ng-model="todo.done">
+                            <span class="done-{{todo.done}}">{{todo.text}}</span>
+                        </li>
+                    </ul>
+                    <form ng-submit="addTodo()">
+                        <input type="text" ng-model="todoText"  size="30" placeholder="add new todo here">
+                        <input class="btn-primary" type="submit" value="add">
+                    </form>
+                </div>
+            </td>
+        </tr>
+    </table>
 </div>
