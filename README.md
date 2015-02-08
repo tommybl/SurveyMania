@@ -1,7 +1,8 @@
 # SurveyMania
-SurveyMania - EPITA 2016 - MTI PLIC - bourdi_c / sabot_p / lopes_t
 
-#Install and run the application
+`SurveyMania - EPITA 2016 - MTI PLIC - bourdi_c / sabot_p / lopes_t`
+
+## Install and run the application
 
 1) Git, Node.js and npm installation
 
