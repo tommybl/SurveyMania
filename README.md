@@ -1,30 +1,31 @@
 # SurveyMania
-SurveyMania - EPITA 2016 - MTI PLIC - bourdi_c / sabot_p / lopes_t
 
-#Install and run the application
+`SurveyMania - EPITA 2016 - MTI PLIC - bourdi_c / sabot_p / lopes_t`
 
-1) Installation de Git, Node.js et npm
+## Install and run the application
+
+1) Git, Node.js and npm installation
 
     $ sudo apt-get install git nodejs-legacy npm
     
-2) Installation de bower
+2) Bower installation
 
     $ sudo npm install -g bower
     
-3) Installation de MySQL
+3) MySQL installation
 
     $ sudo apt-get install mysql-server
   
-4) Récupération du projet
+4) Getting the projet
 
     $ git clone https://github.com/tommybl/SurveyMania.git
   
-5) Aller à la racine du projet
+5) Going to project root
 
     $ cd SurveyMania
   
-6) Lancer le server
+6) Server launching
 
     $ nodejs server.js
   
-7) Ouvrir l'application dans un navigateur à l'addresse http://localhost:1337/
+7) Open the application in a browser at http://localhost:1337/
