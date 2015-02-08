@@ -31,3 +31,7 @@
     $ nodejs server.js
   
 7) Open the application in a browser at http://localhost:1337/
+
+
+![alt text](https://github.com/tommybl/SurveyMania/blob/master/app/img/surveymania.png "SurveyMania")
+
