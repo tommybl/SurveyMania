@@ -14,9 +14,9 @@
 
     $ sudo npm install -g bower
     
-3) MySQL installation
+3) PostGreSQL installation
 
-    $ sudo apt-get install mysql-server
+    $ sudo apt-get install postgresql
   
 4) Getting the projet
 
