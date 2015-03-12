@@ -1,43 +1,28 @@
 // getting required modules
 var express = require('express');
 var https = require('https');
-var mysql = require('mysql');
+var expressJwt = require('express-jwt');
+var jwt = require('jsonwebtoken');
 var pem = require('pem');
-var session = require('express-session');
-var MemoryStore = session.MemoryStore;
 var compress = require('compression');
 var bodyParser = require('body-parser');
 var moment = require('moment');
 var request = require('request');
 var fs = require('fs');
-var RateLimiter = require('limiter').RateLimiter;
-
-// creating a new session store
-var sessionStore = new MemoryStore();
-
-// creating a new mysql pool for future database requests
-/*var pool = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'SurveyMania',
-    connectionLimit: 1000
-});*/
 
 // creating a new app with express framework
 var app = express();
 
 app.set('view engine', 'ejs');
 app.enable('trust proxy');
-//app.set('trust proxy', false);
 
 // needed to compress all our responses
 app.use(compress());
 // needed to parse requests body (for example in post requests)
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-// needed to manage sessions
-app.use(session({store: sessionStore, secret: 'keyboard cat', resave: true, saveUninitialized: true, cookie: { path: '/', httpOnly: true, secure: false, maxAge: 365*24*60*60*1000}}));
+// needed to protect / routes with JWT
+app.use('/', expressJwt({secret: 'secret-df4b8fn5fn6f1vw1cxbuthf4g4n7dty87ng41nsrg35'}));
 
 app
 // route to get the partials views (rendered with ejs)
