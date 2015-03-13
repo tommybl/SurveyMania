@@ -9,9 +9,18 @@ var bodyParser = require('body-parser');
 var moment = require('moment');
 var request = require('request');
 var fs = require('fs');
+var nodemailer = require('nodemailer');
 var pg = require('pg');
 var conString = "postgres://postgres:1234@localhost/SurveyMania";
 var secret = 'secret-df4b8fn5fn6f1vw1cxbuthf4g4n7dty87ng41nsrg35';
+
+var transporter = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+        user: 'surveymania.plic@gmail.com',
+        pass: 'surveymania4242'
+    }
+});
 
 // creating a new app with express framework
 var app = express();
@@ -65,6 +74,34 @@ app
 .get('/login', function (req, res) {
     res.setHeader("Content-Type", "text/html");
     res.render('partials/login');
+})
+
+.post('/signin', function (req, res) {
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    res.setHeader('Accept', 'application/json');
+    var email = req.body.email;
+    var password = req.body.password;
+
+    // setup e-mail data with unicode symbols
+    var mailOptions = {
+        from: 'webmaster@surveymania.com',
+        to: email,
+        subject: 'Signin account verification',
+        //text: 'Hello world',
+        html: 'Please verify your account email to finish your <b>SurveyMania</b> inscription.<br>Thank you and enjoy our services.'
+    };
+
+    // send mail with defined transport object
+    transporter.sendMail(mailOptions, function(error, info){
+        if(error) {
+            console.log(error);
+            res.status(500).json({code: 500, error: "Internal server error", message: "Signin mail couldn't be sent"});
+        }
+        else {
+            console.log('Message sent: ' + info.response);
+            res.json({code: 200, message: "Signin mail successfully sent"});
+        }
+    });
 })
 
 .get('/signin', function (req, res) {

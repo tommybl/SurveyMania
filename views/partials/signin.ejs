@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <div ng-controller="SigninController" style="width: 300px; margin: auto">
     <h1>Inscription</h1>
+    <div id="signin-success" class="alert alert-success alert-dismissible fade in" role="alert" ng-show="signinSuccMess!=undefined">
+        <button type="button" class="close" ng-click="signinSuccMess=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <span>{{signinSuccMess}}</span>
+    </div>
     <div id="signin-error" class="alert alert-danger alert-dismissible fade in" role="alert" ng-show="signinErrMess!=undefined">
         <button type="button" class="close" ng-click="signinErrMess=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
         <span>{{signinErrMess}}</span>
