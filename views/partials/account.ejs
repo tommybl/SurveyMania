@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<div ng-controller="AccountController">
+    <h1>User infos</h1>
+    <div><strong>Firstname:</strong> <%= user.firstname %></div>
+    <div><strong>Lastname:</strong> <%= user.lastname %></div>
+    <div><strong>Email:</strong> <%= user.email %></div>
+    <div><strong>Type:</strong> <%= user.usertype %></div>
+    <div><strong>UserID:</strong> <%= user.id %></div>
+    <div><strong>OrganizationID:</strong> <%= user.organization %></div><br>
+    <button ng-click="logout()">Logout</button>
+</div>
