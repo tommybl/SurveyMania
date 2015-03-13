@@ -28,7 +28,6 @@ app.use(bodyParser.json());
 app.use('/app', expressJwt({secret: secret}));
 
 app
-// route to log in the app
 .post('/login', function (req, res) {
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
     res.setHeader('Accept', 'application/json');
@@ -56,17 +55,21 @@ app
                     var token = jwt.sign(profile, secret, { expiresInMinutes: 30*24*60 });
                     res.json({token: token});
                 }
-                else res.status(401).json({code: 401, error: "Unauthorized", message: "No account found with given email and password"});
+                else res.json({code: 200, error: "Unauthorized", message: "No account found with given email and password"});
                 client.end();
             });
         }
     });
 })
 
-// route to get login page
 .get('/login', function (req, res) {
     res.setHeader("Content-Type", "text/html");
     res.render('partials/login');
+})
+
+.get('/signin', function (req, res) {
+    res.setHeader("Content-Type", "text/html");
+    res.render('partials/signin');
 })
 
 .get('/app/account', function (req, res) {

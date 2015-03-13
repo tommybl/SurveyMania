@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<div ng-controller="AccountController">
+<div ng-controller="AccountController" style="width: 300px; margin: auto">
     <h1>User infos</h1>
     <div><strong>Firstname:</strong> <%= user.firstname %></div>
     <div><strong>Lastname:</strong> <%= user.lastname %></div>
@@ -7,5 +7,5 @@
     <div><strong>Type:</strong> <%= user.usertype %></div>
     <div><strong>UserID:</strong> <%= user.id %></div>
     <div><strong>OrganizationID:</strong> <%= user.organization %></div><br>
-    <button ng-click="logout()">Logout</button>
+    <button ng-click="logout()" class="btn btn-default">Logout</button>
 </div>

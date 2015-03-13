@@ -11,13 +11,14 @@ surveyManiaControllers.controller('LoginController', ['$scope', '$http', '$windo
             var password = CryptoJS.SHA256($scope.user.password).toString();
             $http.post('/login', {email: $scope.user.email, password: password})
             .success(function (data, status, headers, config) {
-                console.log("success");
-                console.log(data);
-                $window.localStorage.token = data.token;
-                $location.path( "/account");
+                if (data.error == undefined) {
+                    console.log(data);
+                    $window.localStorage.token = data.token;
+                    $location.path( "/account");
+                }
+                else $scope.loginErrMess = data.error + '. ' + data.message;
             })
             .error(function (data, status, headers, config) {
-                console.log("error");
                 console.log(data);
                 // Erase the token if the user fails to log in
                 delete $window.localStorage.token;
@@ -26,6 +27,34 @@ surveyManiaControllers.controller('LoginController', ['$scope', '$http', '$windo
             });
         }
         else $scope.loginErrMess = 'Invalid email format!';
+    };
+}]);
+
+surveyManiaControllers.controller('SigninController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
+    $scope.user = {email: '', password: ''};
+    $scope.signinErrMess = undefined;
+    $scope.submit = function () {
+        /*var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        if (re.test($scope.user.email)) {
+            var password = CryptoJS.SHA256($scope.user.password).toString();
+            $http.post('/login', {email: $scope.user.email, password: password})
+            .success(function (data, status, headers, config) {
+                if (data.error == undefined) {
+                    console.log(data);
+                    $window.localStorage.token = data.token;
+                    $location.path( "/account");
+                }
+                else $scope.loginErrMess = data.error + '. ' + data.message;
+            })
+            .error(function (data, status, headers, config) {
+                console.log(data);
+                // Erase the token if the user fails to log in
+                delete $window.localStorage.token;
+                // Handle login errors here
+                $scope.loginErrMess = data.error + '. ' + data.message;
+            });
+        }
+        else $scope.loginErrMess = 'Invalid email format!';*/
     };
 }]);
 

@@ -11,6 +11,11 @@ surveyManiaApp.config(['$routeProvider',
             controller: '',
             navigationPart: 'login'
         }).
+        when('/signin', {
+            templateUrl: '/signin',
+            controller: '',
+            navigationPart: 'signin'
+        }).
         when('/account', {
             templateUrl: '/app/account',
             controller: '',
@@ -35,13 +40,13 @@ surveyManiaApp.factory('authInterceptor', function ($rootScope, $q, $window, $lo
             return config;
         },
         response: function (response) {
-            if (response.status == 401 && $rootScope.navigationPart != "login") {
+            if (response.status == 401) {
                 $location.path( "/401-unauthorized");
             }
             return response || $q.when(response);
         },
         responseError: function(rejection) {
-            if (rejection.status == 401 && $rootScope.navigationPart != "login") {
+            if (rejection.status == 401) {
                 $location.path('/401-unauthorized');
             }
             return $q.reject(rejection);
