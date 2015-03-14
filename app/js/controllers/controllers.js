@@ -28,7 +28,7 @@ surveyManiaControllers.controller('LoginController', ['$scope', '$http', '$windo
     };
 }]);
 
-surveyManiaControllers.controller('SigninController', ['$scope', '$http', '$window', '$location','$templateCache', function($scope, $http, $window, $location, $templateCache) {
+surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
     $scope.default_img ="img/default_profil.jpg";
     $scope.img ="img/default_profil.jpg";
     $scope.fetch_img = function() {
@@ -108,8 +108,8 @@ surveyManiaControllers.controller('SigninController', ['$scope', '$http', '$wind
     }
 
     $scope.user = {email: '', password: '', password2: '', firstname: '', lastname: '', adress: '', phone: '', inviter: ''};
-    $scope.signinErrMess = undefined;
-    $scope.signinSuccMess = undefined;
+    $scope.signupErrMess = undefined;
+    $scope.signupSuccMess = undefined;
     $scope.submit = function () {
         var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         if (!re.test($scope.user.email)) 
@@ -129,17 +129,17 @@ surveyManiaControllers.controller('SigninController', ['$scope', '$http', '$wind
             inviter: ($scope.user.inviter == '') ? null : $scope.user.inviter
         }
 
-        $http.post('/signin', newuser)
+        $http.post('/signup', newuser)
         .success(function (data, status, headers, config) {
             if (data.error == undefined) {
                 console.log(data);
-                $scope.signinSuccMess = "Your account has been successfully created. An email has been sent, please follow its intructions to finish your inscription.";
+                $scope.signupSuccMess = "Your account has been successfully created. An email has been sent, please follow its intructions to finish your inscription.";
             }
-            else $scope.signinErrMess = data.error + '. ' + data.message;
+            else $scope.signupErrMess = data.error + '. ' + data.message;
         })
         .error(function (data, status, headers, config) {
             console.log(data);
-            $scope.signinErrMess = data.error + '. ' + data.message;
+            $scope.signupErrMess = data.error + '. ' + data.message;
         });
     };
 }]);

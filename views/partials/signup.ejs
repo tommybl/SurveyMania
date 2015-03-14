@@ -46,7 +46,7 @@
 }
 </style>
 
-<div ng-controller="SigninController">
+<div ng-controller="SignupController">
 	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
 	 S'inscrire
 	</button>
@@ -59,13 +59,13 @@
 			        <h4 class="modal-title" id="myModalLabel">Inscrivez-vous !</h4>
 			    </div>
 	      			<div class="modal-body">
-	      				<div id="signin-success" class="alert alert-success alert-dismissible fade in" role="alert" ng-show="signinSuccMess!=undefined">
-					        <button type="button" class="close" ng-click="signinSuccMess=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-					        <span>{{signinSuccMess}}</span>
+	      				<div id="signup-success" class="alert alert-success alert-dismissible fade in" role="alert" ng-show="signupSuccMess!=undefined">
+					        <button type="button" class="close" ng-click="signupSuccMess=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					        <span>{{signupSuccMess}}</span>
 					    </div>
-					    <div id="signin-error" class="alert alert-danger alert-dismissible fade in" role="alert" ng-show="signinErrMess!=undefined">
-					        <button type="button" class="close" ng-click="signinErrMess=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-					        <span>{{signinErrMess}}</span>
+					    <div id="signup-error" class="alert alert-danger alert-dismissible fade in" role="alert" ng-show="signupErrMess!=undefined">
+					        <button type="button" class="close" ng-click="signupErrMess=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					        <span>{{signupErrMess}}</span>
 					    </div>
 						<form name="myForm">
 							<div class="col-sm-6">

@@ -12,7 +12,7 @@ surveyManiaApp.config(['$routeProvider',
             navigationPart: 'login'
         }).
         when('/signin', {
-            templateUrl: '/signup_form',
+            templateUrl: '/signup',
             controller: '',
             navigationPart: 'signin'
         }).
