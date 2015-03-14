@@ -28,7 +28,7 @@ surveyManiaControllers.controller('LoginController', ['$scope', '$http', '$windo
     };
 }]);
 
-surveyManiaControllers.controller('SigninController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
+surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
     $scope.default_img ="img/default_profil.jpg";
     $scope.img ="img/default_profil.jpg";
     $scope.fetch_img = function() {
