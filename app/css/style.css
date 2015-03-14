@@ -1,0 +1,51 @@
+@font-face{
+	font-family: 'coolvetica';
+	src: url('fonts/coolvetica.ttf');
+}
+
+@font-face{
+	font-family:'quicksand';
+	src: url('fonts/Quicksand_Light.otf');
+}
+
+header
+{
+	background-color:#f5c950;
+	height:50px;
+	background-image: url('../img/logo.jpg');
+	background-size: 50px;
+	background-repeat: no-repeat;
+	background-position-x: 25px;
+}
+
+.signup
+{
+	margin-top:50px;
+}
+
+.brand{
+	font-family: 'coolvetica';
+	font-size: 31px;
+	color: #FFF;
+	padding-left: 100px;
+	padding-top: 3px;
+	display: block;
+	float: left;
+}
+
+.link_primary{
+	color:#f5c950;
+}
+
+/* centered columns styles */
+.row-centered {
+    text-align:center;
+}
+.col-centered {
+    display:inline-block;
+    float:none;
+    /* reset the text-align */
+    text-align:left;
+    /* inline-block space fix */
+    margin-right:-4px;
+}
