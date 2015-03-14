@@ -30,6 +30,11 @@ surveyManiaApp.config(['$routeProvider',
             controller: '',
             navigationPart: '401-unauthorized'
         }).
+        when('/404-notfound', {
+            templateUrl: '/404-notfound',
+            controller: '',
+            navigationPart: '404-notfound'
+        }).
         otherwise({
             redirectTo: '/login'
         });
@@ -47,11 +52,17 @@ surveyManiaApp.factory('authInterceptor', function ($rootScope, $q, $window, $lo
             if (response.status == 401) {
                 $location.path( "/401-unauthorized");
             }
+            else if (response.status == 404) {
+                $location.path( "/404-notfound");
+            }
             return response || $q.when(response);
         },
         responseError: function(rejection) {
             if (rejection.status == 401) {
                 $location.path('/401-unauthorized');
+            }
+            else if (response.status == 404) {
+                $location.path( "/404-notfound");
             }
             return $q.reject(rejection);
         }
