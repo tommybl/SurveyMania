@@ -46,7 +46,7 @@ app
     pg.connect(conString, function(err, client, done) {
         if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
         else {
-            var query = 'SELECT * FROM surveymania.users INNER JOIN surveymania.user_types ON surveymania.users.user_type = user_types.id WHERE surveymania.users.email = \'' + email + '\' AND surveymania.users.password = \'' + password + '\'';
+            var query = 'SELECT surveymania.users.id AS userid, * FROM surveymania.users INNER JOIN surveymania.user_types ON surveymania.users.user_type = user_types.id WHERE surveymania.users.email = \'' + email + '\' AND surveymania.users.password = \'' + password + '\'';
             client.query(query, function(err, result) {
                 done();
                 if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
@@ -56,7 +56,7 @@ app
                         firstname: result.rows[0].name,
                         lastname: result.rows[0].lastname,
                         email: result.rows[0].email,
-                        id: result.rows[0].id,
+                        id: result.rows[0].userid,
                         usertype: result.rows[0].type_name,
                         organization: result.rows[0].user_organization
                     };
@@ -177,15 +177,28 @@ app
     });
 })
 
-.get('/signup_form', function (req, res) {
+.get('/signup', function (req, res) {
     res.setHeader("Content-Type", "text/html");
-    res.render('partials/signup_form');
+    res.render('partials/signup');
 })
 
 .get('/app/account', function (req, res) {
     console.log(req.user);
-    res.setHeader("Content-Type", "text/html");
-    res.render('partials/account', {user: req.user});
+    var achvmnts = '';
+       pg.connect(conString, function(err, client, done) {
+            var query = 'SELECT * FROM surveymania.user_achievements INNER JOIN surveymania.achievements ON surveymania.user_achievements.achiev_id = surveymania.achievements.id WHERE surveymania.user_achievements.user_id=3';
+            client.query(query, function(err, result) {
+                done();
+                if (result.rows.length) {
+                    achvmnts = result.rows; 
+                }
+                client.end();
+                console.log(achvmnts);
+                res.setHeader("Content-Type", "text/html");
+                res.render('partials/account', {user: req.user, achievements: achvmnts});
+            });
+        
+    });
 })
 
 .get('/401-unauthorized', function (req, res) {
