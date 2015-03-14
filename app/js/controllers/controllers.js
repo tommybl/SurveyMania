@@ -28,11 +28,7 @@ surveyManiaControllers.controller('LoginController', ['$scope', '$http', '$windo
     };
 }]);
 
-<<<<<<< HEAD
-surveyManiaControllers.controller('SigninController', ['$scope', '$http', '$window', '$location','$templateCache', function($scope, $http, $window, $location, $templateCache) {
-=======
 surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
->>>>>>> 0ac9310684d2a80efe1b9b82aafaef509082fe0b
     $scope.default_img ="img/default_profil.jpg";
     $scope.img ="img/default_profil.jpg";
     $scope.fetch_img = function() {
@@ -133,11 +129,7 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
             inviter: ($scope.user.inviter == '') ? null : $scope.user.inviter
         }
 
-<<<<<<< HEAD
-        $http.post('/signin', newuser)
-=======
         $http.post('/signup', newuser)
->>>>>>> 0ac9310684d2a80efe1b9b82aafaef509082fe0b
         .success(function (data, status, headers, config) {
             if (data.error == undefined) {
                 console.log(data);
