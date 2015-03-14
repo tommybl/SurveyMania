@@ -29,6 +29,8 @@ surveyManiaControllers.controller('LoginController', ['$scope', '$http', '$windo
 }]);
 
 surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
+    $scope.user = {email: '', password: '', password2: '', firstname: '', lastname: '', adress: '', phone: '', inviter: ''};
+
     $scope.default_img ="img/default_profil.jpg";
     $scope.img ="img/default_profil.jpg";
     $scope.fetch_img = function() {
@@ -59,12 +61,12 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
     $scope.isValidFirstName = false;
     $scope.isValidLastName = false;
     $scope.isValidPhoneNumber = false;
-    $scope.email_check = function(){console.log("igeudohsjwk");$scope.isValidEmail = !(/^[a-z]+[a-z0-9._]+@[a-z]+\.[a-z.]{2,5}$/.test($scope.email_input));}
-    $scope.pwd_check = function(){$scope.isValidPwd = !(/^(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/.test($scope.pwd));} 
-    $scope.confirmpwd_check = function(){$scope.isValidConfirmPwd = !($scope.pwd == $scope.pwdconfirm);}
-    $scope.firstName_check = function(){$scope.isValidFirstName = !(/^[A-zÀ-ú-']{2,}$/.test($scope.firstName));}
-    $scope.lastName_check = function(){$scope.isValidLastName = !(/^[A-zÀ-ú-']{2,}$/.test($scope.lastName));}
-    $scope.phoneNumber_check = function(){$scope.isValidPhoneNumber = !(/^((\+|00)33\s?|0)[1-9](\s?\d{2}){4}$/.test($scope.phoneNumber));}
+    $scope.email_check = function(){console.log("igeudohsjwk");$scope.isValidEmail = !(/^[a-z]+[a-z0-9._]+@[a-z]+\.[a-z.]{2,5}$/.test($scope.user.email));}
+    $scope.pwd_check = function(){$scope.isValidPwd = !(/^(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/.test($scope.user.password));} 
+    $scope.confirmpwd_check = function(){$scope.isValidConfirmPwd = !($scope.user.password == $scope.user.password2);}
+    $scope.firstName_check = function(){$scope.isValidFirstName = !(/^[A-zÀ-ú-']{2,}$/.test($scope.user.firstname));}
+    $scope.lastName_check = function(){$scope.isValidLastName = !(/^[A-zÀ-ú-']{2,}$/.test($scope.user.lastname));}
+    $scope.phoneNumber_check = function(){$scope.isValidPhoneNumber = !(/^((\+|00)33\s?|0)[1-9](\s?\d{2}){4}$/.test($scope.user.phone));}
 
     $scope.change_form = function()
     {
@@ -107,18 +109,17 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
         }
     }
 
-    $scope.user = {email: '', password: '', password2: '', firstname: '', lastname: '', adress: '', phone: '', inviter: ''};
     $scope.signupErrMess = undefined;
     $scope.signupSuccMess = undefined;
     $scope.submit = function () {
-        console.log("hbfdjis,l");
-        var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        
+        /*var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         if (!re.test($scope.user.email)) 
-            return $scope.signinErrMess = 'Invalid email format!';
+            return $scope.signupErrMess = 'Invalid email format!';*/
         if ($scope.user.email == '' || $scope.user.password == '' || $scope.user.password2 == '' || $scope.user.firstname == '' || $scope.user.lastname == '')
-            return $scope.signinErrMess = 'Please provide all needed informations!';
+            return $scope.signupErrMess = 'Please provide all needed informations!';
         if ($scope.user.password != $scope.user.password2)
-            return $scope.signinErrMess = 'The two passwords are not equals!';
+            return $scope.signupErrMess = 'The two passwords are not equals!';
         var password = CryptoJS.SHA256($scope.user.password).toString();
         var newuser = {
             email: $scope.user.email,
@@ -130,8 +131,11 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
             inviter: ($scope.user.inviter == '') ? null : $scope.user.inviter
         }
 
+        console.log("var newuser ok");
+
         $http.post('/signup', newuser)
         .success(function (data, status, headers, config) {
+            console.log("success");
             if (data.error == undefined) {
                 console.log(data);
                 $scope.signupSuccMess = "Your account has been successfully created. An email has been sent, please follow its intructions to finish your inscription.";
@@ -139,6 +143,7 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
             else $scope.signupErrMess = data.error + '. ' + data.message;
         })
         .error(function (data, status, headers, config) {
+            console.log("error");
             console.log(data);
             $scope.signupErrMess = data.error + '. ' + data.message;
         });

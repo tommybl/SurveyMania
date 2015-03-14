@@ -1,16 +1,4 @@
 <!DOCTYPE html>
-<!--<div ng-controller="AccountController" style="width: 300px; margin: auto">
-    <h1>User infos</h1>
-    <div><strong>Firstname:</strong> <%= user.firstname %></div>
-    <div><strong>Lastname:</strong> <%= user.lastname %></div>
-    <div><strong>Email:</strong> <%= user.email %></div>
-    <div><strong>Type:</strong> <%= user.usertype %></div>
-    <div><strong>UserID:</strong> <%= user.id %></div>
-    <div><strong>OrganizationID:</strong> <%= user.organization %></div><br>
-    <button ng-click="logout()" class="btn btn-default">Logout</button>
-</div>-->
-
-
 <style type="text/css">
 #profil_bg{
 	background-image: url('img/footer_lodyas.png');
@@ -83,6 +71,7 @@
 </style>
 
 <div ng-controller="AccountController">
+	<button ng-click="logout()" class="btn btn-default">Logout</button>
 	<div id="profil_bg" class="col-md-12">
 		<div id="default_profil">
 			<img id="profil_img" src="img/default_profil.png" alt="image de profil"/>
@@ -110,84 +99,31 @@
 		</div>
 	</div>
 	<div id="ss-container" class="ss-container">
-	    <div class="ss-row ss-medium">
-	        <div class="ss-left">
-	            <span class="ss-circle ss-circle-1 ss-circle-deco"></span>
-	        </div>
-	        <div class="ss-right">
-	            <h3>
-	                <span>November 28, 2011</span>
-	                <a href="http://tympanus.net/Tutorials/TypographyEffects/">Typography Effects with CSS3 and jQuery</a>
-	            </h3>
-	        </div>
-	    </div>
-		<div class="ss-row ss-medium">
-	        <div class="ss-left">
-	            <h3>
-	                <span>November 22, 2011</span>
-	                <a href="http://tympanus.net/Development/HoverClickTriggerCircle/">Hover and Click Trigger for Circular Elements with jQuery</a>
-	            </h3>
-	        </div>
-			<div class="ss-right">
-	           <span class="ss-circle ss-circle-2 ss-circle-deco"></span>
-	        </div>
-	    </div>
-	    <div class="ss-row ss-medium">
-	        <div class="ss-left">
-				<span class="ss-circle ss-circle-3 ss-circle-deco"></span>
-	        </div>
-	        <div class="ss-right">
-	            <h3>
-	                <span>November 21, 2011</span>
-	                <a href="http://tympanus.net/Tutorials/ElasticSlideshow/">Elastic Image Slideshow with Thumbnail Preview</a>
-	            </h3>
-	        </div>
-	    </div>
-		<div class="ss-row ss-medium">
-	        <div class="ss-left">
-	            <h3>
-	                <span>November 18, 2011</span>
-	                <a href="http://tympanus.net/Development/FullscreenImageBlurEffect/">Fullscreen Image Blur Effect with HTML5</a>
-	            </h3>
-	        </div>
-			<div class="ss-right">
-	            <span class="ss-circle ss-circle-4 ss-circle-deco"></span>
-	        </div>
-	    </div>
-		<div class="ss-row ss-medium">
-	        <div class="ss-left">
-	            <span class="ss-circle ss-circle-5 ss-circle-deco"></span>
-	        </div>
-	        <div class="ss-right">
-	            <h3>
-	                <span>November 9, 2011</span>
-	                <a href="http://tympanus.net/Tutorials/InteractiveTypographyEffects/">Interactive Typography Effects with HTML5</a>
-	            </h3>
-	        </div>
-	    </div>
-		<div class="ss-row ss-medium">
-			<div class="ss-left">
-	            <h3>
-	                <span>November 7, 2011</span>
-	                <a href="http://tympanus.net/Tutorials/AnimatedButtons/">Animated Buttons with CSS3</a>
-	            </h3>
-	        </div>
-	        <div class="ss-right">
-	            <span class="ss-circle ss-circle-6 ss-circle-deco"></span>
-	        </div>
-	    </div>
-		<div class="ss-row ss-medium">
-	        <div class="ss-left">
-	            <h3>
-	                <span>November 2, 2011</span>
-	                <a href="http://tympanus.net/Tutorials/OriginalHoverEffects/">Original Hover Effects with CSS3</a>
-	            </h3>
-	        </div>
-			<div class="ss-right">
-	            <span class="ss-circle ss-circle-7 ss-circle-deco"></span>
-	        </div>
-	    </div>
-	</div>
+		<% for(var i=0; i < achievements.length; i++) { %>
+			<div class="ss-row ss-medium">
+				<% if(i%2 == 0) { %>
+				    <div class="ss-left">
+			            <span class="ss-circle ss-circle-deco" style="background-image:url(/../img/<%= achievements[i].image_path %>.png)"></span>
+			        </div>
+			        <div class="ss-right">
+			            <h3>
+			                <span><%= achievements[i].recieved_dt %></span>
+			                <span><%= achievements[i].description %></span>
+			            </h3>
+			        </div>
+				<% } else { %>
+					<div class="ss-left">
+			            <h3>
+			                <span><%= achievements[i].recieved_dt %></span>
+			                <span><%= achievements[i].description %></span>
+			            </h3>
+			        </div>
+				    <div class="ss-right">
+			            <span class="ss-circle ss-circle-deco" style="background-image:url(/../img/<%= achievements[i].image_path %>.png)"></span>
+			        </div>
+				<% } %>
+		    </div>
+		<% } %>
 	<div class="row-centered">
 		<div class="col-md-6 col-centered">
 			<p class="recent_survey">Sondages récemment rempli</p>

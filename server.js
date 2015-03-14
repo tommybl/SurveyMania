@@ -76,7 +76,7 @@ app
     res.render('partials/login');
 })
 
-.post('/signin', function (req, res) {
+.post('/signup', function (req, res) {
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
     res.setHeader('Accept', 'application/json');
     var inviter = null;
