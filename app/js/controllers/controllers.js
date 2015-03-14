@@ -108,8 +108,8 @@ surveyManiaControllers.controller('SigninController', ['$scope', '$http', '$wind
     }
 
     $scope.user = {email: '', password: '', password2: '', firstname: '', lastname: '', adress: '', phone: '', inviter: ''};
-    $scope.signinErrMess = undefined;
-    $scope.signinSuccMess = undefined;
+    $scope.signupErrMess = undefined;
+    $scope.signupSuccMess = undefined;
     $scope.submit = function () {
         console.log("hbfdjis,l");
         var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -130,7 +130,7 @@ surveyManiaControllers.controller('SigninController', ['$scope', '$http', '$wind
             inviter: ($scope.user.inviter == '') ? null : $scope.user.inviter
         }
 
-        $http.post('/signin', newuser)
+        $http.post('/signup', newuser)
         .success(function (data, status, headers, config) {
             if (data.error == undefined) {
                 console.log(data);

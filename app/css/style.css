@@ -1,11 +1,11 @@
 @font-face{
 	font-family: 'coolvetica';
-	src: url('fonts/coolvetica.ttf');
+	src: url('../fonts/coolvetica.ttf');
 }
 
 @font-face{
 	font-family:'quicksand';
-	src: url('fonts/Quicksand_Light.otf');
+	src: url('../fonts/Quicksand_Light.otf');
 }
 
 header

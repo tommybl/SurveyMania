@@ -206,6 +206,11 @@ app
     res.render('401-unauthorized');
 })
 
+.get('/404-notfound', function (req, res) {
+    res.setHeader("Content-Type", "text/html");
+    res.render('404-notfound');
+})
+
 // route to get index page
 .get('/', function (req, res) {
     res.setHeader("Content-Type", "text/html");
@@ -217,7 +222,8 @@ app
 
 // redirecting to index for any other route
 .use(function (req, res) {
-    res.redirect('/');
+    res.setHeader("Content-Type", "text/html");
+    res.status(404).render('404-notfound');
 });
 
 /* setting ssl certificate to create https server
