@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<div ng-controller="AccountController" style="width: 300px; margin: auto">
+<!--<div ng-controller="AccountController" style="width: 300px; margin: auto">
     <h1>User infos</h1>
     <div><strong>Firstname:</strong> <%= user.firstname %></div>
     <div><strong>Lastname:</strong> <%= user.lastname %></div>
@@ -8,4 +8,197 @@
     <div><strong>UserID:</strong> <%= user.id %></div>
     <div><strong>OrganizationID:</strong> <%= user.organization %></div><br>
     <button ng-click="logout()" class="btn btn-default">Logout</button>
+</div>-->
+
+
+<style type="text/css">
+#profil_bg{
+	background-image: url('img/footer_lodyas.png');
+	border-bottom: 1px solid #f5c950;
+}
+
+#default_profil{
+	text-align: center;
+	padding: 20px 0px 10px 0px;
+}
+
+#profil_name{
+	font-family: 'quicksand';
+	color: #FFFFFF;
+	font-size: 23px;
+}
+
+.col1, .col2, .col3, .col4{
+	height: 50px;
+	padding: 12px;
+	color:#333333;
+}
+
+.col1{
+	/*background-color: #FFD86D;*/
+	background-color:#313131;
+}
+.col2{
+	/*background-color: #FFE6A0;*/
+	background-color: #373737;
+}
+.col3{
+	background-color: #f5c950;
+}
+
+.about_title, .trophy_title, .coupon_title{
+	font-family: 'quicksand';
+	font-size: 18px;
+	margin-bottom: 20px;
+	display: block;
+	background-repeat: no-repeat;
+	padding-left: 40px;
+	padding-top: 3px;
+}
+
+.about_title{
+	background-image: url("img/user_icon_white.png");
+}
+
+.trophy_title{
+	background-image: url("img/trophy_icon_white.png");
+}
+
+.coupon_title{
+	background-image: url("img/coupon_icon.png");
+}
+
+.recent_survey{
+	font-family: 'quicksand';
+	font-size: 18px;
+	margin-bottom: 20px;
+	display: block;
+	background-image: url("img/recent.png");
+	background-repeat: no-repeat;
+	padding-left: 40px;
+	margin-top:20px;
+	padding-bottom: 5px;
+}
+
+</style>
+
+<div ng-controller="AccountController">
+	<div id="profil_bg" class="col-md-12">
+		<div id="default_profil">
+			<img id="profil_img" src="img/default_profil.png" alt="image de profil"/>
+			<p id="profil_name"><%= user.firstname %> <%= user.lastname %></p>
+		</div>
+	</div>
+	<div class="col1 col-lg-6">
+		<a class="about_title" ng-click="tab_show('show_about')">A propos</a>
+	</div>
+	<div class="col2 col-lg-6">
+		<a class="trophy_title" ng-click="tab_show('ss-container')">Mes trophés</a>
+	</div>
+	<!--<div class="col3 col-lg-3">
+		<span class="coupon_title">Mes bons de réduction</span>
+	</div>
+	<div class="col4 col-lg-3">
+		Hello
+	</div>-->
+	<div id="show_about" style="display:none;">
+		<div class="row-centered">
+			<div class="col-md-6 col-centered">
+				<p><%= user.firstname %> <%= user.lastname %><br/>22 avenue de fontainebleau<br/>94270 Le Kremlin-Bicêtre</p>
+				<p>E-mail: <%= user.email %><br/>Tel. : 06 98 27 71 09</p>
+			</div>
+		</div>
+	</div>
+	<div id="ss-container" class="ss-container">
+	    <div class="ss-row ss-medium">
+	        <div class="ss-left">
+	            <span class="ss-circle ss-circle-1 ss-circle-deco"></span>
+	        </div>
+	        <div class="ss-right">
+	            <h3>
+	                <span>November 28, 2011</span>
+	                <a href="http://tympanus.net/Tutorials/TypographyEffects/">Typography Effects with CSS3 and jQuery</a>
+	            </h3>
+	        </div>
+	    </div>
+		<div class="ss-row ss-medium">
+	        <div class="ss-left">
+	            <h3>
+	                <span>November 22, 2011</span>
+	                <a href="http://tympanus.net/Development/HoverClickTriggerCircle/">Hover and Click Trigger for Circular Elements with jQuery</a>
+	            </h3>
+	        </div>
+			<div class="ss-right">
+	           <span class="ss-circle ss-circle-2 ss-circle-deco"></span>
+	        </div>
+	    </div>
+	    <div class="ss-row ss-medium">
+	        <div class="ss-left">
+				<span class="ss-circle ss-circle-3 ss-circle-deco"></span>
+	        </div>
+	        <div class="ss-right">
+	            <h3>
+	                <span>November 21, 2011</span>
+	                <a href="http://tympanus.net/Tutorials/ElasticSlideshow/">Elastic Image Slideshow with Thumbnail Preview</a>
+	            </h3>
+	        </div>
+	    </div>
+		<div class="ss-row ss-medium">
+	        <div class="ss-left">
+	            <h3>
+	                <span>November 18, 2011</span>
+	                <a href="http://tympanus.net/Development/FullscreenImageBlurEffect/">Fullscreen Image Blur Effect with HTML5</a>
+	            </h3>
+	        </div>
+			<div class="ss-right">
+	            <span class="ss-circle ss-circle-4 ss-circle-deco"></span>
+	        </div>
+	    </div>
+		<div class="ss-row ss-medium">
+	        <div class="ss-left">
+	            <span class="ss-circle ss-circle-5 ss-circle-deco"></span>
+	        </div>
+	        <div class="ss-right">
+	            <h3>
+	                <span>November 9, 2011</span>
+	                <a href="http://tympanus.net/Tutorials/InteractiveTypographyEffects/">Interactive Typography Effects with HTML5</a>
+	            </h3>
+	        </div>
+	    </div>
+		<div class="ss-row ss-medium">
+			<div class="ss-left">
+	            <h3>
+	                <span>November 7, 2011</span>
+	                <a href="http://tympanus.net/Tutorials/AnimatedButtons/">Animated Buttons with CSS3</a>
+	            </h3>
+	        </div>
+	        <div class="ss-right">
+	            <span class="ss-circle ss-circle-6 ss-circle-deco"></span>
+	        </div>
+	    </div>
+		<div class="ss-row ss-medium">
+	        <div class="ss-left">
+	            <h3>
+	                <span>November 2, 2011</span>
+	                <a href="http://tympanus.net/Tutorials/OriginalHoverEffects/">Original Hover Effects with CSS3</a>
+	            </h3>
+	        </div>
+			<div class="ss-right">
+	            <span class="ss-circle ss-circle-7 ss-circle-deco"></span>
+	        </div>
+	    </div>
+	</div>
+	<div class="row-centered">
+		<div class="col-md-6 col-centered">
+			<p class="recent_survey">Sondages récemment rempli</p>
+			<p>
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer mollis, urna ac luctus dictum, tortor tortor blandit tellus, et tempor velit orci et lectus. Maecenas eu euismod magna. Aliquam vel mi ut nibh placerat dignissim id ac erat. Aliquam ut massa ut nulla iaculis aliquam in eu tellus. Curabitur sem quam, posuere vel efficitur luctus, ullamcorper vitae elit. Suspendisse bibendum tortor dapibus blandit convallis. Sed vitae elit tempus, vulputate lacus ac, dignissim eros.
+			</p>
+			<p>
+				Donec viverra urna id metus efficitur, id mattis metus porta. Duis aliquam commodo tristique. Nullam et aliquam mi. Nunc quis dictum urna. Morbi vel lectus ullamcorper, auctor ex non, tempor felis. Proin a ultrices enim. Vivamus rutrum, ipsum in vehicula efficitur, risus enim feugiat est, sed consequat dolor est in elit. Nulla maximus mauris sit amet est sodales maximus.
+			</p>
+		</div>
+	</div>
 </div>
+<script type="text/javascript" src="js/jquery.easing.1.3.js"></script>
+<script type="text/javascript" src="js/scroll.js"></script>

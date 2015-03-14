@@ -28,7 +28,85 @@ surveyManiaControllers.controller('LoginController', ['$scope', '$http', '$windo
     };
 }]);
 
-surveyManiaControllers.controller('SigninController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
+surveyManiaControllers.controller('SigninController', ['$scope', '$http', '$window', '$location','$templateCache', function($scope, $http, $window, $location, $templateCache) {
+    $scope.default_img ="img/default_profil.jpg";
+    $scope.img ="img/default_profil.jpg";
+    $scope.fetch_img = function() {
+        console.log($scope.firmName)
+        $.ajax({
+            url: 'https://www.googleapis.com/customsearch/v1?key=AIzaSyBaiPSlrA4cVQKAv-RlRwo1UgkkVpOS67U&cx=004343761578996942245:kcfk8xi6kqk&q='+$scope.firmName+'+logo&searchType=image&fileType:jpg,png&imgSize=small&alt=json',
+            type: "GET",
+            dataType: 'json',
+            cache: true,
+            success: function (data, status, error) {
+              var i = 0;
+              while (data.items[i].mime === "image/gif")
+                i++;
+              $scope.img=data.items[i].link;
+              $('#logo_suggestion').show();
+              $scope.$apply();
+              console.log('success', data.items[i].mime);
+            },
+            error: function (data, status, error) {
+              console.log('error', data, status, error);
+            }
+        });
+    };
+
+    $scope.isValidEmail = false;
+    $scope.isValidConfirmPwd = false;
+    $scope.isValidPwd = false;
+    $scope.isValidFirstName = false;
+    $scope.isValidLastName = false;
+    $scope.isValidPhoneNumber = false;
+    $scope.email_check = function(){console.log("igeudohsjwk");$scope.isValidEmail = !(/^[a-z]+[a-z0-9._]+@[a-z]+\.[a-z.]{2,5}$/.test($scope.email_input));}
+    $scope.pwd_check = function(){$scope.isValidPwd = !(/^(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/.test($scope.pwd));} 
+    $scope.confirmpwd_check = function(){$scope.isValidConfirmPwd = !($scope.pwd == $scope.pwdconfirm);}
+    $scope.firstName_check = function(){$scope.isValidFirstName = !(/^[A-zÀ-ú-']{2,}$/.test($scope.firstName));}
+    $scope.lastName_check = function(){$scope.isValidLastName = !(/^[A-zÀ-ú-']{2,}$/.test($scope.lastName));}
+    $scope.phoneNumber_check = function(){$scope.isValidPhoneNumber = !(/^((\+|00)33\s?|0)[1-9](\s?\d{2}){4}$/.test($scope.phoneNumber));}
+
+    $scope.change_form = function()
+    {
+        var pro = document.getElementsByClassName("professionnal_form");
+        var par = document.getElementsByClassName("particulier_form");
+        if (document.getElementById('professionnal').checked) {
+            for (var i = 0; i < pro.length; i++)
+                $(pro[i]).slideDown();
+            for (var i = 0; i < par.length; i++)
+                $(par[i]).hide();
+        }
+        else
+        {
+            for (var i = 0; i < pro.length; i++)
+                $(pro[i]).hide();
+            for (var i = 0; i < par.length; i++)
+                $(par[i]).slideDown();
+        }
+    }
+
+    $scope.img_upload_form = function()
+    {
+        $('#img_upload').slideDown();
+    }
+
+    $scope.change_img_preview = function()
+    {
+        var fileInput = document.getElementById('uploadLogo');
+        var file = fileInput.files[0];
+        var imageType = /image.*/;
+
+        if (file.type.match(imageType)) {
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+                $scope.img = reader.result;
+                $scope.$apply();
+            }
+            reader.readAsDataURL(file); 
+        }
+    }
+
     $scope.user = {email: '', password: '', password2: '', firstname: '', lastname: '', adress: '', phone: '', inviter: ''};
     $scope.signinErrMess = undefined;
     $scope.signinSuccMess = undefined;
@@ -50,6 +128,7 @@ surveyManiaControllers.controller('SigninController', ['$scope', '$http', '$wind
             phone: ($scope.user.phone == '') ? null : $scope.user.phone,
             inviter: ($scope.user.inviter == '') ? null : $scope.user.inviter
         }
+
         $http.post('/signin', newuser)
         .success(function (data, status, headers, config) {
             if (data.error == undefined) {
@@ -70,4 +149,20 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
         delete $window.localStorage.token;
         $location.path( "/login");
     };
+
+    $scope.reduce = false;
+    $scope.tab_show = function($id)
+    {
+        if (!$scope.reduce)
+        {
+            $scope.reduce = true;
+            $("#profil_bg").animate({height:"100px"},400);
+            $("#profil_img").animate({width:"70px",height:"70px", marginRight:"50px"},400);
+            $("#default_profil").fadeOut(600, function(){$("#default_profil").css("padding","16px 0px 10px 0px")
+                .css("display","flex").css("align-items","center").css("justify-content","center")});
+        }
+        $("#show_about").hide();
+        $("#ss-container").hide();
+        $("#"+$id+"").fadeIn();
+    }
 }]);

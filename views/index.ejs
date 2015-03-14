@@ -5,44 +5,49 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>SurveyMania</title>
-        <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+        <link href="bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet" type="text/css">
         <link href="css/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
         <link href="css/global.css" rel="stylesheet" type="text/css">
-
+        <link href="css/style.css" rel="stylesheet" type="text/css">
+        <link href="css/scroll_style.css" rel="stylesheet" type="text/css">
         <script type="text/javascript">
           var surveyManiaURL = 'http://localhost:1337/';
         </script>
         <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/sha256.js"></script>
-</head>
-<body>
-    <div id="wrapper">
+    </head>
+    <body>
+        <div id="wrapper">
 
-        <!-- Page Content -->
-        <div  id="page-wrapper" class="view-container">
-            <div style="width: 300px; margin: auto">
-                <ul class="nav nav-pills">
-                    <li role="presentation" ng-class="{active:(navigationPart==='login')}"><a href="/#/login">Login</a></li>
-                    <li role="presentation" ng-class="{active:(navigationPart==='signin')}"><a href="/#/signin">Inscription</a></li>
-                    <li role="presentation" ng-class="{active:(navigationPart==='account')}"><a href="/#/account">Account</a></li>
-                </ul>
+            <!-- Page Content -->
+            <div id="page-wrapper" class="view-container">
+                <header>
+                    <span class="brand">SurveyMania</span>
+                    <div style="width: 300px; margin: auto; padding-top: 5px;">
+                        <ul class="nav nav-pills">
+                            <li role="presentation" ng-class="{active:(navigationPart==='login')}"><a href="/#/login">Login</a></li>
+                            <li role="presentation" ng-class="{active:(navigationPart==='signin')}"><a href="/#/signin">Inscription</a></li>
+                            <li role="presentation" ng-class="{active:(navigationPart==='account')}"><a href="/#/account">Account</a></li>
+                        </ul>
+                    </div>
+                </header>
+
+                <div ng-view id="view-container" class="view-frame"></div>
             </div>
-
-            <div ng-view id="view-container" class="view-frame"></div>
         </div>
-    </div>
-    
-    <script src="bower_components/jquery/jquery.js"></script>
-    <script src="bower_components/angular/angular.min.js"></script>
-    <script src="bower_components/angular-i18n/angular-locale_fr-fr.js"></script>
-    <script src="bower_components/angular-animate/angular-animate.min.js"></script>
-    <script src="bower_components/angular-route/angular-route.min.js"></script>
-    <script src="bower_components/angular-resource/angular-resource.min.js"></script>
-    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="js/config.js"></script>
-    <script src="js/services.js"></script>
-    <script src="js/filters.js"></script>
-    <script src="js/controllers/controllers.js"></script>
-    <script src="js/app.js"></script>
-    <script src="js/global.js"></script>
-</body>
+        
+        <script src="bower_components/jquery/jquery.js"></script>
+        <script src="bower_components/angular/angular.min.js"></script>
+        <script src="bower_components/angular-i18n/angular-locale_fr-fr.js"></script>
+        <script src="bower_components/angular-animate/angular-animate.min.js"></script>
+        <script src="bower_components/angular-route/angular-route.min.js"></script>
+        <script src="bower_components/angular-resource/angular-resource.min.js"></script>
+        <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="bower_components/angular-dragdrop/src/angular-dragdrop.js"></script>
+        <script src="js/config.js"></script>
+        <script src="js/services.js"></script>
+        <script src="js/filters.js"></script>
+        <script src="js/controllers/controllers.js"></script>
+        <script src="js/app.js"></script>
+        <script src="js/global.js"></script>
+    </body>
 </html>

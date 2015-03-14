@@ -177,9 +177,9 @@ app
     });
 })
 
-.get('/signin', function (req, res) {
+.get('/signup_form', function (req, res) {
     res.setHeader("Content-Type", "text/html");
-    res.render('partials/signin');
+    res.render('partials/signup_form');
 })
 
 .get('/app/account', function (req, res) {

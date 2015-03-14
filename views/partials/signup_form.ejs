@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<style type="text/css">
+.signup{
+	color: #FFF;
+}
+
+.signup div
+{
+	margin-top:30px;
+}
+
+.signup div:first-child
+{
+	margin-top:10px;
+}
+
+.signup label, .signup input[type=submit]
+{
+	font-weight: normal;
+	font-family: 'quicksand';
+}
+
+.error
+{
+	position: absolute;
+	color: #f62222;
+	font-size: 10px;
+	font-style: italic;
+}
+
+#logo_suggestion{
+	font-style: italic;
+	font-size: 10px;
+}
+
+#logo_suggestion:hover
+{
+	cursor: pointer;
+}
+
+#img_upload
+{
+	float: right;
+	width: 65%;
+	text-align: center;
+}
+</style>
+
+<div ng-controller="SigninController">
+	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+	 S'inscrire
+	</button>
+
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	  	<div class="modal-dialog row-centered">
+	    	<div class="modal-content col-xs-10 col-sm-10 col-md-8 col-lg-6 col-centered signup">
+			    <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			        <h4 class="modal-title" id="myModalLabel">Inscrivez-vous !</h4>
+			    </div>
+	      			<div class="modal-body">
+						<form name="myForm">
+							<div class="col-sm-6">
+								<label>Indiquez le type de compte</label> <span class="link_primary">*</span><br/>
+								<input type="radio" name="account_type" ng-model="radio_value" value="particulier" ng-change="change_form()" id="particulier" ng-checked="true"/> particulier
+								<input type="radio" name="account_type" ng-model="radio_value" value="professionnal" ng-change="change_form()" id="professionnal"/> professionnel
+							</div>
+							<div class="particulier_form col-sm-6" style="clear:both">
+								<label>Indiquez votre prénom</label> <span class="link_primary">*</span>
+								<input type="text" placeholder="Prénom" class="form-control" name="firstname" ng-model="firstName" ng-change="firstName_check()" required/>
+								<span class="error" ng-show="isValidFirstName">Le prénom de doit contenir que des lettres et des traits d'union et doit être composé au minimum de 2 caractères</span>
+							</div>
+							<div class="professionnal_form col-sm-6" style="clear:both; display:none;">
+								<label>Indiquez le nom de votre entreprise</label> <span class="link_primary">*</span>
+								<input type="text" placeholder="Nom de l'entreprise" class="form-control" name="firm_name" ng-model="firmName" ng-blur="fetch_img()" required/>
+								<span class="error" ng-show="isValidFirmName">Le nom de l'entreprise de doit contenir que des lettres et des traits d'union</span>
+							</div>
+							<div class="col-sm-6">
+								<label>Choississez un mot de passe</label> <span class="link_primary">*</span>
+								<input type="password" placeholder="Mot de passe" class="form-control" name="password" ng-model="pwd" ng-change="pwd_check()" required/>
+								<span class="error" ng-show="isValidPwd">Votre mot de passe doit contenir au moins une lettre, un chiffre, un caractère spécial et doit excéder 6 caractères</span>
+							</div>
+							<div class="particulier_form col-sm-6">
+								<label>Indiquez votre nom</label> <span class="link_primary">*</span>
+								<input type="text" placeholder="Nom" class="form-control" name="lastname" ng-model="lastName" ng-change="lastName_check()" required/>
+								<span class="error" ng-show="isValidLastName">Le prénom de doit contenir que des lettres et des traits d'union</span>
+							</div>
+							<div class="professionnal_form col-sm-6" style="display:none;">
+								<label>Entrez une courte description</label> <span class="link_primary">*</span>
+								<input type="text" placeholder="Description" class="form-control" name="description" ng-model="description" ng-change="description_check()" required/>
+							</div>
+							<div class="col-sm-6">
+								<label>Confirmez votre mot de passe</label> <span class="link_primary">*</span>
+								<input type="password" placeholder="Confirmation mot de passe" class="form-control" name="password_confirm" ng-model="pwdconfirm" ng-change="confirmpwd_check()" required/>
+								<span class="error" ng-show="isValidConfirmPwd">Le mots de passe de sont pas identiques</span>
+							</div>
+							<div class="col-sm-6">
+								<label>Indiquez votre adresse e-mail</label> <span class="link_primary">*</span>
+								<input ng-change="email_check()" ng-model="email_input" type="text" placeholder="email@provider.com" class="form-control" name="email" required/>
+				  				<span class="error" ng-show="isValidEmail">Le mail indiqué est invalide</span>
+							</div>
+							<div class="col-sm-6">
+								<label>Indiquez votre numéro de téléphone</label>
+								<input type="text" placeholder="" class="form-control" name="phone" ng-model="phoneNumber" ng-change="phoneNumber_check()"/>
+								<span class="error" ng-show="isValidPhoneNumber">Le numéro doit être composé de 10 chiffres ou doit commencer par +33</span>
+							</div>
+							<div class="professionnal_form col-sm-6" style="display:none;">
+								<label>Logo de l'entreprise</label><br/>
+								<p id="img_upload" style="display:none;">
+									<input type="file" class="form-control" style="width: 100%;" id="uploadLogo" ng-model="logo_upload" onchange="angular.element(this).scope().change_img_preview()">
+									OU<br/>
+									<input type="radio" name="skip_upload" ng-model="skip_upload" value="1" /> passer cette étape
+								</p>
+								<img ng-src="{{img}}" style="width:100px;"/><br/><span id="logo_suggestion" ng-click="img_upload_form()" style="display:none;">Ceci n'est pas votre logo ?</span>
+							</div>
+							<div class="professionnal_form col-sm-6" style="display:none;">
+								<label>Indiquez le nombre d'utilisateurs potentiels</label><br/>
+								<input type="radio" name="user_num" ng-model="user_num_value" value="50" ng-change="change_form()" /> Moins de 50<br/>
+								<input type="radio" name="user_num" ng-model="user_num_value" value="100" ng-change="change_form()" /> Plus de 100<br/>
+								<input type="radio" name="user_num" ng-model="user_num_value" value="1000" ng-change="change_form()" /> Plus de 1000<br/>
+								<input type="radio" name="user_num" ng-model="user_num_value" value="10000" ng-change="change_form()" /> Plus de 10000<br/>
+							</div>
+							<div class="col-sm-2" style="clear:both;">
+								<input type="submit" class="btn btn-primary" value="S'inscrire" ng-click="testImg()"/>
+							</div>
+							<div class="col-sm-8 col-md-8 col-lg-8">
+							<span>
+								En cliquant sur « S'inscrire », vous acceptez <span class="link_primary">Nos conditions d'utilisation</span> et notre <span class="link_primary">Politique de 	confidentialité</span>
+							</span>
+						</div>
+					</form>
+		  		</div>
+	    	</div>
+	  	</div>
+	</div>
+</div>
