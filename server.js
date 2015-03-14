@@ -177,9 +177,15 @@ app
     });
 })
 
+<<<<<<< HEAD
 .get('/signup_form', function (req, res) {
     res.setHeader("Content-Type", "text/html");
     res.render('partials/signup_form');
+=======
+.get('/signup', function (req, res) {
+    res.setHeader("Content-Type", "text/html");
+    res.render('partials/signup');
+>>>>>>> 0ac9310684d2a80efe1b9b82aafaef509082fe0b
 })
 
 .get('/app/account', function (req, res) {
