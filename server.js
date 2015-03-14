@@ -193,7 +193,6 @@ app
                     achvmnts = result.rows; 
                 }
                 client.end();
-                console.log(achvmnts);
                 res.setHeader("Content-Type", "text/html");
                 res.render('partials/account', {user: req.user, achievements: achvmnts});
             });

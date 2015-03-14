@@ -61,7 +61,7 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
     $scope.isValidFirstName = false;
     $scope.isValidLastName = false;
     $scope.isValidPhoneNumber = false;
-    $scope.email_check = function(){console.log("igeudohsjwk");$scope.isValidEmail = !(/^[a-z]+[a-z0-9._]+@[a-z]+\.[a-z.]{2,5}$/.test($scope.user.email));}
+    $scope.email_check = function(){$scope.isValidEmail = !(/^[a-z]+[a-z0-9._]+@[a-z]+\.[a-z.]{2,5}$/.test($scope.user.email));}
     $scope.pwd_check = function(){$scope.isValidPwd = !(/^(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/.test($scope.user.password));} 
     $scope.confirmpwd_check = function(){$scope.isValidConfirmPwd = !($scope.user.password == $scope.user.password2);}
     $scope.firstName_check = function(){$scope.isValidFirstName = !(/^[A-zÀ-ú-']{2,}$/.test($scope.user.firstname));}
@@ -74,16 +74,28 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
         var par = document.getElementsByClassName("particulier_form");
         if (document.getElementById('professionnal').checked) {
             for (var i = 0; i < pro.length; i++)
+            {
+                $(pro[i]).find('input[type=text]:first').attr("required", true);
                 $(pro[i]).slideDown();
+            }
             for (var i = 0; i < par.length; i++)
+            {
+                $(par[i]).find('input[type=text]:first').removeAttr("required");
                 $(par[i]).hide();
+            }
         }
         else
         {
             for (var i = 0; i < pro.length; i++)
+            {
+                $(pro[i]).find('input[type=text]:first').removeAttr("required");
                 $(pro[i]).hide();
+            }
             for (var i = 0; i < par.length; i++)
+            {
+                $(par[i]).find('input[type=text]:first').attr("required", true);
                 $(par[i]).slideDown();
+            }
         }
     }
 
@@ -113,9 +125,9 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
     $scope.signupSuccMess = undefined;
     $scope.submit = function () {
         
-        /*var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         if (!re.test($scope.user.email)) 
-            return $scope.signupErrMess = 'Invalid email format!';*/
+            return $scope.signupErrMess = 'Invalid email format!';
         if ($scope.user.email == '' || $scope.user.password == '' || $scope.user.password2 == '' || $scope.user.firstname == '' || $scope.user.lastname == '')
             return $scope.signupErrMess = 'Please provide all needed informations!';
         if ($scope.user.password != $scope.user.password2)
