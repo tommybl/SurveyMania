@@ -71,16 +71,18 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
     $scope.change_form = function()
     {
         var pro = document.getElementsByClassName("professionnal_form");
+        var pro_check = document.getElementsByClassName("pro_check");
+        var part_check = document.getElementsByClassName("part_check");
         var par = document.getElementsByClassName("particulier_form");
         if (document.getElementById('professionnal').checked) {
             for (var i = 0; i < pro.length; i++)
             {
-                $(pro[i]).find('input[type=text]:first').attr("required", true);
+                $(pro_check[i]).find('input[type=text]:first').attr("required", true);
                 $(pro[i]).slideDown();
             }
             for (var i = 0; i < par.length; i++)
             {
-                $(par[i]).find('input[type=text]:first').removeAttr("required");
+                $(part_check[i]).find('input[type=text]:first').removeAttr("required");
                 $(par[i]).hide();
             }
         }
@@ -88,12 +90,12 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
         {
             for (var i = 0; i < pro.length; i++)
             {
-                $(pro[i]).find('input[type=text]:first').removeAttr("required");
+                $(pro_check[i]).find('input[type=text]:first').removeAttr("required");
                 $(pro[i]).hide();
             }
             for (var i = 0; i < par.length; i++)
             {
-                $(par[i]).find('input[type=text]:first').attr("required", true);
+                $(part_check[i]).find('input[type=text]:first').attr("required", true);
                 $(par[i]).slideDown();
             }
         }

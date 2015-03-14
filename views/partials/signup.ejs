@@ -73,19 +73,19 @@
 								<input type="radio" name="account_type" ng-model="radio_value" value="particulier" ng-change="change_form()" id="particulier" ng-checked="true"/> particulier
 								<input type="radio" name="account_type" ng-model="radio_value" value="professionnal" ng-change="change_form()" id="professionnal"/> professionnel
 							</div>
-							<div class="particulier_form col-sm-6" style="clear:both">
+							<div class="particulier_form part_check col-sm-6" style="clear:both">
 								<label>Indiquez votre prénom</label> <span class="link_primary">*</span>
-								<input type="text" placeholder="Prénom" class="form-control" name="firstname" ng-model="user.firstname" ng-change="firstName_check()"/>
+								<input type="text" placeholder="Prénom" class="form-control" name="firstname" ng-model="user.firstname" ng-change="firstName_check()" required="true"/>
 								<span class="error" ng-show="isValidFirstName">Le prénom de doit contenir que des lettres et des traits d'union et doit être composé au minimum de 2 caractères</span>
 							</div>
-							<div class="professionnal_form col-sm-6" style="clear:both; display:none;">
+							<div class="professionnal_form pro_check col-sm-6" style="clear:both; display:none;">
 								<label>Indiquez le nom de votre entreprise</label> <span class="link_primary">*</span>
 								<input type="text" placeholder="Nom de l'entreprise" class="form-control" name="firm_name" ng-model="firmName" ng-blur="fetch_img()"/>
 								<span class="error" ng-show="isValidFirmName">Le nom de l'entreprise de doit contenir que des lettres et des traits d'union</span>
 							</div>
-							<div class="particulier_form col-sm-6">
+							<div class="particulier_form part_check col-sm-6">
 								<label>Indiquez votre nom</label> <span class="link_primary">*</span>
-								<input type="text" placeholder="Nom" class="form-control" name="lastname" ng-model="user.lastname" ng-change="lastName_check()"/>
+								<input type="text" placeholder="Nom" class="form-control" name="lastname" ng-model="user.lastname" ng-change="lastName_check()" required="true"/>
 								<span class="error" ng-show="isValidLastName">Le prénom de doit contenir que des lettres et des traits d'union</span>
 							</div>
 							<div class="col-sm-6">
@@ -93,7 +93,7 @@
 								<input type="password" placeholder="Mot de passe" class="form-control" name="password" ng-model="user.password" ng-change="pwd_check()" required/>
 								<span class="error" ng-show="isValidPwd">Votre mot de passe doit contenir au moins une lettre, un chiffre, un caractère spécial et doit excéder 6 caractères</span>
 							</div>
-							<div class="professionnal_form col-sm-6" style="display:none;">
+							<div class="professionnal_form pro_check col-sm-6" style="display:none;">
 								<label>Entrez une courte description</label> <span class="link_primary">*</span>
 								<input type="text" placeholder="Description" class="form-control" name="description" ng-model="description" ng-change="description_check()"/>
 							</div>
@@ -109,8 +109,28 @@
 							</div>
 							<div class="col-sm-6">
 								<label>Indiquez votre numéro de téléphone</label>
-								<input type="text" placeholder="" class="form-control" name="phone" ng-model="user.phone" ng-change="phoneNumber_check()"/>
+								<input type="text" placeholder="" class="form-control" ng-model="user.phone" ng-change="phoneNumber_check()"/>
 								<span class="error" ng-show="isValidPhoneNumber">Le numéro doit être composé de 10 chiffres ou doit commencer par +33</span>
+							</div>
+							<div class="col-sm-6">
+								<label>Indiquez votre adresse</label>
+								<input type="text" placeholder="" class="form-control" ng-model="user.address"/>
+							</div>
+							<div class="col-sm-6">
+								<label>Code postal</label>
+								<input type="text" placeholder="" class="form-control" ng-model="user.zipcode"/>
+							</div>
+							<div class="col-sm-3">
+								<label>Ville</label>
+								<input type="text" placeholder="" class="form-control" ng-model="user.city"/>
+							</div>
+							<div class="col-sm-3">
+								<label>Pays</label>
+								<input type="text" placeholder="" class="form-control" ng-model="user.country"/>
+							</div>
+							<div class="particulier_form col-sm-6">
+								<label>Si vous avez un parrain, indiquez son e-mail</label>
+								<input type="text" placeholder="" class="form-control" ng-model="user.sponsor"/>
 							</div>
 							<div class="professionnal_form col-sm-6" style="display:none;">
 								<label>Logo de l'entreprise</label><br/>
