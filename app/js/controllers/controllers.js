@@ -58,6 +58,8 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
         });
     };
 
+    $scope.reset_default_image = function(){$scope.img = $scope.default_img;}
+
     $scope.isValidEmail = false;
     $scope.isValidConfirmPwd = false;
     $scope.isValidPwd = false;

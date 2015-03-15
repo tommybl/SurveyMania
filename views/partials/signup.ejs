@@ -85,7 +85,7 @@
 							<p id="img_upload" style="display:none;">
 								<input type="file" class="form-control" style="width: 100%;" id="uploadLogo" ng-model="logo_upload" onchange="angular.element(this).scope().change_img_preview()">
 								OU<br/>
-								<input type="radio" name="skip_upload" ng-model="skip_upload" value="1" /> passer cette étape
+								<input type="radio" name="skip_upload" ng-model="skip_upload" value="1" ng-change="reset_default_image()"/> passer cette étape
 							</p>
 							<img ng-src="{{img}}" style="width:100px;"/><br/><span id="logo_suggestion" ng-click="img_upload_form()" style="display:none;">Ceci n'est pas votre logo ?</span>
 						</div>
