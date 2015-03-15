@@ -37,6 +37,11 @@ app.use(bodyParser.json());
 app.use('/app', expressJwt({secret: secret}));
 
 app
+.get('/home', function (req, res) {
+    res.setHeader("Content-Type", "text/html");
+    res.render('partials/home');
+})
+
 .post('/login', function (req, res) {
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
     res.setHeader('Accept', 'application/json');
@@ -73,6 +78,7 @@ app
 
 .get('/login', function (req, res) {
     res.setHeader("Content-Type", "text/html");
+    console.log("get login");
     res.render('partials/login');
 })
 

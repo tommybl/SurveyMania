@@ -173,7 +173,7 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
 surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
     $scope.logout = function () {
         delete $window.localStorage.token;
-        $location.path( "/login");
+        $location.path( "/home");
     };
 
     $scope.reduce = false;

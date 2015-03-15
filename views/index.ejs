@@ -17,20 +17,20 @@
     </head>
     <body>
         <div id="wrapper">
-
-            <!-- Page Content -->
             <div id="page-wrapper" class="view-container">
                 <header>
                     <span class="brand">SurveyMania</span>
                     <div style="width: 300px; margin: auto; padding-top: 5px;">
                         <ul class="nav nav-pills">
-                            <li role="presentation" ng-class="{active:(navigationPart==='login')}"><a href="/#/login">Login</a></li>
-                            <li role="presentation" ng-class="{active:(navigationPart==='signin')}"><a href="/#/signin">Inscription</a></li>
+                            <li role="presentation" ng-class="{active:(navigationPart==='home')}"><a href="/#/home">Home</a></li>
                             <li role="presentation" ng-class="{active:(navigationPart==='account')}"><a href="/#/account">Account</a></li>
                         </ul>
                     </div>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" style="float: right">S'inscrire</button>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal2" style="float: right; margin-right: 10px">S'identifier</button> 
                 </header>
-
+                <div ng-include="'/login'"></div>
+                <div ng-include="'/signup'"></div>
                 <div ng-view id="view-container" class="view-frame"></div>
             </div>
         </div>

@@ -6,15 +6,10 @@ surveyManiaApp.config(['$routeProvider',
     function($routeProvider) {
         // angularjs routing
         $routeProvider.
-        when('/login', {
-            templateUrl: '/login',
+        when('/home', {
+            templateUrl: '/home',
             controller: '',
-            navigationPart: 'login'
-        }).
-        when('/signin', {
-            templateUrl: '/signup',
-            controller: '',
-            navigationPart: 'signin'
+            navigationPart: 'home'
         }).
         when('/account', {
             templateUrl: '/app/account',
@@ -32,7 +27,7 @@ surveyManiaApp.config(['$routeProvider',
             navigationPart: '404-notfound'
         }).
         otherwise({
-            redirectTo: '/login'
+            redirectTo: '/home'
         });
     }
 ]);
@@ -86,14 +81,14 @@ surveyManiaApp.run(function ($rootScope, $location, $route, $templateCache, $inj
     
     // when user changes route, before next page rendering
     $rootScope.$on("$routeChangeStart", function(event, next, current) {
-
         // remove all partial views from angularjs cache, to render modifications according to user infos updates
         $templateCache.removeAll();
     });
 
     // after the route was successfully changed
     $rootScope.$on('$routeChangeSuccess', function(ev,data) {
-        
+        $('#myModal').modal('hide');
+        $('#myModal2').modal('hide');
         if (data.$$route) {
             $rootScope.navigationPart = data.$$route.navigationPart;
         }

@@ -1,13 +1,22 @@
 <!DOCTYPE html>
-<div ng-controller="LoginController" style="width: 300px; margin: auto">
-    <h1>Login</h1>
-    <div id="login-error" class="alert alert-danger alert-dismissible fade in" role="alert" ng-show="loginErrMess!=undefined">
-        <button type="button" class="close" ng-click="loginErrMess=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <span>{{loginErrMess}}</span>
+<div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" ng-controller="LoginController">
+    <div class="modal-dialog row-centered">
+        <div class="modal-content col-xs-6 col-sm-5 col-md-4 col-lg-3 col-centered signup">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Identifiez-vous !</h4>
+            </div>
+            <div class="modal-body">
+                <div id="login-error" class="alert alert-danger alert-dismissible fade in" role="alert" ng-show="loginErrMess!=undefined">
+                    <button type="button" class="close" ng-click="loginErrMess=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <span>{{loginErrMess}}</span>
+                </div>
+                <form ng-submit="submit()">
+                    <input ng-model="user.email" type="text" name="email" placeholder="Email" class="form-control" /> <br>
+                    <input ng-model="user.password" type="password" name="password" placeholder="Password" class="form-control" /> <br>
+                    <input type="submit" value="S'identifier" class="btn btn-primary" />
+                </form>
+            </div>
+        </div>
     </div>
-    <form ng-submit="submit()">
-        <input ng-model="user.email" type="text" name="email" placeholder="Email" class="form-control" /> <br>
-        <input ng-model="user.password" type="password" name="password" placeholder="Password" class="form-control" /> <br>
-        <input type="submit" value="Login" class="btn btn-default" />
-    </form>
 </div>
