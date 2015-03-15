@@ -12,12 +12,15 @@ surveyManiaControllers.controller('LoginController', ['$scope', '$http', '$windo
         var password = CryptoJS.SHA256($scope.user.password).toString();
         $http.post('/login', {email: $scope.user.email, password: password})
         .success(function (data, status, headers, config) {
+            console.log(data);
             if (data.error == undefined) {
-                console.log(data);
                 $window.localStorage.token = data.token;
                 $location.path( "/account");
             }
-            else $scope.loginErrMess = data.error + '. ' + data.message;
+            else {
+                delete $window.localStorage.token;
+                $scope.loginErrMess = data.error + '. ' + data.message;
+            }
         })
         .error(function (data, status, headers, config) {
             console.log(data);
@@ -29,7 +32,7 @@ surveyManiaControllers.controller('LoginController', ['$scope', '$http', '$windo
 }]);
 
 surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
-    $scope.user = {email: '', password: '', password2: '', firstname: '', lastname: '', adress: '', phone: '', inviter: ''};
+    $scope.user = {email: '', password: '', password2: '', firstname: '', lastname: '', adress: '', postal: '', town: '', country: '', phone: '', inviter: ''};
 
     $scope.default_img ="img/default_profil.jpg";
     $scope.img ="img/default_profil.jpg";
@@ -140,7 +143,10 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
             password: password,
             firstname: $scope.user.firstname,
             lastname: $scope.user.lastname,
-            adress: ($scope.user.adress == '') ? null : $scope.user.adress,
+            adress: ($scope.user.address == '') ? null : $scope.user.address,
+            postal: ($scope.user.postal == '') ? null : $scope.user.postal,
+            town: ($scope.user.town == '') ? null : $scope.user.town,
+            country: ($scope.user.country == '') ? null : $scope.user.country,
             phone: ($scope.user.phone == '') ? null : $scope.user.phone,
             inviter: ($scope.user.inviter == '') ? null : $scope.user.inviter
         }

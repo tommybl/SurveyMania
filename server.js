@@ -117,10 +117,13 @@ app
                         var lastname = '\'' + req.body.lastname + '\'';
                         var telephone = (req.body.phone == null) ? 'NULL' : '\'' + req.body.phone + '\'';
                         var adress = (req.body.adress == null) ? 'NULL' : '\'' + req.body.adress + '\'';
+                        var postal = (req.body.postal == null) ? 'NULL' : '\'' + req.body.postal + '\'';
+                        var town = (req.body.town == null) ? 'NULL' : '\'' + req.body.town + '\'';
+                        var country = (req.body.country == null) ? 'NULL' : '\'' + req.body.country + '\'';
                         var inviteDT = (inviter == null) ? 'NULL' : dateNow;
                         var inviterID = (inviter == null) ? 'NULL' : inviter.id;
-                        var query = 'INSERT INTO surveymania.users(email, password, user_type, name, lastname, telephone, adress, creation_dt, last_dt, invite_dt, inviter_id, points, verified) ' +
-                            'VALUES (' + email + ', ' + password + ', 1, ' + firstname + ', ' + lastname + ', ' + telephone + ', ' + adress + ', ' +  dateNow + ', ' + dateNow + ', ' + inviteDT + ', ' + inviterID + ', 50, false)';
+                        var query = 'INSERT INTO surveymania.users(email, password, user_type, name, lastname, telephone, adress, postal, town, country, creation_dt, last_dt, invite_dt, inviter_id, points, verified) ' +
+                            'VALUES (' + email + ', ' + password + ', 1, ' + firstname + ', ' + lastname + ', ' + telephone + ', ' + adress + ', ' + postal + ', ' + town + ', ' + country + ', ' +  dateNow + ', ' + dateNow + ', ' + inviteDT + ', ' + inviterID + ', 50, false)';
                         client.query(query, function(err, result) {
                             done();
                             if(err) {

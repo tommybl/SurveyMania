@@ -118,11 +118,11 @@
 							</div>
 							<div class="col-sm-6">
 								<label>Code postal</label>
-								<input type="text" placeholder="" class="form-control" ng-model="user.zipcode"/>
+								<input type="text" placeholder="" class="form-control" ng-model="user.postal"/>
 							</div>
 							<div class="col-sm-3">
 								<label>Ville</label>
-								<input type="text" placeholder="" class="form-control" ng-model="user.city"/>
+								<input type="text" placeholder="" class="form-control" ng-model="user.town"/>
 							</div>
 							<div class="col-sm-3">
 								<label>Pays</label>
@@ -130,7 +130,7 @@
 							</div>
 							<div class="particulier_form col-sm-6">
 								<label>Indiquez l'e-mail de votre parrain</label>
-								<input type="text" placeholder="" class="form-control" ng-model="user.sponsor"/>
+								<input type="text" placeholder="" class="form-control" ng-model="user.inviter"/>
 							</div>
 							<div class="professionnal_form col-sm-6" style="display:none;clear:both">
 								<label>Logo de l'entreprise</label><br/>
@@ -141,13 +141,13 @@
 								</p>
 								<img ng-src="{{img}}" style="width:100px;"/><br/><span id="logo_suggestion" ng-click="img_upload_form()" style="display:none;">Ceci n'est pas votre logo ?</span>
 							</div>
-							<div class="professionnal_form col-sm-6" style="display:none;">
+							<!-- <div class="professionnal_form col-sm-6" style="display:none;">
 								<label>Indiquez le nombre d'utilisateurs potentiels</label><br/>
 								<input type="radio" name="user_num" ng-model="user_num_value" value="50" ng-change="change_form()" /> Moins de 50<br/>
 								<input type="radio" name="user_num" ng-model="user_num_value" value="100" ng-change="change_form()" /> Plus de 100<br/>
 								<input type="radio" name="user_num" ng-model="user_num_value" value="1000" ng-change="change_form()" /> Plus de 1000<br/>
 								<input type="radio" name="user_num" ng-model="user_num_value" value="10000" ng-change="change_form()" /> Plus de 10000<br/>
-							</div>
+							</div> -->
 							<div class="col-sm-2" style="clear:both;">
 								<input type="submit" class="btn btn-primary" value="S'inscrire"/>
 							</div>
