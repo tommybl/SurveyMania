@@ -52,7 +52,7 @@ surveyManiaApp.factory('authInterceptor', function ($rootScope, $q, $window, $lo
             if (rejection.status == 401) {
                 $location.path('/401-unauthorized');
             }
-            else if (response.status == 404) {
+            else if (rejection.status == 404) {
                 $location.path( "/404-notfound");
             }
             return $q.reject(rejection);
