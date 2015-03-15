@@ -27,8 +27,8 @@
 							<span class="error" ng-show="isValidFirstName">Le prénom de doit contenir que des lettres et des traits d'union et doit être composé au minimum de 2 caractères</span>
 						</div>
 						<div class="professionnal_form pro_check col-sm-6" style="clear:both; display:none;">
-							<label>Indiquez votre entreprise</label> <span class="link_primary">*</span>
-							<input type="text" placeholder="Nom de l'entreprise" class="form-control" name="firm_name" ng-model="firmName" ng-blur="fetch_img()"/>
+							<label>Indiquez le nom de votre entreprise</label> <span class="link_primary">*</span>
+							<input type="text" placeholder="Nom de l'entreprise" class="form-control" name="firm_name" ng-model="user.firmname" ng-blur="fetch_img()"/>
 							<span class="error" ng-show="isValidFirmName">Le nom de l'entreprise de doit contenir que des lettres et des traits d'union</span>
 						</div>
 						<div class="particulier_form part_check col-sm-6">
@@ -43,7 +43,7 @@
 						</div>
 						<div class="professionnal_form pro_check col-sm-6" style="display:none;">
 							<label>Entrez une courte description</label> <span class="link_primary">*</span>
-							<input type="text" placeholder="Description" class="form-control" name="description" ng-model="description" ng-change="description_check()"/>
+							<input type="text" placeholder="Description" class="form-control" name="description" ng-model="user.firmdescription" ng-change="description_check()"/>
 						</div>
 						<div class="col-sm-6">
 							<label>Confirmez votre mot de passe</label> <span class="link_primary">*</span>
@@ -57,7 +57,7 @@
 						</div>
 						<div class="col-sm-6">
 							<label>Indiquez votre numéro de téléphone</label>
-							<input type="text" placeholder="" class="form-control" ng-model="user.phone" ng-change="phoneNumber_check()"/>
+							<input type="text" placeholder="" id="phoneNumber" class="form-control" ng-model="user.phone" ng-change="phoneNumber_check()"/>
 							<span class="error" ng-show="isValidPhoneNumber">Le numéro doit être composé de 10 chiffres ou doit commencer par +33</span>
 						</div>
 						<div class="col-sm-6">

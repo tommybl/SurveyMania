@@ -66,12 +66,14 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
     $scope.isValidFirstName = false;
     $scope.isValidLastName = false;
     $scope.isValidPhoneNumber = false;
-    $scope.email_check = function(){$scope.isValidEmail = !(/^[a-z]+[a-z0-9._]+@[a-z]+\.[a-z.]{2,5}$/.test($scope.user.email));}
+    $scope.email_check = function(){$scope.isValidEmail = !(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test($scope.user.email));}
     $scope.pwd_check = function(){$scope.isValidPwd = !(/^(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/.test($scope.user.password));} 
     $scope.confirmpwd_check = function(){$scope.isValidConfirmPwd = !($scope.user.password == $scope.user.password2);}
     $scope.firstName_check = function(){$scope.isValidFirstName = !(/^[A-zÀ-ú-']{2,}$/.test($scope.user.firstname));}
     $scope.lastName_check = function(){$scope.isValidLastName = !(/^[A-zÀ-ú-']{2,}$/.test($scope.user.lastname));}
     $scope.phoneNumber_check = function(){$scope.isValidPhoneNumber = !(/^((\+|00)33\s?|0)[1-9](\s?\d{2}){4}$/.test($scope.user.phone));}
+    // Champ non obligatoire. Si il y a déjà eu le focus dessus et que le champ est vide, ça met quand même le message d'erreur. Si le champ est non required et à 0 alors on enlève le msg d'erreur
+    $("#phoneNumber").focusout(function() {if($scope.user.phone == 0){$scope.isValidPhoneNumber = false; $scope.$apply();}});
 
     $scope.change_form = function()
     {
@@ -131,14 +133,15 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
     $scope.signupErrMess = undefined;
     $scope.signupSuccMess = undefined;
     $scope.submit = function () {
-        
-        var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        if (!re.test($scope.user.email)) 
-            return $scope.signupErrMess = 'Invalid email format!';
-        if ($scope.user.email == '' || $scope.user.password == '' || $scope.user.password2 == '' || $scope.user.firstname == '' || $scope.user.lastname == '')
+        if ((document.getElementById('professionnal').checked && ($scope.user.email == '' || $scope.user.password == '' || $scope.user.password2 == '' 
+            || $scope.user.firstname == '' || $scope.user.lastname == '')) || 
+            (document.getElementById('particulier').checked && ($scope.user.email == '' || $scope.user.password == '' || $scope.user.password2 == '' 
+            || $scope.user.firmname == '' || $scope.user.firmdescription == '')))
             return $scope.signupErrMess = 'Please provide all needed informations!';
-        if ($scope.user.password != $scope.user.password2)
-            return $scope.signupErrMess = 'The two passwords are not equals!';
+
+        if($scope.isValidEmail || $scope.isValidConfirmPwd || $scope.isValidPwd || $scope.isValidFirstName || $scope.isValidLastName || $scope.isValidPhoneNumber)
+            return $scope.signupErrMess = 'Please correct the errors below';
+
         var password = CryptoJS.SHA256($scope.user.password).toString();
         var newuser = {
             email: $scope.user.email,
@@ -153,11 +156,8 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
             inviter: ($scope.user.inviter == '') ? null : $scope.user.inviter
         }
 
-        console.log("var newuser ok");
-
         $http.post('/signup', newuser)
         .success(function (data, status, headers, config) {
-            console.log("success");
             if (data.error == undefined) {
                 console.log(data);
                 $scope.signupSuccMess = "Your account has been successfully created. An email has been sent, please follow its intructions to finish your inscription.";
@@ -165,7 +165,6 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
             else $scope.signupErrMess = data.error + '. ' + data.message;
         })
         .error(function (data, status, headers, config) {
-            console.log("error");
             console.log(data);
             $scope.signupErrMess = data.error + '. ' + data.message;
         });
