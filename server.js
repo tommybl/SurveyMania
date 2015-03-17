@@ -63,7 +63,8 @@ app
                         email: result.rows[0].email,
                         id: result.rows[0].userid,
                         usertype: result.rows[0].type_name,
-                        organization: result.rows[0].user_organization
+                        organization: result.rows[0].user_organization,
+                        tokenCreation: new Date().getTime()
                     };
                     // We are sending the profile inside the token
                     var token = jwt.sign(profile, secret, { expiresInMinutes: 30*24*60 });
@@ -194,20 +195,19 @@ app
 .get('/app/account', function (req, res) {
     console.log(req.user);
     var achvmnts = '';
-       pg.connect(conString, function(err, client, done) {
+    pg.connect(conString, function(err, client, done) {
+        if (err) console.log(err);
+        var query = 'SELECT * FROM surveymania.user_achievements INNER JOIN surveymania.achievements ON surveymania.user_achievements.achiev_id = surveymania.achievements.id WHERE surveymania.user_achievements.user_id=3';
+        client.query(query, function(err, result) {
             if (err) console.log(err);
-            var query = 'SELECT * FROM surveymania.user_achievements INNER JOIN surveymania.achievements ON surveymania.user_achievements.achiev_id = surveymania.achievements.id WHERE surveymania.user_achievements.user_id=3';
-            client.query(query, function(err, result) {
-                if (err) console.log(err);
-                done();
-                if (result.rows.length) {
-                    achvmnts = result.rows; 
-                }
-                client.end();
-                res.setHeader("Content-Type", "text/html");
-                res.render('partials/account', {user: req.user, achievements: achvmnts});
-            });
-        
+            done();
+            if (result.rows.length) {
+                achvmnts = result.rows; 
+            }
+            client.end();
+            res.setHeader("Content-Type", "text/html");
+            res.render('partials/account', {user: req.user, achievements: achvmnts});
+        });
     });
 })
 
