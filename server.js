@@ -195,8 +195,10 @@ app
     console.log(req.user);
     var achvmnts = '';
        pg.connect(conString, function(err, client, done) {
+            if (err) console.log(err);
             var query = 'SELECT * FROM surveymania.user_achievements INNER JOIN surveymania.achievements ON surveymania.user_achievements.achiev_id = surveymania.achievements.id WHERE surveymania.user_achievements.user_id=3';
             client.query(query, function(err, result) {
+                if (err) console.log(err);
                 done();
                 if (result.rows.length) {
                     achvmnts = result.rows; 
