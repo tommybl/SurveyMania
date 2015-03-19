@@ -218,7 +218,7 @@ surveyManiaControllers.controller('MailVerifyController', ['$scope', '$http', '$
     $scope.submit2 = function () {
         var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         if (!re.test($scope.user.email))
-            return $scope.loginErrMess = "Format d'email invalide!";
+            return $scope.verifErrMess = "Format d'email invalide!";
         $http.post('/accounts/get/verify', {email: $scope.user.email})
         .success(function (data, status, headers, config) {
             console.log(data);
@@ -232,6 +232,53 @@ surveyManiaControllers.controller('MailVerifyController', ['$scope', '$http', '$
         .error(function (data, status, headers, config) {
             console.log(data);
             $scope.verifErrMess = data.error + '. ' + data.message;
+        });
+    };
+}]);
+
+surveyManiaControllers.controller('PwdResetController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
+    $scope.user = {email: '', password: '', password2: ''};
+    $scope.resetSuccMess = undefined;
+    $scope.resetErrMess = undefined;
+    $scope.submit = function (token) {
+        var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        if (!re.test($scope.user.email))
+            return $scope.resetErrMess = "Format d'email invalide!";
+        if ($scope.user.password != $scope.user.password2)
+            return $scope.resetErrMess = "Les deux mots de passe doivent être identiques!";
+        var password = CryptoJS.SHA256($scope.user.password).toString();
+        $http.post('/accounts/reset/' + token, {email: $scope.user.email, password: password})
+        .success(function (data, status, headers, config) {
+            console.log(data);
+            if (data.error == undefined) {
+                $scope.resetSuccMess = 'Votre mot de passe a été changé avec succès.';
+            }
+            else {
+                $scope.resetErrMess = data.error + '. ' + data.message;
+            }
+        })
+        .error(function (data, status, headers, config) {
+            console.log(data);
+            $scope.resetErrMess = data.error + '. ' + data.message;
+        });
+    };
+    $scope.submit2 = function () {
+        var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        if (!re.test($scope.user.email))
+            return $scope.resetErrMess = "Format d'email invalide!";
+        $http.post('/accounts/get/reset', {email: $scope.user.email})
+        .success(function (data, status, headers, config) {
+            console.log(data);
+            if (data.error == undefined) {
+                $scope.resetSuccMess = 'Un nouveau mail avec votre code de réinitialisation a bien été envoyé.';
+            }
+            else {
+                $scope.resetErrMess = data.error + '. ' + data.message;
+            }
+        })
+        .error(function (data, status, headers, config) {
+            console.log(data);
+            $scope.resetErrMess = data.error + '. ' + data.message;
         });
     };
 }]);

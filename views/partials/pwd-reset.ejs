@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<div ng-controller="PwdResetController" class="signup" style="width: 400px; margin: auto; color: black">
+    <h1>Réinitialisation de mot de passe</h1>
+    <div id="reset-success" class="alert alert-success alert-dismissible fade in" role="alert" ng-show="resetSuccMess!=undefined">
+        <button type="button" class="close" ng-click="resetSuccMess=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <span>{{resetSuccMess}}</span>
+    </div>
+    <div id="reset-error" class="alert alert-danger alert-dismissible fade in" role="alert" ng-show="resetErrMess!=undefined">
+        <button type="button" class="close" ng-click="resetErrMess=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <span>{{resetErrMess}}</span>
+    </div>
+    <% if (token == undefined || token == 'new') { %>
+    <div ng-show="resetSuccMess==undefined">
+        <p>
+            <% if (token == undefined) { %>
+            <strong>Code de réinitialisation invalide.<br><br></strong>
+            <% } %>
+            Renseignez ci-dessous votre email afin de recevoir un nouveau mail de réinitialisation de mot de passe.
+        </p><br>
+        <form ng-submit="submit2()">
+            <input ng-model="user.email" type="text" name="email" placeholder="Email" class="form-control" /> <br>
+            <input type="submit" value="Valider" class="btn btn-primary" />
+        </form>
+    </div>
+    <% } else { %>
+    <div ng-show="resetSuccMess==undefined">
+        <p>Renseignez ci-dessous votre email et votre nouveau mot de passe pour l'enregistrer.</p><br>
+        <form ng-submit="submit('<%= token %>')">
+            <input ng-model="user.email" type="text" name="email" placeholder="Email" class="form-control" /> <br>
+            <input ng-model="user.password" type="password" name="password" placeholder="Entrez votre nouveau mot de passe" class="form-control" /> <br>
+            <input ng-model="user.password2" type="password" name="password2" placeholder="Retapez votre nouveau mot de passe" class="form-control" /> <br>
+            <input type="submit" value="Sauvegarder" class="btn btn-primary" />
+        </form>
+    </div>
+    <% } %>
+</div>

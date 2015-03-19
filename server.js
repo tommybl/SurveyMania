@@ -26,10 +26,6 @@ mongodb.once('open', function (callback) {
     MailVerifToken = mongoose.model('MailVerifToken', MailVerifTokenSchema);
     var PwdResetTokenSchema = mongoose.Schema({token: String, userid: Number});
     PwdResetToken = mongoose.model('PwdResetToken', PwdResetTokenSchema);
-    /*new PwdResetToken({token: 'abcd', userid: 42}).save(function (err, obj) {
-        if (err) return console.log(err);
-        console.log(obj);
-    });*/
 });
 
 var transporter = nodemailer.createTransport({
@@ -358,6 +354,124 @@ app
                 }
                 else if (result.rows.length) {
                     res.json({code: 200, error: "Already verified", message: "Votre compte a déjà été vérifié, vous pouvez donc y accéder en vous connectant"});
+                }
+                else res.json({code: 200, error: "Unauthorized", message: "Aucun compte associé à cet email n'a été trouvé"});
+                client.end();
+            });
+        }
+    });
+})
+
+.get('/accounts/reset/:token', function (req, res) {
+    res.setHeader("Content-Type", "text/html");
+    var token = req.params.token;
+    if (token != "new") {
+        PwdResetToken.find({token: token}, function (err, tokens) {
+            if (err || !tokens.length) {
+                if (err) console.error(err);
+                token = undefined;
+            }
+            res.render('partials/pwd-reset', {token: token});
+        });
+    }
+    else res.render('partials/pwd-reset', {token: token});
+})
+
+.post('/accounts/reset/:token', function (req, res) {
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    res.setHeader('Accept', 'application/json');
+    var token = req.params.token;
+    var email = req.body.email;
+    var password = '\'' + req.body.password + '\'';
+    var userid = null;
+    PwdResetToken.find({token: token}, function (err, tokens) {
+        if (err) {
+            console.error(err);
+            res.status(500).json({code: 500, error: "Internal server error", message: "Une erreur est survenue lors de la recherche du token de vérification d'email"});
+        }
+        else if (!tokens.length) {
+            res.json({code: 200, error: "Invalid reinitialization code", message: "Le code de réinitialisation de mot de passe est invalide, le mot de passe n'a pas pu être modifié"});
+        }
+        else {
+            userid = tokens[0].userid;
+            pg.connect(conString, function(err, client, done) {
+                if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
+                else {
+                    var query = 'SELECT surveymania.users.id AS userid, * FROM surveymania.users WHERE surveymania.users.id = ' + userid + ' AND surveymania.users.email = \'' + email + '\'';
+                    client.query(query, function(err, result) {
+                        done();
+                        if(err) {
+                            client.end();
+                            res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                        }
+                        else if (result.rows.length) {
+                            var query = 'UPDATE surveymania.users SET password=' + password + ' WHERE id=' + userid;
+                            client.query(query, function(err, result) {
+                                done();
+                                if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                else {
+                                    PwdResetToken.find({userid: userid}).remove(function (err) {
+                                        if (err) console.log(err);
+                                        res.json({code: 200, message: "Le mot de passe a bien été modifié"});
+                                    });
+                                }
+                                client.end();
+                            });
+                        }
+                        else {
+                            client.end();
+                            res.json({code: 200, error: "Unauthorized", message: "Votre email ne correspond pas au compte associé à ce token, le mot de passe n'a pas pu être modifié"});
+                        }
+                    });
+                }
+            });
+        }
+    });
+})
+
+.post('/accounts/get/reset', function (req, res) {
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    res.setHeader('Accept', 'application/json');
+    var email = req.body.email;
+    var userid = null;
+    pg.connect(conString, function(err, client, done) {
+        if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
+        else {
+            var query = 'SELECT surveymania.users.id AS userid, * FROM surveymania.users WHERE surveymania.users.email = \'' + email + '\'';
+            client.query(query, function(err, result) {
+                done();
+                if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                else if (result.rows.length) {
+                    var userid = result.rows[0].userid;
+                    var firstname = result.rows[0].name;
+                    var lastname = result.rows[0].lastname;
+                    var hash = CryptoJS.HmacMD5(userid + "" + (new Date().getTime()), SurveyManiasecret).toString();
+                    var verifyURL = SurveyManiaURL + '#/accounts/reset/' + hash;
+                    new PwdResetToken({token: hash, userid: userid}).save(function (err, obj) {
+                        if (err) console.log(err);
+                    });
+                    var mailOptions = {
+                        from: 'webmaster@surveymania.com',
+                        to: email,
+                        subject: 'Password reinitialization code',
+                        html: 'Hello ' + firstname + ' ' + lastname + ' !<br><br>' +
+                              'A request to reinitialize your password has been made on your behalf.<br>' +
+                              'If you are not at the origin of this action, just ignore this email and your password won\'t be changed.<br>' +
+                              'If you want to reinitialize your password please click on the link below.<br>' +
+                              '<a href="' + verifyURL + '">' + verifyURL + '</a><br><br>' +
+                              'Thank you for your trust and enjoy our services.<br><br>' +
+                              'SurveyMania Team'
+                    };
+                    transporter.sendMail(mailOptions, function(error, info){
+                        if(error) {
+                            console.log(error);
+                            res.status(500).json({code: 500, error: "Internal server error", message: "Une erreur est survenue lors de l'envoie du mail avec votre nouveau code de réinitialisation"});
+                        }
+                        else {
+                            console.log('Message sent: ' + info.response);
+                            res.json({code:200, message: "Le mail contenant votre nouveau code de réinitialisation de mot de passe a bien été envoyé."});
+                        }
+                    });
                 }
                 else res.json({code: 200, error: "Unauthorized", message: "Aucun compte associé à cet email n'a été trouvé"});
                 client.end();

@@ -21,6 +21,11 @@ surveyManiaApp.config(['$routeProvider',
             controller: '',
             navigationPart: 'accounts/verify'
         }).
+        when('/accounts/reset/:token', {
+            templateUrl: function(params){ return '/accounts/reset/' + params.token; },
+            controller: '',
+            navigationPart: 'accounts/reset'
+        }).
         when('/401-unauthorized', {
             templateUrl: '/401-unauthorized',
             controller: '',
