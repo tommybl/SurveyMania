@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<div ng-controller="MailVerifyController" class="signup" style="width: 400px; margin: auto; color: black">
+    <h1>Verification d'email</h1>
+    <div id="verif-success" class="alert alert-success alert-dismissible fade in" role="alert" ng-show="verifSuccMess!=undefined">
+        <button type="button" class="close" ng-click="verifSuccMess=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <span>{{verifSuccMess}}</span>
+    </div>
+    <div id="verif-error" class="alert alert-danger alert-dismissible fade in" role="alert" ng-show="verifErrMess!=undefined">
+        <button type="button" class="close" ng-click="verifErrMess=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <span>{{verifErrMess}}</span>
+    </div>
+    <% if (token == undefined || token == 'new') { %>
+    <div ng-show="verifSuccMess==undefined">
+        <p>
+            <% if (token == undefined) { %>
+            <strong>Code de vérification invalide.<br><br></strong>
+            <% } %>
+            Renseignez ci-dessous votre email afin de recevoir un nouveau mail de vérification.
+        </p><br>
+        <form ng-submit="submit2()">
+            <input ng-model="user.email" type="text" name="email" placeholder="Email" class="form-control" /> <br>
+            <input type="submit" value="Valider" class="btn btn-primary" />
+        </form>
+    </div>
+    <% } else { %>
+    <div ng-show="verifSuccMess==undefined">
+        <p>Renseignez ci-dessous votre mot de passe afin de finaliser la vérification de votre compte.</p><br>
+        <form ng-submit="submit('<%= token %>')">
+            <input ng-model="user.password" type="password" name="password" placeholder="Entrez votre mot de passe" class="form-control" /> <br>
+            <input type="submit" value="Vérification" class="btn btn-primary" />
+        </form>
+    </div>
+    <% } %>
+</div>

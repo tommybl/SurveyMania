@@ -9,10 +9,28 @@ var bodyParser = require('body-parser');
 var moment = require('moment');
 var request = require('request');
 var fs = require('fs');
+var CryptoJS = require("crypto-js");
 var nodemailer = require('nodemailer');
+var SurveyManiaURL = 'http://localhost:1337/';
+var SurveyManiasecret = 'secret-df4b8fn5fn6f1vw1cxbuthf4g4n7dty87ng41nsrg35';
 var pg = require('pg');
 var conString = "postgres://postgres:1234@localhost/SurveyMania";
-var secret = 'secret-df4b8fn5fn6f1vw1cxbuthf4g4n7dty87ng41nsrg35';
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/SurveyMania');
+var mongodb = mongoose.connection;
+mongodb.on('error', function () { console.log("Error connecting to mongodb"); });
+var MailVerifToken = null, PwdResetToken = null;
+mongodb.once('open', function (callback) { 
+    console.log("Successfully connecting to mongodb");
+    var MailVerifTokenSchema = mongoose.Schema({token: String, userid: Number});
+    MailVerifToken = mongoose.model('MailVerifToken', MailVerifTokenSchema);
+    var PwdResetTokenSchema = mongoose.Schema({token: String, userid: Number});
+    PwdResetToken = mongoose.model('PwdResetToken', PwdResetTokenSchema);
+    /*new PwdResetToken({token: 'abcd', userid: 42}).save(function (err, obj) {
+        if (err) return console.log(err);
+        console.log(obj);
+    });*/
+});
 
 var transporter = nodemailer.createTransport({
     service: 'Gmail',
@@ -34,7 +52,7 @@ app.use(compress());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 // needed to protect / routes with JWT
-app.use('/app', expressJwt({secret: secret}));
+app.use('/app', expressJwt({secret: SurveyManiasecret}));
 
 app
 .get('/home', function (req, res) {
@@ -55,7 +73,7 @@ app
             client.query(query, function(err, result) {
                 done();
                 if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
-                else if (result.rows.length) {
+                else if (result.rows.length && result.rows[0].verified == true) {
                     console.log(result.rows);
                     var profile = {
                         firstname: result.rows[0].name,
@@ -67,9 +85,14 @@ app
                         tokenCreation: new Date().getTime()
                     };
                     // We are sending the profile inside the token
-                    var token = jwt.sign(profile, secret, { expiresInMinutes: 30*24*60 });
+                    var token = jwt.sign(profile, SurveyManiasecret, { expiresInMinutes: 30*24*60 });
                     res.json({token: token});
                 }
+                else if (result.rows.length) res.json({
+                        code: 200, error: "Account not verified",
+                        message: "Votre compte n'a pas encore été vérifié. Si vous n'avez pas reçu ou si vous avez perdu votre mail contenant le code de vérification, " +
+                                 "vous pouvez en recevoir un nouveau <strong><u><a href='#/accounts/verify/new' class='text-muted'>en cliquant ici.</a></u></strong>"
+                    });
                 else res.json({code: 200, error: "Unauthorized", message: "No account found with given email and password"});
                 client.end();
             });
@@ -79,7 +102,6 @@ app
 
 .get('/login', function (req, res) {
     res.setHeader("Content-Type", "text/html");
-    console.log("get login");
     res.render('partials/login');
 })
 
@@ -130,7 +152,8 @@ app
                         var inviteDT = (inviter == null) ? 'NULL' : dateNow;
                         var inviterID = (inviter == null) ? 'NULL' : inviter.id;
                         var query = 'INSERT INTO surveymania.users(email, password, user_type, name, lastname, telephone, adress, postal, town, country, creation_dt, last_dt, invite_dt, inviter_id, points, verified) ' +
-                            'VALUES (' + email + ', ' + password + ', 1, ' + firstname + ', ' + lastname + ', ' + telephone + ', ' + adress + ', ' + postal + ', ' + town + ', ' + country + ', ' +  dateNow + ', ' + dateNow + ', ' + inviteDT + ', ' + inviterID + ', 50, false)';
+                            'VALUES (' + email + ', ' + password + ', 1, ' + firstname + ', ' + lastname + ', ' + telephone + ', ' + adress + ', ' + postal + ', ' + town + ', ' + country + ', ' +  dateNow + ', ' + dateNow + ', ' + inviteDT + ', ' + inviterID + ', 50, false) ' +
+                            'RETURNING id';
                         client.query(query, function(err, result) {
                             done();
                             if(err) {
@@ -138,11 +161,20 @@ app
                                 client.end();
                             }
                             else {
+                                var userid = result.rows[0].id;
+                                var hash = CryptoJS.HmacMD5(userid + "" + (new Date().getTime()), SurveyManiasecret).toString();
+                                var verifyURL = SurveyManiaURL + '#/accounts/verify/' + hash;
+                                new MailVerifToken({token: hash, userid: userid}).save(function (err, obj) {
+                                    if (err) console.log(err);
+                                });
                                 var mailOptions = {
                                     from: 'webmaster@surveymania.com',
                                     to: req.body.email,
                                     subject: 'Signin account verification',
-                                    html: 'Please verify your account email to finish your <b>SurveyMania</b> inscription.<br>Thank you and enjoy our services.<br><br>' +
+                                    html: 'Hello ' + req.body.firstname + ' ' + req.body.lastname + ', welcome to SurveyMania!<br><br>' +
+                                          'Please click on the link below to verify your account email and finish your <b>SurveyMania</b> inscription.<br>' +
+                                          '<a href="' + verifyURL + '">' + verifyURL + '</a><br><br>' +
+                                          'Thank you for your trust and enjoy our services.<br><br>' +
                                           'SurveyMania Team'
                                 };
                                 transporter.sendMail(mailOptions, function(error, info){
@@ -208,6 +240,129 @@ app
             res.setHeader("Content-Type", "text/html");
             res.render('partials/account', {user: req.user, achievements: achvmnts});
         });
+    });
+})
+
+.get('/accounts/verify/:token', function (req, res) {
+    res.setHeader("Content-Type", "text/html");
+    var token = req.params.token;
+    if (token != "new") {
+        MailVerifToken.find({token: token}, function (err, tokens) {
+            if (err || !tokens.length) {
+                if (err) console.error(err);
+                token = undefined;
+            }
+            res.render('partials/mail-verify', {token: token});
+        });
+    }
+    else res.render('partials/mail-verify', {token: token});
+})
+
+.post('/accounts/verify/:token', function (req, res) {
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    res.setHeader('Accept', 'application/json');
+    var token = req.params.token;
+    var password = req.body.password;
+    var userid = null;
+    MailVerifToken.find({token: token}, function (err, tokens) {
+        if (err) {
+            console.error(err);
+            res.status(500).json({code: 500, error: "Internal server error", message: "Une erreur est survenue lors de la recherche du token de vérification d'email"});
+        }
+        else if (!tokens.length) {
+            res.json({code: 200, error: "Invalid verification code", message: "Le code de vérification est invalide, votre compte n'a pas pu être vérifié"});
+        }
+        else {
+            userid = tokens[0].userid;
+            pg.connect(conString, function(err, client, done) {
+                if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
+                else {
+                    var query = 'SELECT surveymania.users.id AS userid, * FROM surveymania.users WHERE surveymania.users.id = ' + userid + ' AND surveymania.users.password = \'' + password + '\'';
+                    client.query(query, function(err, result) {
+                        done();
+                        if(err) {
+                            client.end();
+                            res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                        }
+                        else if (result.rows.length && result.rows[0].verified == false) {
+                            var dateNow = '\'' + moment().format("YYYY-MM-DD hh:mm:ss") + '\'';
+                            var query = 'UPDATE surveymania.users SET verified=true, verified_dt=' + dateNow + ' WHERE id=' + userid;
+                            client.query(query, function(err, result) {
+                                done();
+                                if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                else {
+                                    MailVerifToken.find({userid: userid}).remove(function (err) {
+                                        if (err) console.log(err);
+                                        res.json({code: 200, message: "Le compte a bien été vérifié"});
+                                    });
+                                }
+                                client.end();
+                            });
+                        }
+                        else if (result.rows.length) {
+                            client.end();
+                            res.json({code: 200, error: "Already verified", message: "Votre compte a déjà été vérifié, vous pouvez donc y accéder en vous connectant"});
+                        }
+                        else {
+                            client.end();
+                            res.json({code: 200, error: "Unauthorized", message: "Votre mot de passe ne correspond pas au compte associé à ce token, il n'a donc pas pu être vérifié"});
+                        }
+                    });
+                }
+            });
+        }
+    });
+})
+
+.post('/accounts/get/verify', function (req, res) {
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    res.setHeader('Accept', 'application/json');
+    var email = req.body.email;
+    var userid = null;
+    pg.connect(conString, function(err, client, done) {
+        if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
+        else {
+            var query = 'SELECT surveymania.users.id AS userid, * FROM surveymania.users WHERE surveymania.users.email = \'' + email + '\'';
+            client.query(query, function(err, result) {
+                done();
+                if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                else if (result.rows.length && result.rows[0].verified == false) {
+                    var userid = result.rows[0].userid;
+                    var firstname = result.rows[0].name;
+                    var lastname = result.rows[0].lastname;
+                    var hash = CryptoJS.HmacMD5(userid + "" + (new Date().getTime()), SurveyManiasecret).toString();
+                    var verifyURL = SurveyManiaURL + '#/accounts/verify/' + hash;
+                    new MailVerifToken({token: hash, userid: userid}).save(function (err, obj) {
+                        if (err) console.log(err);
+                    });
+                    var mailOptions = {
+                        from: 'webmaster@surveymania.com',
+                        to: email,
+                        subject: 'New account verification code',
+                        html: 'Hello ' + firstname + ' ' + lastname + ', welcome to SurveyMania!<br><br>' +
+                              'Please click on the new link below to verify your account email and finish your <b>SurveyMania</b> inscription.<br>' +
+                              '<a href="' + verifyURL + '">' + verifyURL + '</a><br><br>' +
+                              'Thank you for your trust and enjoy our services.<br><br>' +
+                              'SurveyMania Team'
+                    };
+                    transporter.sendMail(mailOptions, function(error, info){
+                        if(error) {
+                            console.log(error);
+                            res.status(500).json({code: 500, error: "Internal server error", message: "Une erreur est survenue lors de l'envoie du mail avec votre nouveau code de vérification"});
+                        }
+                        else {
+                            console.log('Message sent: ' + info.response);
+                            res.json({code:200, message: "Le mail contenant votre nouveau code de vérification a bien été envoyé. Veuillez suivre ses instructions afin de finaliser votre inscription"});
+                        }
+                    });
+                }
+                else if (result.rows.length) {
+                    res.json({code: 200, error: "Already verified", message: "Votre compte a déjà été vérifié, vous pouvez donc y accéder en vous connectant"});
+                }
+                else res.json({code: 200, error: "Unauthorized", message: "Aucun compte associé à cet email n'a été trouvé"});
+                client.end();
+            });
+        }
     });
 })
 

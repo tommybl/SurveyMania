@@ -1,6 +1,6 @@
 'use strict';
 
-var surveyManiaApp = angular.module('surveyManiaApp', ['ngRoute', 'surveyManiaConfig', 'surveyManiaControllers', 'surveyManiaServices', 'surveyManiaFilters']);
+var surveyManiaApp = angular.module('surveyManiaApp', ['ngRoute', 'surveyManiaConfig', 'surveyManiaControllers', 'surveyManiaServices', 'surveyManiaFilters', 'ngSanitize']);
 
 surveyManiaApp.config(['$routeProvider',
     function($routeProvider) {
@@ -15,6 +15,11 @@ surveyManiaApp.config(['$routeProvider',
             templateUrl: '/app/account',
             controller: '',
             navigationPart: 'account'
+        }).
+        when('/accounts/verify/:token', {
+            templateUrl: function(params){ return '/accounts/verify/' + params.token; },
+            controller: '',
+            navigationPart: 'accounts/verify'
         }).
         when('/401-unauthorized', {
             templateUrl: '/401-unauthorized',

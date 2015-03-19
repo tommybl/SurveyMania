@@ -8,7 +8,7 @@ surveyManiaControllers.controller('LoginController', ['$scope', '$http', '$windo
     $scope.submit = function () {
         var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         if (!re.test($scope.user.email))
-            return $scope.loginErrMess = 'Invalid email format!';
+            return $scope.loginErrMess = "Format d'email invalide!";
         var password = CryptoJS.SHA256($scope.user.password).toString();
         $http.post('/login', {email: $scope.user.email, password: password})
         .success(function (data, status, headers, config) {
@@ -192,4 +192,46 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
         $("#ss-container").hide();
         $("#"+$id+"").fadeIn();
     }
+}]);
+
+surveyManiaControllers.controller('MailVerifyController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
+    $scope.user = {email: '', password: ''};
+    $scope.verifSuccMess = undefined;
+    $scope.verifErrMess = undefined;
+    $scope.submit = function (token) {
+        var password = CryptoJS.SHA256($scope.user.password).toString();
+        $http.post('/accounts/verify/' + token, {password: password})
+        .success(function (data, status, headers, config) {
+            console.log(data);
+            if (data.error == undefined) {
+                $scope.verifSuccMess = 'Votre compte a bien été activé. Vous pouvez dès à présent vous connecter.';
+            }
+            else {
+                $scope.verifErrMess = data.error + '. ' + data.message;
+            }
+        })
+        .error(function (data, status, headers, config) {
+            console.log(data);
+            $scope.verifErrMess = data.error + '. ' + data.message;
+        });
+    };
+    $scope.submit2 = function () {
+        var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        if (!re.test($scope.user.email))
+            return $scope.loginErrMess = "Format d'email invalide!";
+        $http.post('/accounts/get/verify', {email: $scope.user.email})
+        .success(function (data, status, headers, config) {
+            console.log(data);
+            if (data.error == undefined) {
+                $scope.verifSuccMess = 'Un nouveau mail avec votre code de vérification a bien été envoyé.';
+            }
+            else {
+                $scope.verifErrMess = data.error + '. ' + data.message;
+            }
+        })
+        .error(function (data, status, headers, config) {
+            console.log(data);
+            $scope.verifErrMess = data.error + '. ' + data.message;
+        });
+    };
 }]);
