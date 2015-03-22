@@ -2,6 +2,14 @@
 <div class="row-centered" ng-controller="ValidateProAccount">
     	<div class="col-xs-10 col-sm-10 col-md-8 col-lg-6 col-centered">
     		<h1>Panel d'administration</h1>
+            <div id="verif-success" class="alert alert-success alert-dismissible fade in" role="alert" ng-show="verifSuccMess!=undefined">
+                <button type="button" class="close" ng-click="verifSuccMess=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <span>{{verifSuccMess}}</span>
+            </div>
+            <div id="verif-error" class="alert alert-danger alert-dismissible fade in" role="alert" ng-show="verifErrMess!=undefined">
+                <button type="button" class="close" ng-click="verifErrMess=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <span>{{verifErrMess}}</span>
+            </div>
 			<% for(var i=0; i < accounts.length; i++) { %>
 				<div class="col-md-8"><%= accounts[i].name %></div>
 				<div class="col-md-4"><span class="validate_btn" ng-click="validate_pro_account(<%= accounts[i].orga_id %>)"></span></div>

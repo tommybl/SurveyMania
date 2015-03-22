@@ -83,7 +83,7 @@ app
                     };
                     // We are sending the profile inside the token
                     var token = jwt.sign(profile, SurveyManiasecret, { expiresInMinutes: 30*24*60 });
-                    res.json({token: token});
+                    res.json({token: token, usertype: profile.usertypenumber});
                 }
                 else if (result.rows.length) res.json({
                         code: 200, error: "Account not verified",
@@ -183,14 +183,8 @@ app
     res.render('partials/signup');
 })
 
-.get('/app/validate-pro-account', function (req, res) {
-    console.log("user type number : "+req.user.usertypenumber);
-    if(req.user.usertypenumber != 2)
-    {
-        console.log("bordel");
-        res.writeHead(302, {'Location': '/401-unauthorized'});
-        res.end();
-    }
+.get('/app/account/admin/validate/pro', function (req, res) {
+    if(req.user.usertypenumber != 2) res.redirect('/401-unauthorized');
     else
     {
         console.log(req.user);
@@ -212,28 +206,53 @@ app
     }
 })
 
-.post('/validate-pro-account', function (req, res) {
+.post('/app/account/admin/validate/pro', function (req, res) {
+    if(req.user.usertypenumber != 2) {res.status(401).json({code: 401, error: "Unauthorized", message: "Unauthorized, you have to be an admin"}); return;}
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
     res.setHeader('Accept', 'application/json');
     var id = req.body.id;
     pg.connect(conString, function(err, client, done) {
         if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
         else {
-            var query = 'SELECT surveymania.organizations.id FROM surveymania.organizations WHERE surveymania.organizations.id = \''+id+'\'';
+            var query = 'SELECT owner.email AS owner_email, owner.name AS owner_firstname, owner.lastname AS owner_lastname, orga.id FROM surveymania.organizations orga INNER JOIN surveymania.users owner ON orga.id = owner.user_organization WHERE owner.user_type = 3 AND orga.id = ' + id;
             client.query(query, function(err, result) {
                 done();
-                if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
-                else if (result.rows.length) {
-                        console.log(result.rows);
-                        var query2 ='UPDATE surveymania.organizations SET verified = TRUE WHERE surveymania.organizations.id = \''+id+'\'';
-                        client.query(query, function(err, result) {
-                            done();
-                            if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running update query"});
-                            else res.json({code: 200, message: "Update successfully performed."});
-                        });
+                if(err) {
+                    client.end();
+                    res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                 }
-                else res.json({code: 200, error: "Unauthorized", message: "Action couldn't perform."});
-                client.end();
+                else if (result.rows.length) {
+                    var owner_email = result.rows[0].owner_email;
+                    var owner_firstname = result.rows[0].owner_firstname;
+                    var owner_lastname = result.rows[0].owner_lastname;
+                    var dateNow = '\'' + moment().format("YYYY-MM-DD hh:mm:ss") + '\'';
+                    var query = 'UPDATE surveymania.organizations SET verified = TRUE, verified_dt =' + dateNow + ' WHERE surveymania.organizations.id = ' + id;
+                    client.query(query, function(err, result) {
+                        done();
+                        if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running update query"});
+                        else {
+                            var mailOptions = {
+                                from: 'webmaster@surveymania.com',
+                                to: owner_email,
+                                subject: 'Professional account accepted',
+                                html: 'Hello ' + owner_firstname + ' ' + owner_lastname + ', welcome to SurveyMania!<br><br>' +
+                                      'Your profesionnal account has been accpeted. From now on you can access your account by logging in!<br><br>' +
+                                      'Thank you for your trust and enjoy our services.<br><br>' +
+                                      'SurveyMania Team'
+                            };
+                            transporter.sendMail(mailOptions, function(error, info){
+                                if(error) console.log(error);
+                                else console.log('Message sent: ' + info.response);
+                            });
+                            res.json({code: 200, message: "Professional account successfully accepted."});
+                        }
+                        client.end();
+                    });
+                }
+                else {
+                    client.end();
+                    res.json({code: 200, error: "Organization not found", message: "Action couldn't perform and professional couldn't be accepted."});
+                }
             });
         }
     });

@@ -15,7 +15,9 @@ surveyManiaControllers.controller('LoginController', ['$scope', '$http', '$windo
             console.log(data);
             if (data.error == undefined) {
                 $window.localStorage.token = data.token;
-                $location.path( "/account");
+                if (data.usertype == 1 || data.usertype == 3 || data.usertype == 4)
+                    $location.path( "/account");
+                else $location.path( "/account/admin/validate/pro");
             }
             else {
                 delete $window.localStorage.token;
@@ -33,7 +35,6 @@ surveyManiaControllers.controller('LoginController', ['$scope', '$http', '$windo
 
 surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
     $scope.user = {email: '', password: '', password2: '', firstname: '', lastname: '', adress: '', postal: '', town: '', country: '', phone: '', inviter: ''};
-
     $scope.default_img ="img/default_profil.jpg";
     $scope.img ="img/default_profil.jpg";
     $scope.fetch_img = function() {
@@ -172,16 +173,20 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
 }]);
 
 surveyManiaControllers.controller('ValidateProAccount', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
+    $scope.verifErrMess = undefined;
+    $scope.verifSuccMess = undefined;
     $scope.validate_pro_account = function($id)
     {
-        $http.post('/validate-pro-account',  {id: $id})
+        $http.post('/app/account/admin/validate/pro',  {id: $id})
         .success(function (data, status, headers, config) {
-            if (data.error == undefined) {
-                console.log(data.message);
-                $scope.signupSuccMess = "Le compte a bien été validé.";
-            }
-            else $scope.signupErrMess = data.error + '. ' + data.message;
+            console.log(data.message);
+            if (data.error == undefined) $scope.verifSuccMess = "Le compte a bien été validé.";
+            else $scope.verifErrMess = data.error + '. ' + data.message;
         })
+        .error(function (data, status, headers, config) {
+            console.log(data);
+            $scope.verifErrMess = data.error + '. ' + data.message;
+        });
     }
 
 }]);
