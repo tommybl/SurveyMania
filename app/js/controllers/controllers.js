@@ -37,9 +37,9 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
     $scope.default_img ="img/default_profil.jpg";
     $scope.img ="img/default_profil.jpg";
     $scope.fetch_img = function() {
-        console.log($scope.firmName)
+        console.log($scope.user.firmname)
         $.ajax({
-            url: 'https://www.googleapis.com/customsearch/v1?key=AIzaSyBaiPSlrA4cVQKAv-RlRwo1UgkkVpOS67U&cx=004343761578996942245:kcfk8xi6kqk&q='+$scope.firmName+'+logo&searchType=image&fileType:jpg,png&imgSize=small&alt=json',
+            url: 'https://www.googleapis.com/customsearch/v1?key=AIzaSyBaiPSlrA4cVQKAv-RlRwo1UgkkVpOS67U&cx=004343761578996942245:kcfk8xi6kqk&q='+$scope.user.firmname+'+logo&searchType=image&fileType:jpg,png&imgSize=small&alt=json',
             type: "GET",
             dataType: 'json',
             cache: true,
@@ -133,9 +133,9 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
     $scope.signupErrMess = undefined;
     $scope.signupSuccMess = undefined;
     $scope.submit = function () {
-        if ((document.getElementById('professionnal').checked && ($scope.user.email == '' || $scope.user.password == '' || $scope.user.password2 == '' 
+        if ((document.getElementById('particulier').checked && ($scope.user.email == '' || $scope.user.password == '' || $scope.user.password2 == '' 
             || $scope.user.firstname == '' || $scope.user.lastname == '')) || 
-            (document.getElementById('particulier').checked && ($scope.user.email == '' || $scope.user.password == '' || $scope.user.password2 == '' 
+            (document.getElementById('professionnal').checked && ($scope.user.email == '' || $scope.user.password == '' || $scope.user.password2 == '' 
             || $scope.user.firmname == '' || $scope.user.firmdescription == '')))
             return $scope.signupErrMess = 'Please provide all needed informations!';
 
@@ -169,6 +169,21 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
             $scope.signupErrMess = data.error + '. ' + data.message;
         });
     };
+}]);
+
+surveyManiaControllers.controller('ValidateProAccount', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
+    $scope.validate_pro_account = function($id)
+    {
+        $http.post('/validate-pro-account',  {id: $id})
+        .success(function (data, status, headers, config) {
+            if (data.error == undefined) {
+                console.log(data.message);
+                $scope.signupSuccMess = "Le compte a bien été validé.";
+            }
+            else $scope.signupErrMess = data.error + '. ' + data.message;
+        })
+    }
+
 }]);
 
 surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {

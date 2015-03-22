@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<div class="row-centered" ng-controller="ValidateProAccount">
+    	<div class="col-xs-10 col-sm-10 col-md-8 col-lg-6 col-centered">
+    		<h1>Panel d'administration</h1>
+			<% for(var i=0; i < accounts.length; i++) { %>
+				<div class="col-md-8"><%= accounts[i].name %></div>
+				<div class="col-md-4"><span class="validate_btn" ng-click="validate_pro_account(<%= accounts[i].orga_id %>)"></span></div>
+			<% } %>
+		</div>
+	</div>
+</div>

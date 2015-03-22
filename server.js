@@ -77,6 +77,7 @@ app
                         email: result.rows[0].email,
                         id: result.rows[0].userid,
                         usertype: result.rows[0].type_name,
+                        usertypenumber: result.rows[0].user_type,
                         organization: result.rows[0].user_organization,
                         tokenCreation: new Date().getTime()
                     };
@@ -180,6 +181,62 @@ app
 .get('/signup', function (req, res) {
     res.setHeader("Content-Type", "text/html");
     res.render('partials/signup');
+})
+
+.get('/app/validate-pro-account', function (req, res) {
+    console.log("user type number : "+req.user.usertypenumber);
+    if(req.user.usertypenumber != 2)
+    {
+        console.log("bordel");
+        res.writeHead(302, {'Location': '/401-unauthorized'});
+        res.end();
+    }
+    else
+    {
+        console.log(req.user);
+        var pro_accounts = '';
+        pg.connect(conString, function(err, client, done) {
+            if (err) console.log(err);
+            var query = 'SELECT surveymania.organizations.id AS orga_id, * FROM surveymania.organizations INNER JOIN surveymania.users ON surveymania.organizations.id = surveymania.users.user_organization WHERE surveymania.users.user_type = 3 AND surveymania.users.verified=TRUE';
+            client.query(query, function(err, result) {
+                if (err) console.log(err);
+                done();
+                if (result.rows.length) {
+                    pro_accounts = result.rows; 
+                }
+                client.end();
+                res.setHeader("Content-Type", "text/html");
+                res.render('partials/validate-pro-account', {user: req.user, accounts: pro_accounts});
+            });
+        });
+    }
+})
+
+.post('/validate-pro-account', function (req, res) {
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    res.setHeader('Accept', 'application/json');
+    var id = req.body.id;
+    pg.connect(conString, function(err, client, done) {
+        if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
+        else {
+            var query = 'SELECT surveymania.organizations.id FROM surveymania.organizations WHERE surveymania.organizations.id = \''+id+'\'';
+            client.query(query, function(err, result) {
+                done();
+                if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                else if (result.rows.length) {
+                        console.log(result.rows);
+                        var query2 ='UPDATE surveymania.organizations SET verified = TRUE WHERE surveymania.organizations.id = \''+id+'\'';
+                        client.query(query, function(err, result) {
+                            done();
+                            if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running update query"});
+                            else res.json({code: 200, message: "Update successfully performed."});
+                        });
+                }
+                else res.json({code: 200, error: "Unauthorized", message: "Action couldn't perform."});
+                client.end();
+            });
+        }
+    });
 })
 
 .get('/app/account', function (req, res) {

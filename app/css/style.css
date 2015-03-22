@@ -174,3 +174,14 @@ header
     margin-top:20px;
     padding-bottom: 5px;
 }
+
+.validate_btn
+{
+    background-image: url('../img/glyphicons-halflings.png');
+    width: 15px;
+    position: absolute;
+    height: 15px;
+    top: 10px;
+    background-position:-288px 0px;
+    right: 40px;
+}
