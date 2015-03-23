@@ -65,31 +65,37 @@ app
     pg.connect(conString, function(err, client, done) {
         if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
         else {
-            var query = 'SELECT surveymania.users.id AS userid, * FROM surveymania.users INNER JOIN surveymania.user_types ON surveymania.users.user_type = user_types.id WHERE surveymania.users.email = \'' + email + '\' AND surveymania.users.password = \'' + password + '\'';
+            var query = 'SELECT usertypes.type_name AS anyuser_typename, anyuser.id AS anyuser_id, anyuser.name AS anyuser_firstname, anyuser.lastname AS anyuser_lastname, anyuser.email AS anyuser_email, anyuser.user_type AS anyuser_type, anyuser.user_organization AS anyuser_organization, anyuser.verified AS anyuser_verified, orga.verified AS orga_verified ' +
+                        ' FROM surveymania.users anyuser INNER JOIN surveymania.user_types usertypes ON anyuser.user_type = usertypes.id LEFT JOIN surveymania.organizations orga ON anyuser.user_organization = orga.id WHERE anyuser.email = \'' + email + '\' AND anyuser.password = \'' + password + '\'';
             client.query(query, function(err, result) {
                 done();
                 if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
-                else if (result.rows.length && result.rows[0].verified == true) {
+                else if (result.rows.length && result.rows[0].anyuser_verified == false) res.json({
+                        code: 200, error: "Account not verified",
+                        message: "Votre compte n'a pas encore été vérifié. Si vous n'avez pas reçu ou si vous avez perdu votre mail contenant le code de vérification, " +
+                                 "vous pouvez en recevoir un nouveau <strong><u><a href='#/accounts/verify/new' class='text-muted'>en cliquant ici.</a></u></strong>"
+                    });
+                else if (result.rows.length && result.rows[0].anyuser_verified == true && result.rows[0].orga_verified == false) res.json({
+                        code: 200, error: "Professional account not accepted yet",
+                        message: "Votre compte n'a pas encore été accepté par notre équipe. " +
+                                 "Veuillez patienter, nous vous informerons lorsque votre demande de compte aura été traitée."
+                    });
+                else if (result.rows.length && result.rows[0].anyuser_verified == true) {
                     console.log(result.rows);
                     var profile = {
-                        firstname: result.rows[0].name,
-                        lastname: result.rows[0].lastname,
-                        email: result.rows[0].email,
-                        id: result.rows[0].userid,
-                        usertype: result.rows[0].type_name,
-                        usertypenumber: result.rows[0].user_type,
-                        organization: result.rows[0].user_organization,
+                        firstname: result.rows[0].anyuser_firstname,
+                        lastname: result.rows[0].anyuser_lastname,
+                        email: result.rows[0].anyuser_email,
+                        id: result.rows[0].anyuser_id,
+                        usertype: result.rows[0].anyuser_typename,
+                        usertypenumber: result.rows[0].anyuser_type,
+                        organization: result.rows[0].anyuser_organization,
                         tokenCreation: new Date().getTime()
                     };
                     // We are sending the profile inside the token
                     var token = jwt.sign(profile, SurveyManiasecret, { expiresInMinutes: 30*24*60 });
                     res.json({token: token, usertype: profile.usertypenumber});
                 }
-                else if (result.rows.length) res.json({
-                        code: 200, error: "Account not verified",
-                        message: "Votre compte n'a pas encore été vérifié. Si vous n'avez pas reçu ou si vous avez perdu votre mail contenant le code de vérification, " +
-                                 "vous pouvez en recevoir un nouveau <strong><u><a href='#/accounts/verify/new' class='text-muted'>en cliquant ici.</a></u></strong>"
-                    });
                 else res.json({code: 200, error: "Unauthorized", message: "No account found with given email and password"});
                 client.end();
             });
