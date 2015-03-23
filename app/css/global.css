@@ -2,3 +2,7 @@
   text-decoration: line-through;
   color: grey;
 }
+
+.pac-container {
+    z-index: 9999!important;
+}

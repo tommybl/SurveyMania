@@ -170,6 +170,9 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
             $scope.signupErrMess = data.error + '. ' + data.message;
         });
     };
+
+    // IMPORTANT
+    googleAddress.initialize();
 }]);
 
 surveyManiaControllers.controller('ValidateProAccount', ['$scope', '$http', '$window', function($scope, $http, $window) {

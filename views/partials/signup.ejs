@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" ng-controller="SignupController">
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" ng-controller="SignupController" >
   	<div class="modal-dialog row-centered">
     	<div class="modal-content col-xs-10 col-sm-10 col-md-8 col-lg-6 col-centered signup">
 		    <div class="modal-header">
@@ -61,33 +61,41 @@
 							<span class="error" ng-show="isValidPhoneNumber">Le numéro doit être composé de 10 chiffres ou doit commencer par +33</span>
 						</div>
 						<div class="col-sm-6">
-							<label>Indiquez votre adresse</label>
-							<input type="text" placeholder="" class="form-control" ng-model="user.address"/>
+							<label>Indiquez votre adresse ici</label>
+							<input type="text" id="googleAddress-autocomplete" placeholder="" class="form-control" onFocus="googleAddress.geolocate()" />
+						</div>
+						<div class="col-sm-6">
+							<label>Route</label>
+							<input type="text" placeholder="" id="sign-route" class="form-control" ng-model="user.address" readonly />
 						</div>
 						<div class="col-sm-6">
 							<label>Code postal</label>
-							<input type="text" placeholder="" class="form-control" ng-model="user.postal"/>
+							<input type="text" placeholder="" id="sign-postal" class="form-control" ng-model="user.postal" readonly />
 						</div>
 						<div class="col-sm-3">
 							<label>Ville</label>
-							<input type="text" placeholder="" class="form-control" ng-model="user.town"/>
+							<input type="text" placeholder="" id="sign-town" class="form-control" ng-model="user.town" readonly />
 						</div>
 						<div class="col-sm-3">
 							<label>Pays</label>
-							<input type="text" placeholder="" class="form-control" ng-model="user.country"/>
+							<input type="text" placeholder="" id="sign-country" class="form-control" ng-model="user.country" readonly />
 						</div>
 						<div class="particulier_form col-sm-6">
 							<label>Indiquez l'e-mail de votre parrain</label>
 							<input type="text" placeholder="" class="form-control" ng-model="user.inviter"/>
 						</div>
 						<div class="professionnal_form col-sm-6" style="display:none;clear:both">
+							<p style="float: right">
 							<label>Logo de l'entreprise</label><br/>
-							<p id="img_upload" style="display:none;">
+							<img ng-src="{{img}}" style="width:100px;"/><br/><span id="logo_suggestion" ng-click="img_upload_form()" style="display:none;">Ceci n'est pas votre logo ?</span>
+							</p>
+						</div>
+						<div class="col-sm-6">
+							<div id="img_upload" style="display:none; float: left">
 								<input type="file" class="form-control" style="width: 100%;" id="uploadLogo" ng-model="logo_upload" onchange="angular.element(this).scope().change_img_preview()">
 								OU<br/>
 								<input type="radio" name="skip_upload" ng-model="skip_upload" value="1" ng-change="reset_default_image()"/> passer cette étape
-							</p>
-							<img ng-src="{{img}}" style="width:100px;"/><br/><span id="logo_suggestion" ng-click="img_upload_form()" style="display:none;">Ceci n'est pas votre logo ?</span>
+							</div>
 						</div>
 						<!-- <div class="professionnal_form col-sm-6" style="display:none;">
 							<label>Indiquez le nombre d'utilisateurs potentiels</label><br/>
