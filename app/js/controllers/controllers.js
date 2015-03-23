@@ -172,15 +172,23 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
     };
 }]);
 
-surveyManiaControllers.controller('ValidateProAccount', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
+surveyManiaControllers.controller('ValidateProAccount', ['$scope', '$http', '$window', function($scope, $http, $window) {
     $scope.verifErrMess = undefined;
     $scope.verifSuccMess = undefined;
     $scope.validate_pro_account = function($id)
     {
         $http.post('/app/account/admin/validate/pro',  {id: $id})
         .success(function (data, status, headers, config) {
-            console.log(data.message);
-            if (data.error == undefined) $scope.verifSuccMess = "Le compte a bien été validé.";
+            console.log(data);
+            if (data.error == undefined) {
+                $scope.verifSuccMess = "Le compte a bien été validé.";
+                $("#account-pro-" + $id).toggle(700, function () {
+                    $("#account-pro-" + $id).removeClass("account-pro");
+                    console.log($(".account-pro"));
+                    if ($(".account-pro").length == 0)
+                        $("#account-pro-none").show();
+                });
+            }
             else $scope.verifErrMess = data.error + '. ' + data.message;
         })
         .error(function (data, status, headers, config) {

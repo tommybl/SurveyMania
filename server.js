@@ -188,14 +188,16 @@ app
     else
     {
         console.log(req.user);
-        var pro_accounts = '';
+        var pro_accounts = undefined;
         pg.connect(conString, function(err, client, done) {
             if (err) console.log(err);
-            var query = 'SELECT surveymania.organizations.id AS orga_id, * FROM surveymania.organizations INNER JOIN surveymania.users ON surveymania.organizations.id = surveymania.users.user_organization WHERE surveymania.users.user_type = 3 AND surveymania.users.verified=TRUE';
+            var query = 'SELECT orga.id AS orga_id, orga.name AS orga_name, orga.description AS orga_description, orga.adress AS orga_adress, orga.postal AS orga_postal, orga.town AS orga_town, orga.country AS orga_country, orga.telephone AS orga_tel, orga.logo_path AS orga_logo, ' +
+                                'owner.email AS owner_email, owner.name AS owner_firstname, owner.lastname AS owner_lastname, owner.adress AS owner_adress, owner.postal AS owner_postal, owner.town AS owner_town, owner.country AS owner_country, owner.telephone AS owner_tel ' +
+                        'FROM surveymania.organizations orga INNER JOIN surveymania.users owner ON orga.id = owner.user_organization WHERE owner.user_type = 3 AND owner.verified=TRUE AND orga.verified=FALSE';
             client.query(query, function(err, result) {
-                if (err) console.log(err);
                 done();
-                if (result.rows.length) {
+                if (err) console.log(err);
+                else if (result.rows.length) {
                     pro_accounts = result.rows; 
                 }
                 client.end();
