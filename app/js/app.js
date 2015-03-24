@@ -6,6 +6,9 @@ surveyManiaApp.config(['$routeProvider',
     function($routeProvider) {
         // angularjs routing
         $routeProvider.
+         when('/', {
+            redirectTo: '/home'
+        }).
         when('/home', {
             templateUrl: '/home',
             controller: '',
@@ -42,7 +45,7 @@ surveyManiaApp.config(['$routeProvider',
             navigationPart: '404-notfound'
         }).
         otherwise({
-            redirectTo: '/home'
+            redirectTo: '/404-notfound'
         });
     }
 ]);
