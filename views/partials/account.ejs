@@ -32,10 +32,11 @@
 			<div class="ss-row ss-medium">
 				<% if(i%2 == 0) { %>
 				    <div class="ss-left">
-			            <span class="ss-circle ss-circle-deco" style="background-image:url(/../img/<%= achievements[i].image_path %>.png)"></span>
+			            <span class="ss-circle ss-circle-deco" style="background-image:url(<%= achievements[i].image_path %>)"></span>
 			        </div>
 			        <div class="ss-right">
 			            <h3>
+			            	<span style="font-weight: bold!important; font-size: 25px"><strong><%= achievements[i].name %></strong></span>
 			                <span><%= achievements[i].recieved_dt %></span>
 			                <span><%= achievements[i].description %></span>
 			            </h3>
@@ -43,12 +44,13 @@
 				<% } else { %>
 					<div class="ss-left">
 			            <h3>
+			            	<span style="font-weight: bold!important; font-size: 25px"><strong><%= achievements[i].name %></strong></span>
 			                <span><%= achievements[i].recieved_dt %></span>
 			                <span><%= achievements[i].description %></span>
 			            </h3>
 			        </div>
 				    <div class="ss-right">
-			            <span class="ss-circle ss-circle-deco" style="background-image:url(/../img/<%= achievements[i].image_path %>.png)"></span>
+			            <span class="ss-circle ss-circle-deco" style="background-image:url(<%= achievements[i].image_path %>)"></span>
 			        </div>
 				<% } %>
 		    </div>
