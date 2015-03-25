@@ -499,7 +499,7 @@ app
                                     });
                                     var dateNow = '\'' + moment().format("YYYY-MM-DD hh:mm:ss") + '\'';
                                     var query = 'INSERT INTO surveymania.user_achievements(user_id, achiev_id, recieved_dt) ' +
-                                                'VALUES (' + invited_id + ', 1, ' + dateNow + ') ';
+                                                'VALUES (' + invited_id + ', 1, ' + dateNow + '), (' + invited_id + ', 3, ' + dateNow + '), (' + invited_id + ', 4, ' + dateNow + ')';
                                     client.query(query, function(err, result) {
                                         done();
                                         if(err) console.log(err);
