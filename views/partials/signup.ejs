@@ -56,8 +56,8 @@
 							<input ng-change="email_check()" ng-model="user.email" type="text" placeholder="email@provider.com" class="form-control" required/>
 			  				<span class="error" ng-show="isValidEmail">Le mail indiqué est invalide</span>
 						</div>
-						<div class="col-sm-6">
-							<label>Indiquez votre numéro de téléphone</label>
+						<div class="professionnal_form col-sm-6">
+							<label>Indiquez votre numéro de téléphone</label> <span class="link_primary" hidden >*</span>
 							<input type="text" placeholder="" id="phoneNumber" class="form-control" ng-model="user.phone" ng-change="phoneNumber_check()"/>
 							<span class="error" ng-show="isValidPhoneNumber">Le numéro doit être composé de 10 chiffres ou doit commencer par +33</span>
 						</div>

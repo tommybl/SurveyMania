@@ -237,18 +237,27 @@ app
                                 if (logo_skip == false) {
                                     var img_path = "img/organizations/" + orgaid + "/logo." + logo_type;
                                     mkdirp('app/img/organizations/' + orgaid, function (err) {
-                                        if (err) console.error(err)
+                                        if (err) {
+                                            console.log(err)
+                                        }
                                         else {
                                             fs.writeFile("app/" + img_path, logo_img, 'base64', function(err) {
-                                                if (err) console.log(err);
+                                                if (err) {
+                                                    console.log(err);
+                                                }
                                                 else {
                                                     pg.connect(conString, function(err2, client2, done2) {
-                                                        if (err2) console.log(err2);
+                                                        if (err2) {
+                                                            console.log(err2);
+                                                        }
                                                         else {
                                                             var query2 = 'UPDATE surveymania.organizations SET logo_path = \'' + img_path + '\' WHERE surveymania.organizations.id = ' + orgaid;
                                                             client2.query(query2, function(err2, result2) {
                                                                 done2();
-                                                                if (err2) console.log(err2);
+                                                                if (err2) {
+                                                                    console.log("err5");
+                                                                    console.log(err2);
+                                                                }
                                                                 client2.end();
                                                             });
                                                         }
@@ -272,7 +281,9 @@ app
                                         var hash = CryptoJS.HmacMD5(userid + "" + (new Date().getTime()), SurveyManiasecret).toString();
                                         var verifyURL = SurveyManiaURL + '#/accounts/verify/' + hash;
                                         new MailVerifToken({token: hash, userid: userid}).save(function (err, obj) {
-                                            if (err) console.log(err);
+                                            if (err) {
+                                                console.log(err);
+                                            }
                                         });
                                         var mailOptions = {
                                             from: 'webmaster@surveymania.com',
@@ -287,7 +298,9 @@ app
                                                   'SurveyMania Team'
                                         };
                                         transporter.sendMail(mailOptions, function(error, info){
-                                            if(error) console.log(error);
+                                            if (error) {
+                                                console.log(error);
+                                            }
                                             else console.log('Message sent: ' + info.response);
                                         });
                                         res.status(200).json({code: 200, message: "Account successfully created"});
