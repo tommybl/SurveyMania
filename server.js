@@ -46,8 +46,8 @@ app.enable('trust proxy');
 // needed to compress all our responses
 app.use(compress());
 // needed to parse requests body (for example in post requests)
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false, limit: '10000kb' }));
+app.use(bodyParser.json({ limit: '10000kb' }));
 // needed to protect / routes with JWT
 app.use('/app', expressJwt({secret: SurveyManiasecret}));
 
@@ -401,7 +401,7 @@ app
             done();
             if (result.rows.length) {
                 user = result.rows[0];
-                var query = 'SELECT * FROM surveymania.user_achievements INNER JOIN surveymania.achievements ON surveymania.user_achievements.achiev_id = surveymania.achievements.id WHERE surveymania.user_achievements.user_id = ' + req.user.id;
+                var query = 'SELECT * FROM surveymania.user_achievements INNER JOIN surveymania.achievements ON surveymania.user_achievements.achiev_id = surveymania.achievements.id WHERE surveymania.user_achievements.user_id = ' + req.user.id + ' ORDER BY surveymania.user_achievements.id DESC';
                 client.query(query, function(err, result) {
                     if (err) console.log(err);
                     done();

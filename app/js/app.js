@@ -54,7 +54,8 @@ surveyManiaApp.factory('authInterceptor', function ($rootScope, $q, $window, $lo
     return {
         request: function (config) {
             config.headers = config.headers || {};
-            config.headers.Authorization = 'Bearer ' + $window.localStorage.token;
+            if (config.url.charAt(0) == '/')
+                config.headers.Authorization = 'Bearer ' + $window.localStorage.token;
             return config;
         },
         response: function (response) {

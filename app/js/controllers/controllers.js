@@ -42,40 +42,44 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
                    firmname: '', firmdescription: '', logo_skip: true};
     $scope.default_img ="img/default_profil.jpg";
     $scope.img ="img/default_profil.jpg";
-    $scope.fetch_img = function() {
-        console.log($scope.user.firmname)
-        $.ajax({
-            url: 'https://www.googleapis.com/customsearch/v1?key=AIzaSyBaiPSlrA4cVQKAv-RlRwo1UgkkVpOS67U&cx=004343761578996942245:kcfk8xi6kqk&q='+$scope.user.firmname+'+logo&searchType=image&fileType:jpg,png&imgSize=small&alt=json',
-            type: "GET",
-            dataType: 'json',
-            cache: true,
-            success: function (data, status, error) {
-              var i = 0;
-              while (data.items[i].mime === "image/gif") i++;
 
-              var xhr = new XMLHttpRequest();
-              xhr.open('GET', data.items[i].link, true);
-              xhr.responseType = 'blob';
-              xhr.onload = function(e) {
-                  if (this.status == 200) {
-                    var myBlob = this.response;
-                    var reader = new FileReader();
-                    reader.onload = function(e) {
-                        $scope.img = reader.result;
-                        $scope.user.logo_skip = false;
-                        $('#logo_suggestion').show();
-                        $scope.$apply();
-                        console.log($scope.img);
-                        console.log('success', data.items[i].mime);
-                    }
-                    reader.readAsDataURL(myBlob);
-                  }
-              };
-              xhr.send();
-            },
-            error: function (data, status, error) {
-              console.log('error', data, status, error);
-            }
+    $scope.fetch_img = function() {
+        $http.get('https://www.googleapis.com/customsearch/v1?key=AIzaSyBaiPSlrA4cVQKAv-RlRwo1UgkkVpOS67U&cx=004343761578996942245:kcfk8xi6kqk&q='+$scope.user.firmname+'+logo&searchType=image&fileType:jpg,png&imgSize=small&alt=json', {cache: true, responseType: "json"})
+        .success(function (data, status, headers, config) {
+            console.log(data);
+            var items = data.items;
+            var i = 0;
+            while (items[i].mime === "image/gif") i++;
+
+            var successCall = function (data, status, headers, config) {
+                console.log(data);
+                var myBlob = data;
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    $scope.img = reader.result;
+                    $scope.user.logo_skip = false;
+                    $('#logo_suggestion').show();
+                    $scope.$apply();
+                    console.log($scope.img);
+                }
+                reader.readAsDataURL(myBlob);
+            };
+
+            var errorCall = function (data, status, headers, config) {
+                i++;
+                if (i < items.length) {
+                    $http.get(items[i].link, {cache: true, responseType: "blob"})
+                    .success(successCall)
+                    .error(errorCall);
+                }
+            };
+
+            $http.get(items[i].link, {cache: true, responseType: "blob"})
+            .success(successCall)
+            .error(errorCall);
+        })
+        .error(function (data, status, headers, config) {
+            console.log(data);
         });
     };
 
@@ -244,6 +248,7 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
     $scope.reduce = false;
     $scope.tab_show = function($id)
     {
+        $("#account-main").hide();
         if (!$scope.reduce)
         {
             $scope.reduce = true;
