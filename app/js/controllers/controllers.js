@@ -2,7 +2,7 @@
 
 var surveyManiaControllers = angular.module('surveyManiaControllers', []);
 
-surveyManiaControllers.controller('LoginController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
+surveyManiaControllers.controller('LoginController', ['$rootScope', '$scope', '$http', '$window', '$location', '$route', function($rootScope, $scope, $http, $window, $location, $route) {
     $scope.user = {email: '', password: ''};
     $scope.loginErrMess = undefined;
     $scope.submit = function () {
@@ -15,8 +15,11 @@ surveyManiaControllers.controller('LoginController', ['$scope', '$http', '$windo
             console.log(data);
             if (data.error == undefined) {
                 $window.localStorage.token = data.token;
-                if (data.usertype == 1 || data.usertype == 3 || data.usertype == 4)
-                    $location.path( "/account");
+                if (data.usertype == 1 || data.usertype == 3 || data.usertype == 4) {
+                    if ($rootScope.navigationPart != "account")
+                        $location.path( "/account");
+                    else $route.reload();
+                }
                 else $location.path( "/account/admin/validate/pro");
             }
             else {

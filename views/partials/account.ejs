@@ -4,7 +4,7 @@
 	<div id="profil_bg" class="col-md-12">
 		<div id="default_profil">
 			<img id="profil_img" src="img/default_profil.png" alt="image de profil"/>
-			<p id="profil_name"><%= user.firstname %> <%= user.lastname %></p>
+			<p id="profil_name"><%= user.owner_firstname %> <%= user.owner_lastname %></p>
 		</div>
 	</div>
 	<div class="col1 col-lg-6">
@@ -22,8 +22,17 @@
 	<div id="show_about" style="display:none;">
 		<div class="row-centered">
 			<div class="col-md-6 col-centered">
-				<p><%= user.firstname %> <%= user.lastname %><br/>22 avenue de fontainebleau<br/>94270 Le Kremlin-Bicêtre</p>
-				<p>E-mail: <%= user.email %><br/>Tel. : 06 98 27 71 09</p>
+				<h1>User informations</h1>
+				<p>Type de compte: 
+					<% if (user.owner_type == 1) { %> Particulier
+					<% } else if (user.owner_type == 2) { %> Admin
+					<% } else if (user.owner_type == 3) { %> Professionel
+					<% } else if (user.owner_type == 4) { %> Admin Professionel
+					<% } %>
+				</p>
+				<p>Adresse: <br/><%= user.owner_adress %><br/><%= user.owner_postal %> <%= user.owner_town %><br/><%= user.owner_country %></p>
+				<p>E-mail: <%= user.owner_email %><br/>Tel: <%= user.owner_tel %></p>
+				<p>Points: <%= user.owner_points %></p>
 			</div>
 		</div>
 	</div>

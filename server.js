@@ -391,18 +391,27 @@ app
 .get('/app/account', function (req, res) {
     console.log(req.user);
     var achvmnts = '';
+    var user = req.user;
     pg.connect(conString, function(err, client, done) {
-        if (err) console.log(err);
-        var query = 'SELECT * FROM surveymania.user_achievements INNER JOIN surveymania.achievements ON surveymania.user_achievements.achiev_id = surveymania.achievements.id WHERE surveymania.user_achievements.user_id = ' + req.user.id;
+        if (err) return console.log(err);
+        var query = 'SELECT owner.email AS owner_email, owner.name AS owner_firstname, owner.lastname AS owner_lastname, owner.adress AS owner_adress, owner.postal AS owner_postal, owner.town AS owner_town, owner.country AS owner_country, owner.telephone AS owner_tel, owner.user_type AS owner_type, owner.points AS owner_points ' +
+                    'FROM surveymania.users owner WHERE owner.id = ' + req.user.id;
         client.query(query, function(err, result) {
             if (err) console.log(err);
             done();
             if (result.rows.length) {
-                achvmnts = result.rows; 
+                user = result.rows[0];
+                var query = 'SELECT * FROM surveymania.user_achievements INNER JOIN surveymania.achievements ON surveymania.user_achievements.achiev_id = surveymania.achievements.id WHERE surveymania.user_achievements.user_id = ' + req.user.id;
+                client.query(query, function(err, result) {
+                    if (err) console.log(err);
+                    done();
+                    if (result.rows.length) {
+                        achvmnts = result.rows;
+                    }
+                    res.setHeader("Content-Type", "text/html");
+                    res.render('partials/account', {user: user, achievements: achvmnts});
+                });
             }
-            client.end();
-            res.setHeader("Content-Type", "text/html");
-            res.render('partials/account', {user: req.user, achievements: achvmnts});
         });
     });
 })
@@ -450,6 +459,7 @@ app
                         }
                         else if (result.rows.length && result.rows[0].invited_verified == false) {
                             var inviter_id = result.rows[0].inviter_id;
+                            var invited_id = result.rows[0].invited_id;
                             var inviter_points = result.rows[0].inviter_points;
                             var inviter_email = result.rows[0].inviter_email;
                             var invited_email = result.rows[0].invited_email;
