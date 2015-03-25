@@ -17,7 +17,7 @@
         <div id="account-pro-<%= accounts[i].orga_id %>" class="row account-pro" style="padding: 0 20px">
             <h3>Organisation <strong><%= accounts[i].orga_name %></strong></h3>
             <div class="row">
-                <div class="col col-md-2 pull-center"><img src="<%= accounts[i].orga_logo %>" class="center-block" /></div>
+                <div class="col col-md-2 pull-center"><img src="<%= accounts[i].orga_logo %>" class="center-block" style="max-width: 100px; max-height: 100px" /></div>
                 <div class="col col-md-8 pull-center">
                     <div class="col col-md-12"><%= accounts[i].orga_description %></div>
                     <div class="col col-md-12"><%= accounts[i].orga_adress %> <%= accounts[i].orga_postal %> <%= accounts[i].orga_town %> <%= accounts[i].orga_country %></div>

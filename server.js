@@ -9,6 +9,7 @@ var bodyParser = require('body-parser');
 var moment = require('moment');
 var request = require('request');
 var fs = require('fs');
+var mkdirp = require('mkdirp');
 var CryptoJS = require("crypto-js");
 var nodemailer = require('nodemailer');
 var SurveyManiaURL = 'http://localhost:1337/';
@@ -114,74 +115,193 @@ app
     var inviter = null;
     var error = false;
 
-    pg.connect(conString, function(err, client, done) {
-        if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
-        else {
-            var query = 'SELECT getuser.email AS user_email, getuser.id AS user_id FROM surveymania.users getuser WHERE getuser.email = \'' + req.body.email + '\' ' +
-                        'UNION ' +
-                        'SELECT getuser.email AS user_email, getuser.id AS user_id FROM surveymania.users getuser WHERE getuser.email = \'' + req.body.inviter + '\'';
-            client.query(query, function(err, result) {
-                done();
-                if(err) {
-                    res.status(500).json({code: 500, error: "Internal server error", message: "Error running query verifying email"});
-                    client.end();
-                }
-                else if (result.rows.length && result.rows[0].user_email == req.body.email) {
-                    res.status(200).json({code: 200, error: "Conflict", message: "Email already used for an existing account"});
-                    client.end();
-                }
-                else {
-                    var inviter_id = (result.rows.length && result.rows[0].user_email != req.body.email) ? result.rows[0].user_id : null;
-                    var dateNow = '\'' + moment().format("YYYY-MM-DD hh:mm:ss") + '\'';
-                    var email = '\'' + req.body.email + '\'';
-                    var password = '\'' + req.body.password + '\'';
-                    var firstname = '\'' + req.body.firstname + '\'';
-                    var lastname = '\'' + req.body.lastname + '\'';
-                    var telephone = (req.body.phone == null) ? 'NULL' : '\'' + req.body.phone + '\'';
-                    var adress = (req.body.adress == null) ? 'NULL' : '\'' + req.body.adress + '\'';
-                    var postal = (req.body.postal == null) ? 'NULL' : '\'' + req.body.postal + '\'';
-                    var town = (req.body.town == null) ? 'NULL' : '\'' + req.body.town + '\'';
-                    var country = (req.body.country == null) ? 'NULL' : '\'' + req.body.country + '\'';
-                    var inviteDT = (inviter_id == null) ? 'NULL' : dateNow;
-                    var inviterID = (inviter_id == null) ? 'NULL' : inviter_id;
-                    var query = 'INSERT INTO surveymania.users(email, password, user_type, name, lastname, telephone, adress, postal, town, country, creation_dt, last_dt, invite_dt, inviter_id, points, verified) ' +
-                        'VALUES (' + email + ', ' + password + ', 1, ' + firstname + ', ' + lastname + ', ' + telephone + ', ' + adress + ', ' + postal + ', ' + town + ', ' + country + ', ' +  dateNow + ', ' + dateNow + ', ' + inviteDT + ', ' + inviterID + ', 50, false) ' +
-                        'RETURNING id';
-                    client.query(query, function(err, result) {
-                        done();
-                        if(err) {
-                            res.status(500).json({code: 500, error: "Internal server error", message: "Error running query inserting new user"});
-                            client.end();
-                        }
-                        else {
-                            var userid = result.rows[0].id;
-                            var hash = CryptoJS.HmacMD5(userid + "" + (new Date().getTime()), SurveyManiasecret).toString();
-                            var verifyURL = SurveyManiaURL + '#/accounts/verify/' + hash;
-                            new MailVerifToken({token: hash, userid: userid}).save(function (err, obj) {
-                                if (err) console.log(err);
-                            });
-                            var mailOptions = {
-                                from: 'webmaster@surveymania.com',
-                                to: req.body.email,
-                                subject: 'Signin account verification',
-                                html: 'Hello ' + req.body.firstname + ' ' + req.body.lastname + ', welcome to SurveyMania!<br><br>' +
-                                      'Please click on the link below to verify your account email and finish your <b>SurveyMania</b> inscription.<br>' +
-                                      '<a href="' + verifyURL + '">' + verifyURL + '</a><br><br>' +
-                                      'Thank you for your trust and enjoy our services.<br><br>' +
-                                      'SurveyMania Team'
-                            };
-                            transporter.sendMail(mailOptions, function(error, info){
-                                if(error) console.log(error);
-                                else console.log('Message sent: ' + info.response);
-                            });
-                            res.status(200).json({code: 200, message: "Account successfully created"});
-                            client.end();
-                        }
-                    });
-                }
-            });
-        }
-    });
+    /*console.log(req.body);
+    res.end();
+    return;*/
+
+    if (req.body.type == 'particulier' && req.body.email != null && req.body.password != null && req.body.firstname != null && req.body.lastname != null) {
+        pg.connect(conString, function(err, client, done) {
+            if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
+            else {
+                var query = 'SELECT getuser.email AS user_email, getuser.id AS user_id FROM surveymania.users getuser WHERE getuser.email = \'' + req.body.email + '\' ' +
+                            'UNION ' +
+                            'SELECT getuser.email AS user_email, getuser.id AS user_id FROM surveymania.users getuser WHERE getuser.email = \'' + req.body.inviter + '\'';
+                client.query(query, function(err, result) {
+                    done();
+                    if(err) {
+                        res.status(500).json({code: 500, error: "Internal server error", message: "Error running query verifying email"});
+                        client.end();
+                    }
+                    else if (result.rows.length && result.rows[0].user_email == req.body.email) {
+                        res.status(200).json({code: 200, error: "Conflict", message: "Email already used for an existing account"});
+                        client.end();
+                    }
+                    else {
+                        var inviter_id = (result.rows.length && result.rows[0].user_email != req.body.email) ? result.rows[0].user_id : null;
+                        var dateNow = '\'' + moment().format("YYYY-MM-DD hh:mm:ss") + '\'';
+                        var email = '\'' + req.body.email + '\'';
+                        var password = '\'' + req.body.password + '\'';
+                        var firstname = '\'' + req.body.firstname + '\'';
+                        var lastname = '\'' + req.body.lastname + '\'';
+                        var telephone = (req.body.phone == null) ? 'NULL' : '\'' + req.body.phone + '\'';
+                        var adress = (req.body.adress == null) ? 'NULL' : '\'' + req.body.adress + '\'';
+                        var postal = (req.body.postal == null) ? 'NULL' : '\'' + req.body.postal + '\'';
+                        var town = (req.body.town == null) ? 'NULL' : '\'' + req.body.town + '\'';
+                        var country = (req.body.country == null) ? 'NULL' : '\'' + req.body.country + '\'';
+                        var inviteDT = (inviter_id == null) ? 'NULL' : dateNow;
+                        var inviterID = (inviter_id == null) ? 'NULL' : inviter_id;
+                        var query = 'INSERT INTO surveymania.users(email, password, user_type, name, lastname, telephone, adress, postal, town, country, creation_dt, last_dt, invite_dt, inviter_id, points, verified) ' +
+                            'VALUES (' + email + ', ' + password + ', 1, ' + firstname + ', ' + lastname + ', ' + telephone + ', ' + adress + ', ' + postal + ', ' + town + ', ' + country + ', ' +  dateNow + ', ' + dateNow + ', ' + inviteDT + ', ' + inviterID + ', 50, false) ' +
+                            'RETURNING id';
+                        client.query(query, function(err, result) {
+                            done();
+                            if(err) {
+                                res.status(500).json({code: 500, error: "Internal server error", message: "Error running query inserting new user"});
+                                client.end();
+                            }
+                            else {
+                                var userid = result.rows[0].id;
+                                var hash = CryptoJS.HmacMD5(userid + "" + (new Date().getTime()), SurveyManiasecret).toString();
+                                var verifyURL = SurveyManiaURL + '#/accounts/verify/' + hash;
+                                new MailVerifToken({token: hash, userid: userid}).save(function (err, obj) {
+                                    if (err) console.log(err);
+                                });
+                                var mailOptions = {
+                                    from: 'webmaster@surveymania.com',
+                                    to: req.body.email,
+                                    subject: 'Signin account verification',
+                                    html: 'Hello ' + req.body.firstname + ' ' + req.body.lastname + ', welcome to SurveyMania!<br><br>' +
+                                          'Please click on the link below to verify your account email and finish your <b>SurveyMania</b> inscription.<br>' +
+                                          '<a href="' + verifyURL + '">' + verifyURL + '</a><br><br>' +
+                                          'Thank you for your trust and enjoy our services.<br><br>' +
+                                          'SurveyMania Team'
+                                };
+                                transporter.sendMail(mailOptions, function(error, info){
+                                    if(error) console.log(error);
+                                    else console.log('Message sent: ' + info.response);
+                                });
+                                res.status(200).json({code: 200, message: "Account successfully created"});
+                                client.end();
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
+    else if (req.body.type == 'professional' && req.body.email != null && req.body.firstname != null && req.body.lastname != null && req.body.password != null && req.body.firmname != null &&
+             req.body.firmdescription != null && req.body.phone != null && req.body.adress != null && req.body.postal != null && req.body.town != null && req.body.country != null) {
+        pg.connect(conString, function(err, client, done) {
+            if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
+            else {
+                var query = 'SELECT getuser.email AS user_email, getuser.id AS user_id FROM surveymania.users getuser WHERE getuser.email = \'' + req.body.email + '\' ';
+                client.query(query, function(err, result) {
+                    done();
+                    if(err) {
+                        res.status(500).json({code: 500, error: "Internal server error", message: "Error running query verifying email"});
+                        client.end();
+                    }
+                    else if (result.rows.length && result.rows[0].user_email == req.body.email) {
+                        res.status(200).json({code: 200, error: "Conflict", message: "Email already used for an existing account"});
+                        client.end();
+                    }
+                    else {
+                        var dateNow = '\'' + moment().format("YYYY-MM-DD hh:mm:ss") + '\'';
+                        var email = '\'' + req.body.email + '\'';
+                        var password = '\'' + req.body.password + '\'';
+                        var firstname = '\'' + req.body.firstname + '\'';
+                        var lastname = '\'' + req.body.lastname + '\'';
+                        var telephone = (req.body.phone == null) ? 'NULL' : '\'' + req.body.phone + '\'';
+                        var adress = (req.body.adress == null) ? 'NULL' : '\'' + req.body.adress + '\'';
+                        var postal = (req.body.postal == null) ? 'NULL' : '\'' + req.body.postal + '\'';
+                        var town = (req.body.town == null) ? 'NULL' : '\'' + req.body.town + '\'';
+                        var country = (req.body.country == null) ? 'NULL' : '\'' + req.body.country + '\'';
+                        var firmname = (req.body.firmname == null) ? 'NULL' : '\'' + req.body.firmname + '\'';
+                        var firmdescription = (req.body.firmdescription == null) ? 'NULL' : '\'' + req.body.firmdescription + '\'';
+                        var logo_img = req.body.logo_img;
+                        var logo_type = req.body.logo_type;
+                        var logo_skip = req.body.logo_skip;
+
+                        var query = 'INSERT INTO surveymania.organizations(name, description, adress, postal, town, country, telephone, logo_path, url_add_discount, url_verify_discount, url_remove_discount, current_points, verified) ' +
+                            'VALUES (' + firmname + ', ' + firmdescription + ', ' + adress + ', ' + postal + ', ' + town + ', ' + country + ', ' + telephone + ', \'img/default_profil.jpg\', \'url\', \'url\', \'url\', 50, false) ' +
+                            'RETURNING id';
+                        client.query(query, function(err, result) {
+                            done();
+                            if(err) {
+                                console.log(err);
+                                res.status(500).json({code: 500, error: "Internal server error", message: "Error running query inserting new organization"});
+                                client.end();
+                            }
+                            else {
+                                var orgaid = result.rows[0].id;
+                                if (logo_skip == false) {
+                                    var img_path = "img/organizations/" + orgaid + "/logo." + logo_type;
+                                    mkdirp('app/img/organizations/' + orgaid, function (err) {
+                                        if (err) console.error(err)
+                                        else {
+                                            fs.writeFile("app/" + img_path, logo_img, 'base64', function(err) {
+                                                if (err) console.log(err);
+                                                else {
+                                                    pg.connect(conString, function(err2, client2, done2) {
+                                                        if (err2) console.log(err2);
+                                                        else {
+                                                            var query2 = 'UPDATE surveymania.organizations SET logo_path = \'' + img_path + '\' WHERE surveymania.organizations.id = ' + orgaid;
+                                                            client2.query(query2, function(err2, result2) {
+                                                                done2();
+                                                                if (err2) console.log(err2);
+                                                                client2.end();
+                                                            });
+                                                        }
+                                                    });  
+                                                }
+                                            });       
+                                        }
+                                    });
+                                }
+                                var query = 'INSERT INTO surveymania.users(user_organization, email, password, user_type, name, lastname, telephone, adress, postal, town, country, creation_dt, last_dt, points, verified) ' +
+                                    'VALUES (' + orgaid + ', ' + email + ', ' + password + ', 3, ' + firstname + ', ' + lastname + ', ' + telephone + ', ' + adress + ', ' + postal + ', ' + town + ', ' + country + ', ' +  dateNow + ', ' + dateNow + ', 50, false) ' +
+                                    'RETURNING id';
+                                client.query(query, function(err, result) {
+                                    done();
+                                    if(err) {
+                                        res.status(500).json({code: 500, error: "Internal server error", message: "Error running query inserting new user"});
+                                        client.end();
+                                    }
+                                    else {
+                                        var userid = result.rows[0].id;
+                                        var hash = CryptoJS.HmacMD5(userid + "" + (new Date().getTime()), SurveyManiasecret).toString();
+                                        var verifyURL = SurveyManiaURL + '#/accounts/verify/' + hash;
+                                        new MailVerifToken({token: hash, userid: userid}).save(function (err, obj) {
+                                            if (err) console.log(err);
+                                        });
+                                        var mailOptions = {
+                                            from: 'webmaster@surveymania.com',
+                                            to: req.body.email,
+                                            subject: 'Signin professional account verification',
+                                            html: 'Hello ' + req.body.firstname + ' ' + req.body.lastname + ', welcome to SurveyMania!<br><br>' +
+                                                  'You have submitted a new professional account for your organization <strong>' + firmname + '</strong><br>' +
+                                                  'Please click on the link below to verify your account email for your <b>SurveyMania</b> inscription.<br>' +
+                                                  '<a href="' + verifyURL + '">' + verifyURL + '</a><br><br>' +
+                                                  'After that, we will study your request and will inform you when your professional account is validated, if it is accepted.<br><br>' +
+                                                  'Thank you for your trust and enjoy our services.<br><br>' +
+                                                  'SurveyMania Team'
+                                        };
+                                        transporter.sendMail(mailOptions, function(error, info){
+                                            if(error) console.log(error);
+                                            else console.log('Message sent: ' + info.response);
+                                        });
+                                        res.status(200).json({code: 200, message: "Account successfully created"});
+                                        client.end();
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
+    else res.status(500).json({code: 500, error: "Internal server error", message: "Bad user infos"});
 })
 
 .get('/signup', function (req, res) {
@@ -319,7 +439,7 @@ app
             pg.connect(conString, function(err, client, done) {
                 if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
                 else {
-                    var query = 'SELECT invited.id AS invited_id, inviter.id AS inviter_id, invited.verified AS invited_verified, inviter.points AS inviter_points, inviter.email AS inviter_email, inviter.name AS inviter_firstname, inviter.lastname AS inviter_lastname ' +
+                    var query = 'SELECT invited.id AS invited_id, inviter.id AS inviter_id, invited.verified AS invited_verified, inviter.points AS inviter_points, invited.email AS invited_email, inviter.email AS inviter_email, invited.name AS invited_firstname, invited.lastname AS invited_lastname ' +
                         'FROM surveymania.users invited LEFT JOIN surveymania.users inviter ON invited.inviter_id = inviter.id WHERE invited.id = ' + userid + ' AND invited.password = \'' + password + '\'';
                     client.query(query, function(err, result) {
                         done();
@@ -331,8 +451,9 @@ app
                             var inviter_id = result.rows[0].inviter_id;
                             var inviter_points = result.rows[0].inviter_points;
                             var inviter_email = result.rows[0].inviter_email;
-                            var inviter_firstname = result.rows[0].inviter_firstname;
-                            var inviter_lastname = result.rows[0].inviter_lastname;
+                            var invited_email = result.rows[0].invited_email;
+                            var invited_firstname = result.rows[0].invited_firstname;
+                            var invited_lastname = result.rows[0].invited_lastname;
                             var dateNow = '\'' + moment().format("YYYY-MM-DD hh:mm:ss") + '\'';
                             var query = 'UPDATE surveymania.users SET verified=true, verified_dt=' + dateNow + ' WHERE id=' + userid;
                             client.query(query, function(err, result) {
@@ -352,7 +473,7 @@ app
                                                     from: 'webmaster@surveymania.com',
                                                     to: inviter_email,
                                                     subject: 'Someone has just named you as his inviter',
-                                                    html: inviter_firstname + ' ' + inviter_lastname + ' (' + inviter_email + ') has just named you as his inviter!<br>' +
+                                                    html: invited_firstname + ' ' + invited_lastname + ' (' + invited_email + ') has just named you as his inviter!<br>' +
                                                           'This action made you win 500 points and you have now a total of ' + newpoints + ' points.<br>' +
                                                           'Plus you unlocked a new achievement! You can see the details on your account.<br>' +
                                                           'Congratulations and thank you very much for your activity, we hope you enjoy our services :D<br><br>' +

@@ -18,20 +18,25 @@
 					<form name="myForm" ng-submit="submit()">
 						<div class="col-sm-6">
 							<label>Indiquez le type de compte</label> <span class="link_primary">*</span><br/>
-							<input type="radio" name="account_type" ng-model="radio_value" value="particulier" ng-change="change_form()" id="particulier" ng-checked="true"/> particulier
-							<input type="radio" name="account_type" ng-model="radio_value" value="professionnal" ng-change="change_form()" id="professionnal"/> professionnel
-						</div>
-						<div class="particulier_form part_check col-sm-6" style="clear:both">
-							<label>Indiquez votre prénom</label> <span class="link_primary">*</span>
-							<input type="text" placeholder="Prénom" class="form-control" name="firstname" ng-model="user.firstname" ng-change="firstName_check()" required="true"/>
-							<span class="error" ng-show="isValidFirstName">Le prénom de doit contenir que des lettres et des traits d'union et doit être composé au minimum de 2 caractères</span>
+							<input type="radio" name="account_type" ng-model="user.type" value="particulier" ng-change="change_form()" id="particulier" ng-checked="true"/> particulier
+							&nbsp;&nbsp;
+							<input type="radio" name="account_type" ng-model="user.type" value="professional" ng-change="change_form()" id="professionnal"/> professionnel
 						</div>
 						<div class="professionnal_form pro_check col-sm-6" style="clear:both; display:none;">
 							<label>Indiquez le nom de votre entreprise</label> <span class="link_primary">*</span>
 							<input type="text" placeholder="Nom de l'entreprise" class="form-control" name="firm_name" ng-model="user.firmname" ng-blur="fetch_img()"/>
 							<span class="error" ng-show="isValidFirmName">Le nom de l'entreprise de doit contenir que des lettres et des traits d'union</span>
 						</div>
-						<div class="particulier_form part_check col-sm-6">
+						<div class="professionnal_form pro_check col-sm-6" style="display:none;">
+							<label>Entrez une courte description</label> <span class="link_primary">*</span>
+							<input type="text" placeholder="Description" class="form-control" name="description" ng-model="user.firmdescription" ng-change="description_check()"/>
+						</div>
+						<div class="col-sm-6" style="clear:both">
+							<label>Indiquez votre prénom</label> <span class="link_primary">*</span>
+							<input type="text" placeholder="Prénom" class="form-control" name="firstname" ng-model="user.firstname" ng-change="firstName_check()" required="true"/>
+							<span class="error" ng-show="isValidFirstName">Le prénom de doit contenir que des lettres et des traits d'union et doit être composé au minimum de 2 caractères</span>
+						</div>
+						<div class="col-sm-6">
 							<label>Indiquez votre nom</label> <span class="link_primary">*</span>
 							<input type="text" placeholder="Nom" class="form-control" name="lastname" ng-model="user.lastname" ng-change="lastName_check()" required="true"/>
 							<span class="error" ng-show="isValidLastName">Le prénom de doit contenir que des lettres et des traits d'union</span>
@@ -40,10 +45,6 @@
 							<label>Choississez un mot de passe</label> <span class="link_primary">*</span>
 							<input type="password" placeholder="Mot de passe" class="form-control" name="password" ng-model="user.password" ng-change="pwd_check()" required/>
 							<span class="error" ng-show="isValidPwd">Votre mot de passe doit contenir au moins une lettre, un chiffre, un caractère spécial et doit excéder 6 caractères</span>
-						</div>
-						<div class="professionnal_form pro_check col-sm-6" style="display:none;">
-							<label>Entrez une courte description</label> <span class="link_primary">*</span>
-							<input type="text" placeholder="Description" class="form-control" name="description" ng-model="user.firmdescription" ng-change="description_check()"/>
 						</div>
 						<div class="col-sm-6">
 							<label>Confirmez votre mot de passe</label> <span class="link_primary">*</span>
@@ -64,37 +65,37 @@
 							<label>Indiquez votre adresse ici</label>
 							<input type="text" id="googleAddress-autocomplete" placeholder="" class="form-control" onFocus="googleAddress.geolocate()" />
 						</div>
-						<div class="col-sm-6">
-							<label>Route</label>
+						<div class="professionnal_form col-sm-6"> 
+							<label>Route</label> <span class="link_primary" hidden >*</span>
 							<input type="text" placeholder="" id="sign-route" class="form-control" ng-model="user.address" readonly />
 						</div>
-						<div class="col-sm-6">
-							<label>Code postal</label>
+						<div class="professionnal_form col-sm-6">
+							<label>Code postal</label> <span class="link_primary" hidden >*</span>
 							<input type="text" placeholder="" id="sign-postal" class="form-control" ng-model="user.postal" readonly />
 						</div>
-						<div class="col-sm-3">
-							<label>Ville</label>
+						<div class="professionnal_form col-sm-3">
+							<label>Ville</label> <span class="link_primary" hidden >*</span>
 							<input type="text" placeholder="" id="sign-locality" class="form-control" ng-model="user.town" readonly />
 						</div>
-						<div class="col-sm-3">
-							<label>Pays</label>
+						<div class="professionnal_form col-sm-3">
+							<label>Pays</label> <span class="link_primary" hidden >*</span>
 							<input type="text" placeholder="" id="sign-country" class="form-control" ng-model="user.country" readonly />
 						</div>
-						<div class="particulier_form col-sm-6">
+						<div class="part_check col-sm-6">
 							<label>Indiquez l'e-mail de votre parrain</label>
 							<input type="text" placeholder="" class="form-control" ng-model="user.inviter"/>
 						</div>
-						<div class="professionnal_form col-sm-6" style="display:none;clear:both">
+						<div class="pro_check col-sm-6" style="display:none;clear:both">
 							<p style="float: right">
 							<label>Logo de l'entreprise</label><br/>
 							<img ng-src="{{img}}" style="width:100px;"/><br/><span id="logo_suggestion" ng-click="img_upload_form()" style="display:none;">Ceci n'est pas votre logo ?</span>
 							</p>
 						</div>
-						<div class="col-sm-6">
+						<div class="pro_check col-sm-6">
 							<div id="img_upload" style="display:none; float: left">
-								<input type="file" class="form-control" style="width: 100%;" id="uploadLogo" ng-model="logo_upload" onchange="angular.element(this).scope().change_img_preview()">
-								OU<br/>
-								<input type="radio" name="skip_upload" ng-model="skip_upload" value="1" ng-change="reset_default_image()"/> passer cette étape
+								<input type="file" accept="image/*" class="form-control" style="width: 100%;" id="uploadLogo" onchange="angular.element(this).scope().change_img_preview()">
+								<br>ou<br><br>
+								<input type="checkbox" name="skip_upload" ng-model="user.logo_skip" ng-change="reset_default_image()" /> passer cette étape
 							</div>
 						</div>
 						<!-- <div class="professionnal_form col-sm-6" style="display:none;">

@@ -34,7 +34,9 @@ surveyManiaControllers.controller('LoginController', ['$scope', '$http', '$windo
 }]);
 
 surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
-    $scope.user = {email: '', password: '', password2: '', firstname: '', lastname: '', adress: '', postal: '', town: '', country: '', phone: '', inviter: ''};
+    $scope.user = {type: 'particulier', email: '', password: '', password2: '', firstname: '', lastname: '',
+                   address: '', postal: '', town: '', country: '', phone: '', inviter: '',
+                   firmname: '', firmdescription: '', logo_skip: true};
     $scope.default_img ="img/default_profil.jpg";
     $scope.img ="img/default_profil.jpg";
     $scope.fetch_img = function() {
@@ -46,12 +48,27 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
             cache: true,
             success: function (data, status, error) {
               var i = 0;
-              while (data.items[i].mime === "image/gif")
-                i++;
-              $scope.img=data.items[i].link;
-              $('#logo_suggestion').show();
-              $scope.$apply();
-              console.log('success', data.items[i].mime);
+              while (data.items[i].mime === "image/gif") i++;
+
+              var xhr = new XMLHttpRequest();
+              xhr.open('GET', data.items[i].link, true);
+              xhr.responseType = 'blob';
+              xhr.onload = function(e) {
+                  if (this.status == 200) {
+                    var myBlob = this.response;
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        $scope.img = reader.result;
+                        $scope.user.logo_skip = false;
+                        $('#logo_suggestion').show();
+                        $scope.$apply();
+                        console.log($scope.img);
+                        console.log('success', data.items[i].mime);
+                    }
+                    reader.readAsDataURL(myBlob);
+                  }
+              };
+              xhr.send();
             },
             error: function (data, status, error) {
               console.log('error', data, status, error);
@@ -78,34 +95,24 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
 
     $scope.change_form = function()
     {
-        var pro = document.getElementsByClassName("professionnal_form");
-        var pro_check = document.getElementsByClassName("pro_check");
-        var part_check = document.getElementsByClassName("part_check");
-        var par = document.getElementsByClassName("particulier_form");
+        var pro = $(".professionnal_form");
+        var pro_check = $(".pro_check");
+        var part_check = $(".part_check");
+        var par = $(".particulier_form");
         if (document.getElementById('professionnal').checked) {
-            for (var i = 0; i < pro.length; i++)
-            {
-                $(pro_check[i]).find('input[type=text]:first').attr("required", true);
-                $(pro[i]).slideDown();
-            }
-            for (var i = 0; i < par.length; i++)
-            {
-                $(part_check[i]).find('input[type=text]:first').removeAttr("required");
-                $(par[i]).hide();
-            }
+            pro.find('input[type=text]:first').attr("required", true);
+            pro_check.slideDown();
+            par.find('input[type=text]:first').removeAttr("required");
+            part_check.slideUp();
+            $(".professionnal_form .link_primary").show();
         }
         else
         {
-            for (var i = 0; i < pro.length; i++)
-            {
-                $(pro_check[i]).find('input[type=text]:first').removeAttr("required");
-                $(pro[i]).hide();
-            }
-            for (var i = 0; i < par.length; i++)
-            {
-                $(part_check[i]).find('input[type=text]:first').attr("required", true);
-                $(par[i]).slideDown();
-            }
+            pro.find('input[type=text]:first').removeAttr("required");
+            pro_check.slideUp();
+            par.find('input[type=text]:first').attr("required", true);
+            part_check.slideDown();
+            $(".professionnal_form .link_primary").hide();
         }
     }
 
@@ -122,9 +129,9 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
 
         if (file.type.match(imageType)) {
             var reader = new FileReader();
-
             reader.onload = function(e) {
                 $scope.img = reader.result;
+                $scope.user.logo_skip = false;
                 $scope.$apply();
             }
             reader.readAsDataURL(file); 
@@ -145,16 +152,39 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
 
         var password = CryptoJS.SHA256($scope.user.password).toString();
         var newuser = {
+            type: $scope.user.type,
             email: $scope.user.email,
             password: password,
-            firstname: $scope.user.firstname,
-            lastname: $scope.user.lastname,
+            firstname: ($scope.user.firstname == '') ? null : $scope.user.firstname,
+            lastname: ($scope.user.lastname == '') ? null : $scope.user.lastname,
             adress: ($scope.user.address == '') ? null : $scope.user.address,
             postal: ($scope.user.postal == '') ? null : $scope.user.postal,
             town: ($scope.user.town == '') ? null : $scope.user.town,
             country: ($scope.user.country == '') ? null : $scope.user.country,
             phone: ($scope.user.phone == '') ? null : $scope.user.phone,
-            inviter: ($scope.user.inviter == '') ? null : $scope.user.inviter
+            inviter: ($scope.user.inviter == '') ? null : $scope.user.inviter,
+            firmname: ($scope.user.firmname == '') ? null : $scope.user.firmname,
+            firmdescription: ($scope.user.firmdescription == '') ? null : $scope.user.firmdescription,
+            logo_img: $scope.img,
+            logo_type: '',
+            logo_skip: $scope.user.logo_skip
+        }
+
+        if (newuser.logo_skip == false) {
+            var splits = newuser.logo_img.split(/:(.+)?/);
+            console.log(splits[0]);
+            if (splits[0] != 'data') return $scope.signupErrMess = 'Bad logo image format!';
+            splits = splits[1].split(/\/(.+)?/);
+            console.log(splits[0]);
+            if (splits[0] != 'image') return $scope.signupErrMess = 'Bad logo image format!';
+            splits = splits[1].split(/;(.+)?/);
+            console.log(splits[0]);
+            if (splits[0] != 'png' && splits[0] != 'jpeg') return $scope.signupErrMess = 'Bad logo image format!';
+            else newuser.logo_type = (splits[0] == 'png') ? 'png' : 'jpg';
+            splits = splits[1].split(/,(.+)?/);
+            console.log(splits[0]);
+            if (splits[0] != 'base64') return $scope.signupErrMess = 'Bad logo image format!';
+            newuser.logo_img = splits[1];
         }
 
         $http.post('/signup', newuser)

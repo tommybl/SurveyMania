@@ -33,11 +33,13 @@ var googleAddress = {
             }
         }
 
-        document.getElementById('sign-route').value = num + route;
-        document.getElementById('sign-postal').value = postal;
-        document.getElementById('sign-country').value = country;
-        if (locality == "") document.getElementById('sign-locality').value = sublocality;
-        else document.getElementById('sign-locality').value = locality;
+        var scope = angular.element(document.getElementById('sign-route')).scope();
+        scope.user.address = num + route;
+        scope.user.postal = postal;
+        scope.user.country = country;
+        if (locality == "") scope.user.town = sublocality;
+        else scope.user.town = locality;
+        scope.$apply();
     },
 
     geolocate: function () {
