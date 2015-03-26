@@ -2,7 +2,7 @@
 <div ng-controller="AccountController">
 	<button ng-click="logout()" class="btn btn-default">Logout</button>
 	<div id="profil_bg" class="col-md-12">
-		<div id="default_profil">
+		<div id="default_profil" ng-click="tab_hide()">
 			<img id="profil_img" src="img/default_profil.png" alt="image de profil"/>
 			<p id="profil_name"><%= user.owner_firstname %> <%= user.owner_lastname %></p>
 		</div>

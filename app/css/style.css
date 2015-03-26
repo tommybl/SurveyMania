@@ -115,6 +115,7 @@ header
 #default_profil{
     text-align: center;
     padding: 20px 0px 10px 0px;
+    cursor: pointer;
 }
 
 #profil_name{
