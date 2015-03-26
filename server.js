@@ -129,7 +129,7 @@ app
                         res.status(200).json({code: 200, error: "Conflict", message: "Email already used for an existing account"});
                     else {
                         var inviter_id = (result.rows.length && result.rows[0].user_email != req.body.email) ? result.rows[0].user_id : null;
-                        var dateNow = '\'' + moment().format("YYYY-MM-DD hh:mm:ss") + '\'';
+                        var dateNow = '\'' + moment().format("YYYY-MM-DD HH:mm:ss") + '\'';
                         var email = '\'' + req.body.email + '\'';
                         var password = '\'' + req.body.password + '\'';
                         var firstname = '\'' + req.body.firstname + '\'';
@@ -189,7 +189,7 @@ app
                     else if (result.rows.length && result.rows[0].user_email == req.body.email)
                         res.status(200).json({code: 200, error: "Conflict", message: "Email already used for an existing account"});
                     else {
-                        var dateNow = '\'' + moment().format("YYYY-MM-DD hh:mm:ss") + '\'';
+                        var dateNow = '\'' + moment().format("YYYY-MM-DD HH:mm:ss") + '\'';
                         var email = '\'' + req.body.email + '\'';
                         var password = '\'' + req.body.password + '\'';
                         var firstname = '\'' + req.body.firstname + '\'';
@@ -315,7 +315,7 @@ app
                     var owner_email = result.rows[0].owner_email;
                     var owner_firstname = result.rows[0].owner_firstname;
                     var owner_lastname = result.rows[0].owner_lastname;
-                    var dateNow = '\'' + moment().format("YYYY-MM-DD hh:mm:ss") + '\'';
+                    var dateNow = '\'' + moment().format("YYYY-MM-DD HH:mm:ss") + '\'';
                     var query = 'UPDATE surveymania.organizations SET verified = TRUE, verified_dt =' + dateNow + ' WHERE surveymania.organizations.id = ' + id;
                     client.query(query, function(err, result) {
                         done();
@@ -411,7 +411,7 @@ app
                             var invited_email = result.rows[0].invited_email;
                             var invited_firstname = result.rows[0].invited_firstname;
                             var invited_lastname = result.rows[0].invited_lastname;
-                            var dateNow = '\'' + moment().format("YYYY-MM-DD hh:mm:ss") + '\'';
+                            var dateNow = '\'' + moment().format("YYYY-MM-DD HH:mm:ss") + '\'';
                             var query = 'UPDATE surveymania.users SET verified=true, verified_dt=' + dateNow + ' WHERE id=' + userid;
                             client.query(query, function(err, result) {
                                 done();
@@ -437,7 +437,7 @@ app
                                                     if(error) console.log(error);
                                                     else console.log('Message sent: ' + info.response);
                                                 });
-                                                var dateNow = '\'' + moment().format("YYYY-MM-DD hh:mm:ss") + '\'';
+                                                var dateNow = '\'' + moment().format("YYYY-MM-DD HH:mm:ss") + '\'';
                                                 var query = 'INSERT INTO surveymania.user_achievements(user_id, achiev_id, recieved_dt) ' +
                                                             'VALUES (' + inviter_id + ', 2, ' + dateNow + ') ';
                                                 client.query(query, function(err, result) {
@@ -451,7 +451,7 @@ app
                                         if (err) console.log(err);
                                         res.json({code: 200, message: "Le compte a bien été vérifié"});
                                     });
-                                    var dateNow = '\'' + moment().format("YYYY-MM-DD hh:mm:ss") + '\'';
+                                    var dateNow = '\'' + moment().format("YYYY-MM-DD HH:mm:ss") + '\'';
                                     var query = 'INSERT INTO surveymania.user_achievements(user_id, achiev_id, recieved_dt) ' +
                                                 'VALUES (' + invited_id + ', 1, ' + dateNow + '), (' + invited_id + ', 3, ' + dateNow + '), (' + invited_id + ', 4, ' + dateNow + ')';
                                     client.query(query, function(err, result) {

@@ -246,6 +246,11 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
     };
 
     $scope.reduce = false;
+    $scope.tab_hide = function() {
+        $("#show_about").hide();
+        $("#ss-container").hide();
+        $("#account-main").show();
+    }
     $scope.tab_show = function($id)
     {
         $("#account-main").hide();
