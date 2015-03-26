@@ -19,10 +19,10 @@ var conString = "postgres://postgres:1234@localhost/SurveyMania";
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/SurveyMania');
 var mongodb = mongoose.connection;
-mongodb.on('error', function () { console.log("Error connecting to mongodb"); });
+mongodb.on('error', function () { console.log("Error connecting to mongodb"); process.exit(1);});
 var MailVerifToken = null, PwdResetToken = null;
 mongodb.once('open', function (callback) { 
-    console.log("Successfully connecting to mongodb");
+    console.log("Successfully connected to mongodb");
     var MailVerifTokenSchema = mongoose.Schema({token: String, userid: Number});
     MailVerifToken = mongoose.model('MailVerifToken', MailVerifTokenSchema);
     var PwdResetTokenSchema = mongoose.Schema({token: String, userid: Number});
@@ -93,12 +93,12 @@ app
                         organization: result.rows[0].anyuser_organization,
                         tokenCreation: new Date().getTime()
                     };
+                    console.log(profile);
                     // We are sending the profile inside the token
                     var token = jwt.sign(profile, SurveyManiasecret, { expiresInMinutes: 30*24*60 });
                     res.json({token: token, usertype: profile.usertypenumber});
                 }
                 else res.json({code: 200, error: "Unauthorized", message: "No account found with given email and password"});
-                client.end();
             });
         }
     });
@@ -115,10 +115,6 @@ app
     var inviter = null;
     var error = false;
 
-    /*console.log(req.body);
-    res.end();
-    return;*/
-
     if (req.body.type == 'particulier' && req.body.email != null && req.body.password != null && req.body.firstname != null && req.body.lastname != null) {
         pg.connect(conString, function(err, client, done) {
             if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
@@ -128,14 +124,9 @@ app
                             'SELECT getuser.email AS user_email, getuser.id AS user_id FROM surveymania.users getuser WHERE getuser.email = \'' + req.body.inviter + '\'';
                 client.query(query, function(err, result) {
                     done();
-                    if(err) {
-                        res.status(500).json({code: 500, error: "Internal server error", message: "Error running query verifying email"});
-                        client.end();
-                    }
-                    else if (result.rows.length && result.rows[0].user_email == req.body.email) {
+                    if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query verifying email"});
+                    else if (result.rows.length && result.rows[0].user_email == req.body.email)
                         res.status(200).json({code: 200, error: "Conflict", message: "Email already used for an existing account"});
-                        client.end();
-                    }
                     else {
                         var inviter_id = (result.rows.length && result.rows[0].user_email != req.body.email) ? result.rows[0].user_id : null;
                         var dateNow = '\'' + moment().format("YYYY-MM-DD hh:mm:ss") + '\'';
@@ -155,10 +146,7 @@ app
                             'RETURNING id';
                         client.query(query, function(err, result) {
                             done();
-                            if(err) {
-                                res.status(500).json({code: 500, error: "Internal server error", message: "Error running query inserting new user"});
-                                client.end();
-                            }
+                            if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query inserting new user"});
                             else {
                                 var userid = result.rows[0].id;
                                 var hash = CryptoJS.HmacMD5(userid + "" + (new Date().getTime()), SurveyManiasecret).toString();
@@ -182,7 +170,6 @@ app
                                     else console.log('Message sent: ' + info.response);
                                 });
                                 res.status(200).json({code: 200, message: "Account successfully created"});
-                                client.end();
                             }
                         });
                     }
@@ -198,12 +185,9 @@ app
                 var query = 'SELECT getuser.email AS user_email, getuser.id AS user_id FROM surveymania.users getuser WHERE getuser.email = \'' + req.body.email + '\' ';
                 client.query(query, function(err, result) {
                     done();
-                    if(err) {
-                        res.status(500).json({code: 500, error: "Internal server error", message: "Error running query verifying email"});
-                    }
-                    else if (result.rows.length && result.rows[0].user_email == req.body.email) {
+                    if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query verifying email"});
+                    else if (result.rows.length && result.rows[0].user_email == req.body.email)
                         res.status(200).json({code: 200, error: "Conflict", message: "Email already used for an existing account"});
-                    }
                     else {
                         var dateNow = '\'' + moment().format("YYYY-MM-DD hh:mm:ss") + '\'';
                         var email = '\'' + req.body.email + '\'';
@@ -220,37 +204,26 @@ app
                         var logo_img = req.body.logo_img;
                         var logo_type = req.body.logo_type;
                         var logo_skip = req.body.logo_skip;
-
                         var query = 'INSERT INTO surveymania.organizations(name, description, adress, postal, town, country, telephone, logo_path, url_add_discount, url_verify_discount, url_remove_discount, current_points, verified) ' +
                             'VALUES (' + firmname + ', ' + firmdescription + ', ' + adress + ', ' + postal + ', ' + town + ', ' + country + ', ' + telephone + ', \'img/default_profil.jpg\', \'url\', \'url\', \'url\', 50, false) ' +
                             'RETURNING id';
                         client.query(query, function(err, result) {
                             done();
-                            if(err) {
-                                console.log(err);
-                                res.status(500).json({code: 500, error: "Internal server error", message: "Error running query inserting new organization"});
-                            }
+                            if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query inserting new organization"});
                             else {
                                 var orgaid = result.rows[0].id;
                                 if (logo_skip == false) {
                                     var img_path = "img/organizations/" + orgaid + "/logo." + logo_type;
                                     mkdirp('app/img/organizations/' + orgaid, function (err) {
-                                        if (err) {
-                                            console.log(err)
-                                        }
+                                        if (err) console.log(err)
                                         else {
                                             fs.writeFile("app/" + img_path, logo_img, 'base64', function(err) {
-                                                if (err) {
-                                                    console.log(err);
-                                                }
+                                                if (err) console.log(err);
                                                 else {
                                                     var query = 'UPDATE surveymania.organizations SET logo_path = \'' + img_path + '\' WHERE surveymania.organizations.id = ' + orgaid;
                                                     client.query(query, function(err, result) {
                                                         done();
-                                                        if (err) {
-                                                            console.log("err5");
-                                                            console.log(err);
-                                                        }
+                                                        if (err) console.log(err);
                                                     });  
                                                 }
                                             });       
@@ -262,17 +235,13 @@ app
                                     'RETURNING id';
                                 client.query(query, function(err, result) {
                                     done();
-                                    if(err) {
-                                        res.status(500).json({code: 500, error: "Internal server error", message: "Error running query inserting new user"});
-                                    }
+                                    if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query inserting new user"});
                                     else {
                                         var userid = result.rows[0].id;
                                         var hash = CryptoJS.HmacMD5(userid + "" + (new Date().getTime()), SurveyManiasecret).toString();
                                         var verifyURL = SurveyManiaURL + '#/accounts/verify/' + hash;
                                         new MailVerifToken({token: hash, userid: userid}).save(function (err, obj) {
-                                            if (err) {
-                                                console.log(err);
-                                            }
+                                            if (err) console.log(err);
                                         });
                                         var mailOptions = {
                                             from: 'webmaster@surveymania.com',
@@ -288,9 +257,7 @@ app
                                                   'SurveyMania Team'
                                         };
                                         transporter.sendMail(mailOptions, function(error, info){
-                                            if (error) {
-                                                console.log(error);
-                                            }
+                                            if (error) console.log(error);
                                             else console.log('Message sent: ' + info.response);
                                         });
                                         res.status(200).json({code: 200, message: "Account successfully created"});
@@ -315,7 +282,6 @@ app
     if(req.user.usertypenumber != 2) res.redirect('/401-unauthorized');
     else
     {
-        console.log(req.user);
         var pro_accounts = undefined;
         pg.connect(conString, function(err, client, done) {
             if (err) console.log(err);
@@ -325,10 +291,7 @@ app
             client.query(query, function(err, result) {
                 done();
                 if (err) console.log(err);
-                else if (result.rows.length) {
-                    pro_accounts = result.rows; 
-                }
-                client.end();
+                else if (result.rows.length) pro_accounts = result.rows;
                 res.setHeader("Content-Type", "text/html");
                 res.render('partials/validate-pro-account', {user: req.user, accounts: pro_accounts});
             });
@@ -347,10 +310,7 @@ app
             var query = 'SELECT owner.email AS owner_email, owner.name AS owner_firstname, owner.lastname AS owner_lastname, orga.id FROM surveymania.organizations orga INNER JOIN surveymania.users owner ON orga.id = owner.user_organization WHERE owner.user_type = 3 AND orga.id = ' + id;
             client.query(query, function(err, result) {
                 done();
-                if(err) {
-                    client.end();
-                    res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
-                }
+                if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                 else if (result.rows.length) {
                     var owner_email = result.rows[0].owner_email;
                     var owner_firstname = result.rows[0].owner_firstname;
@@ -376,20 +336,15 @@ app
                             });
                             res.json({code: 200, message: "Professional account successfully accepted."});
                         }
-                        client.end();
                     });
                 }
-                else {
-                    client.end();
-                    res.json({code: 200, error: "Organization not found", message: "Action couldn't perform and professional couldn't be accepted."});
-                }
+                else res.json({code: 200, error: "Organization not found", message: "Action couldn't perform and professional couldn't be accepted."});
             });
         }
     });
 })
 
 .get('/app/account', function (req, res) {
-    console.log(req.user);
     var achvmnts = '';
     var user = req.user;
     pg.connect(conString, function(err, client, done) {
@@ -397,17 +352,15 @@ app
         var query = 'SELECT owner.email AS owner_email, owner.name AS owner_firstname, owner.lastname AS owner_lastname, owner.adress AS owner_adress, owner.postal AS owner_postal, owner.town AS owner_town, owner.country AS owner_country, owner.telephone AS owner_tel, owner.user_type AS owner_type, owner.points AS owner_points ' +
                     'FROM surveymania.users owner WHERE owner.id = ' + req.user.id;
         client.query(query, function(err, result) {
-            if (err) console.log(err);
             done();
-            if (result.rows.length) {
+            if (err) console.log(err);
+            else if (result.rows.length) {
                 user = result.rows[0];
                 var query = 'SELECT * FROM surveymania.user_achievements INNER JOIN surveymania.achievements ON surveymania.user_achievements.achiev_id = surveymania.achievements.id WHERE surveymania.user_achievements.user_id = ' + req.user.id + ' ORDER BY surveymania.user_achievements.id DESC';
                 client.query(query, function(err, result) {
-                    if (err) console.log(err);
                     done();
-                    if (result.rows.length) {
-                        achvmnts = result.rows;
-                    }
+                    if (err) console.log(err);
+                    else if (result.rows.length) achvmnts = result.rows;
                     res.setHeader("Content-Type", "text/html");
                     res.render('partials/account', {user: user, achievements: achvmnts});
                 });
@@ -438,13 +391,8 @@ app
     var password = req.body.password;
     var userid = null;
     MailVerifToken.find({token: token}, function (err, tokens) {
-        if (err) {
-            console.error(err);
-            res.status(500).json({code: 500, error: "Internal server error", message: "Une erreur est survenue lors de la recherche du token de vérification d'email"});
-        }
-        else if (!tokens.length) {
-            res.json({code: 200, error: "Invalid verification code", message: "Le code de vérification est invalide, votre compte n'a pas pu être vérifié"});
-        }
+        if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Une erreur est survenue lors de la recherche du token de vérification d'email"});
+        else if (!tokens.length) res.json({code: 200, error: "Invalid verification code", message: "Le code de vérification est invalide, votre compte n'a pas pu être vérifié"});
         else {
             userid = tokens[0].userid;
             pg.connect(conString, function(err, client, done) {
@@ -454,9 +402,7 @@ app
                         'FROM surveymania.users invited LEFT JOIN surveymania.users inviter ON invited.inviter_id = inviter.id WHERE invited.id = ' + userid + ' AND invited.password = \'' + password + '\'';
                     client.query(query, function(err, result) {
                         done();
-                        if(err) {
-                            res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
-                        }
+                        if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                         else if (result.rows.length && result.rows[0].invited_verified == false) {
                             var inviter_id = result.rows[0].inviter_id;
                             var invited_id = result.rows[0].invited_id;
@@ -469,9 +415,7 @@ app
                             var query = 'UPDATE surveymania.users SET verified=true, verified_dt=' + dateNow + ' WHERE id=' + userid;
                             client.query(query, function(err, result) {
                                 done();
-                                if(err) {
-                                    res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
-                                }
+                                if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                                 else {
                                     if (inviter_id != null) {
                                         var newpoints = inviter_points + 500;
@@ -517,12 +461,8 @@ app
                                 }
                             });
                         }
-                        else if (result.rows.length) {
-                            res.json({code: 200, error: "Already verified", message: "Votre compte a déjà été vérifié, vous pouvez donc y accéder en vous connectant"});
-                        }
-                        else {
-                            res.json({code: 200, error: "Unauthorized", message: "Votre mot de passe ne correspond pas au compte associé à ce token, il n'a donc pas pu être vérifié"});
-                        }
+                        else if (result.rows.length) res.json({code: 200, error: "Already verified", message: "Votre compte a déjà été vérifié, vous pouvez donc y accéder en vous connectant"});
+                        else res.json({code: 200, error: "Unauthorized", message: "Votre mot de passe ne correspond pas au compte associé à ce token, il n'a donc pas pu être vérifié"});
                     });
                 }
             });
@@ -562,21 +502,12 @@ app
                               'SurveyMania Team'
                     };
                     transporter.sendMail(mailOptions, function(error, info){
-                        if(error) {
-                            console.log(error);
-                            res.status(500).json({code: 500, error: "Internal server error", message: "Une erreur est survenue lors de l'envoie du mail avec votre nouveau code de vérification"});
-                        }
-                        else {
-                            console.log('Message sent: ' + info.response);
-                            res.json({code:200, message: "Le mail contenant votre nouveau code de vérification a bien été envoyé. Veuillez suivre ses instructions afin de finaliser votre inscription"});
-                        }
+                        if(error) res.status(500).json({code: 500, error: "Internal server error", message: "Une erreur est survenue lors de l'envoie du mail avec votre nouveau code de vérification"});
+                        else res.json({code:200, message: "Le mail contenant votre nouveau code de vérification a bien été envoyé. Veuillez suivre ses instructions afin de finaliser votre inscription"});
                     });
                 }
-                else if (result.rows.length) {
-                    res.json({code: 200, error: "Already verified", message: "Votre compte a déjà été vérifié, vous pouvez donc y accéder en vous connectant"});
-                }
+                else if (result.rows.length) res.json({code: 200, error: "Already verified", message: "Votre compte a déjà été vérifié, vous pouvez donc y accéder en vous connectant"});
                 else res.json({code: 200, error: "Unauthorized", message: "Aucun compte associé à cet email n'a été trouvé"});
-                client.end();
             });
         }
     });
@@ -605,13 +536,8 @@ app
     var password = '\'' + req.body.password + '\'';
     var userid = null;
     PwdResetToken.find({token: token}, function (err, tokens) {
-        if (err) {
-            console.error(err);
-            res.status(500).json({code: 500, error: "Internal server error", message: "Une erreur est survenue lors de la recherche du token de vérification d'email"});
-        }
-        else if (!tokens.length) {
-            res.json({code: 200, error: "Invalid reinitialization code", message: "Le code de réinitialisation de mot de passe est invalide, le mot de passe n'a pas pu être modifié"});
-        }
+        if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Une erreur est survenue lors de la recherche du token de vérification d'email"});
+        else if (!tokens.length) res.json({code: 200, error: "Invalid reinitialization code", message: "Le code de réinitialisation de mot de passe est invalide, le mot de passe n'a pas pu être modifié"});
         else {
             userid = tokens[0].userid;
             pg.connect(conString, function(err, client, done) {
@@ -620,10 +546,7 @@ app
                     var query = 'SELECT surveymania.users.id AS userid, * FROM surveymania.users WHERE surveymania.users.id = ' + userid + ' AND surveymania.users.email = \'' + email + '\'';
                     client.query(query, function(err, result) {
                         done();
-                        if(err) {
-                            client.end();
-                            res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
-                        }
+                        if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                         else if (result.rows.length) {
                             var query = 'UPDATE surveymania.users SET password=' + password + ' WHERE id=' + userid;
                             client.query(query, function(err, result) {
@@ -635,13 +558,9 @@ app
                                         res.json({code: 200, message: "Le mot de passe a bien été modifié"});
                                     });
                                 }
-                                client.end();
                             });
                         }
-                        else {
-                            client.end();
-                            res.json({code: 200, error: "Unauthorized", message: "Votre email ne correspond pas au compte associé à ce token, le mot de passe n'a pas pu être modifié"});
-                        }
+                        else res.json({code: 200, error: "Unauthorized", message: "Votre email ne correspond pas au compte associé à ce token, le mot de passe n'a pas pu être modifié"});
                     });
                 }
             });
@@ -683,18 +602,11 @@ app
                               'SurveyMania Team'
                     };
                     transporter.sendMail(mailOptions, function(error, info){
-                        if(error) {
-                            console.log(error);
-                            res.status(500).json({code: 500, error: "Internal server error", message: "Une erreur est survenue lors de l'envoie du mail avec votre nouveau code de réinitialisation"});
-                        }
-                        else {
-                            console.log('Message sent: ' + info.response);
-                            res.json({code:200, message: "Le mail contenant votre nouveau code de réinitialisation de mot de passe a bien été envoyé."});
-                        }
+                        if(error) res.status(500).json({code: 500, error: "Internal server error", message: "Une erreur est survenue lors de l'envoie du mail avec votre nouveau code de réinitialisation"});
+                        else res.json({code:200, message: "Le mail contenant votre nouveau code de réinitialisation de mot de passe a bien été envoyé."});
                     });
                 }
                 else res.json({code: 200, error: "Unauthorized", message: "Aucun compte associé à cet email n'a été trouvé"});
-                client.end();
             });
         }
     });
