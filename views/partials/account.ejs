@@ -41,8 +41,19 @@
 					<% } else if (user.owner_type == 4) { %> Admin Professionel
 					<% } %>
 				</p>
-				<p>Adresse: <br/><%= user.owner_adress %><br/><%= user.owner_postal %> <%= user.owner_town %><br/><%= user.owner_country %></p>
-				<p>E-mail: <%= user.owner_email %><br/>Tel: <%= user.owner_tel %></p>
+				<p>Adresse:<br/>
+					<span class="edit_link" ng-hide="addressEdit" ng-click="editAdress(true)" ng-cloak>{{owner_adress || "<%=user.owner_adress%>"}}</span>
+					<input class="user_info_edit_input" ng-show="addressEdit" type="text" ng-model="owner_adress" ng-init="owner_adress = owner_adress || '<%=user.owner_adress%>'"/>
+					<button ng-show="addressEdit" type="button" class="btn btn-default button-validate" ng-click="editAdress(false)"><i class="fa fa-check"></i></button><br/>
+
+
+					<%= user.owner_postal %> <%= user.owner_town %><br/><%= user.owner_country %>
+				</p>
+				<p>E-mail:
+					<span class="edit_link" ng-hide="emailEdit" ng-click="editEmail(true)" ng-cloak>{{owner_email || "<%= user.owner_email %>"}}</span>
+					<input class="user_info_edit_input" ng-show="emailEdit" type="text" ng-model="owner_email" ng-init="owner_email = owner_email || '<%=user.owner_email%>'"/>
+					<button ng-show="emailEdit" type="button" class="btn btn-default button-validate" ng-click="editEmail(false)"><i class="fa fa-check"></i></button><br/>
+					<br/>Tel: <%= user.owner_tel %></p>
 				<p>Points: <%= user.owner_points %></p>
 			</div>
 		</div>

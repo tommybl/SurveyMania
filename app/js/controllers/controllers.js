@@ -266,6 +266,11 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
         $("#ss-container").hide();
         $("#"+$id+"").fadeIn();
     }
+    
+    $scope.addressEdit=false;
+    $scope.emailEdit=false;
+    $scope.editAdress=function($bool){console.log($scope.owner_adress);$scope.addressEdit=$bool;}
+    $scope.editEmail=function($bool){$scope.emailEdit=$bool;}
 }]);
 
 surveyManiaControllers.controller('MailVerifyController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
