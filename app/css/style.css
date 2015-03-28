@@ -217,3 +217,11 @@ header
   -webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
   transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
 }
+
+.edit_link:hover{
+    cursor: pointer;
+}
+
+.edit_link:hover + .showEdit{
+   display: inline-block;   
+}

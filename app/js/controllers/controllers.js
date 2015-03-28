@@ -240,6 +240,20 @@ surveyManiaControllers.controller('ValidateProAccount', ['$scope', '$http', '$wi
 }]);
 
 surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
+
+    $http.post('/app/getUser/')
+        .success(function (data, status, headers, config) {
+            console.log(data);
+            if (data.error == undefined) {
+                $scope.user = data.user;
+            }
+            else $scope.verifErrMess = data.error + '. ' + data.message;
+        })
+        .error(function (data, status, headers, config) {
+            $scope.verifErrMess = data.error + '. ' + data.message;
+        });
+
+
     $scope.logout = function () {
         delete $window.localStorage.token;
         $location.path( "/home");
@@ -269,8 +283,9 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
     
     $scope.addressEdit=false;
     $scope.emailEdit=false;
-    $scope.editAdress=function($bool){console.log($scope.owner_adress);$scope.addressEdit=$bool;}
-    $scope.editEmail=function($bool){$scope.emailEdit=$bool;}
+    $scope.editProfile= false;
+    $scope.editAdress=function($bool){$scope.editProfile=true;$scope.addressEdit=$bool;}
+    $scope.editEmail=function($bool){$scope.editProfile=true;$scope.emailEdit=$bool;}
 }]);
 
 surveyManiaControllers.controller('MailVerifyController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {

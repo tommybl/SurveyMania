@@ -35,26 +35,28 @@
 			<div class="col-md-6 col-centered">
 				<h1>User informations</h1>
 				<p>Type de compte: 
-					<% if (user.owner_type == 1) { %> Particulier
-					<% } else if (user.owner_type == 2) { %> Admin
-					<% } else if (user.owner_type == 3) { %> Professionel
-					<% } else if (user.owner_type == 4) { %> Admin Professionel
-					<% } %>
+					<span ng-if="user.owner_type == 1">Particulier</span>
+					<span ng-if="user.owner_type == 2">Administrateur</span>
+					<span ng-if="user.owner_type == 3">Professionnel</span>
+					<span ng-if="user.owner_type == 4">Administrateur professionnel</span>
 				</p>
 				<p>Adresse:<br/>
-					<span class="edit_link" ng-hide="addressEdit" ng-click="editAdress(true)" ng-cloak>{{owner_adress || "<%=user.owner_adress%>"}}</span>
-					<input class="user_info_edit_input" ng-show="addressEdit" type="text" ng-model="owner_adress" ng-init="owner_adress = owner_adress || '<%=user.owner_adress%>'"/>
+					<span class="edit_link" ng-hide="addressEdit" ng-click="editAdress(true)" ng-bind="user.owner_adress"></span>
+					<input class="user_info_edit_input" ng-show="addressEdit" type="text" ng-model="user.owner_adress"/>
 					<button ng-show="addressEdit" type="button" class="btn btn-default button-validate" ng-click="editAdress(false)"><i class="fa fa-check"></i></button><br/>
 
 
-					<%= user.owner_postal %> <%= user.owner_town %><br/><%= user.owner_country %>
+					{{user.owner_postal}} {{user.owner_town}}<br/>{{user.owner_country}}
 				</p>
 				<p>E-mail:
-					<span class="edit_link" ng-hide="emailEdit" ng-click="editEmail(true)" ng-cloak>{{owner_email || "<%= user.owner_email %>"}}</span>
-					<input class="user_info_edit_input" ng-show="emailEdit" type="text" ng-model="owner_email" ng-init="owner_email = owner_email || '<%=user.owner_email%>'"/>
+					<span class="edit_link" ng-hide="emailEdit" ng-click="editEmail(true)" ng-bind="user.owner_email">
+						<button style="display:none;" type="button" class="btn btn-default button-validate showEdit" ng-click="editEmail(true)"><i class="fafa-pencil-square-o"></i></button>
+					</span>
+					<input class="user_info_edit_input" ng-show="emailEdit" type="text" ng-model="user.owner_email"/>
 					<button ng-show="emailEdit" type="button" class="btn btn-default button-validate" ng-click="editEmail(false)"><i class="fa fa-check"></i></button><br/>
-					<br/>Tel: <%= user.owner_tel %></p>
-				<p>Points: <%= user.owner_points %></p>
+					<br/>Tel: {{user.owner_tel}}</p>
+				<p>Points: {{user.owner_points}}</p>
+				<input ng-show="editProfile" type="submit" value="Enregistrer les modifications" class="btn btn-primary" />
 			</div>
 		</div>
 	</div>
