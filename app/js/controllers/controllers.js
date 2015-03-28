@@ -241,10 +241,12 @@ surveyManiaControllers.controller('ValidateProAccount', ['$scope', '$http', '$wi
 
 surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
 
+    var oldUser;
     $http.post('/app/getUser/')
         .success(function (data, status, headers, config) {
             console.log(data);
             if (data.error == undefined) {
+                oldUser = data.user;
                 $scope.user = data.user;
             }
             else $scope.verifErrMess = data.error + '. ' + data.message;
@@ -253,6 +255,20 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
             $scope.verifErrMess = data.error + '. ' + data.message;
         });
 
+    $scope.submitProfileChange = function()
+    {
+         $http.post('/app/profileChange/', {newuser:$scope.user, olduser:oldUser})
+        .success(function (data, status, headers, config) {
+            console.log(data);
+            if (data.error == undefined) {
+                console.log("nickel");
+            }
+            else $scope.verifErrMess = data.error + '. ' + data.message;
+        })
+        .error(function (data, status, headers, config) {
+            $scope.verifErrMess = data.error + '. ' + data.message;
+        });
+    }
 
     $scope.logout = function () {
         delete $window.localStorage.token;

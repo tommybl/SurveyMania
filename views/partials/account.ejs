@@ -56,7 +56,7 @@
 					<button ng-show="emailEdit" type="button" class="btn btn-default button-validate" ng-click="editEmail(false)"><i class="fa fa-check"></i></button><br/>
 					<br/>Tel: {{user.owner_tel}}</p>
 				<p>Points: {{user.owner_points}}</p>
-				<input ng-show="editProfile" type="submit" value="Enregistrer les modifications" class="btn btn-primary" />
+				<input ng-show="editProfile" type="submit" value="Enregistrer les modifications" class="btn btn-primary" ng-click="submitProfileChange()"/>
 			</div>
 		</div>
 	</div>
