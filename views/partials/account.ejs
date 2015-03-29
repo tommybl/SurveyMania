@@ -48,6 +48,28 @@
 
 					{{user.owner_postal}} {{user.owner_town}}<br/>{{user.owner_country}}
 				</p>
+				<div>
+					<div class="col-sm-6">
+						<label>Indiquez votre adresse ici</label>
+						<input type="text" id="googleAddressAccount-autocomplete" placeholder="" class="form-control" onFocus="googleAddress.geolocate()" />
+					</div>
+					<div class="professionnal_form col-sm-6"> 
+						<label>Route</label> <span class="link_primary" hidden >*</span>
+						<input type="text" placeholder="" id="googleAddress2sign-route" class="form-control" ng-model="user.owner_adress" readonly />
+					</div>
+					<div class="professionnal_form col-sm-6">
+						<label>Code postal</label> <span class="link_primary" hidden >*</span>
+						<input type="text" placeholder="" id="sign-postal" class="form-control" ng-model="user.owner_postal" readonly />
+					</div>
+					<div class="professionnal_form col-sm-3">
+						<label>Ville</label> <span class="link_primary" hidden >*</span>
+						<input type="text" placeholder="" id="sign-locality" class="form-control" ng-model="user.owner_town" readonly />
+					</div>
+					<div class="professionnal_form col-sm-3">
+						<label>Pays</label> <span class="link_primary" hidden >*</span>
+						<input type="text" placeholder="" id="sign-country" class="form-control" ng-model="user.owner_country" readonly />
+					</div>
+				</div>
 				<p>E-mail:
 					<span class="edit_link" ng-hide="emailEdit" ng-click="editEmail(true)" ng-bind="user.owner_email">
 						<button style="display:none;" type="button" class="btn btn-default button-validate showEdit" ng-click="editEmail(true)"><i class="fafa-pencil-square-o"></i></button>

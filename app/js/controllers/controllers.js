@@ -42,7 +42,6 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
                    firmname: '', firmdescription: '', logo_skip: true};
     $scope.default_img ="img/default_profil.jpg";
     $scope.img ="img/default_profil.jpg";
-
     $scope.fetch_img = function() {
         $http.get('https://www.googleapis.com/customsearch/v1?key=AIzaSyBaiPSlrA4cVQKAv-RlRwo1UgkkVpOS67U&cx=004343761578996942245:kcfk8xi6kqk&q='+$scope.user.firmname+'+logo&searchType=image&fileType:jpg,png&imgSize=small&alt=json', {cache: true, responseType: "json"})
         .success(function (data, status, headers, config) {
@@ -209,7 +208,8 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
     };
 
     // IMPORTANT
-    googleAddress.initialize();
+    if ($location.$$path != "/account")
+        googleInitialize();
 }]);
 
 surveyManiaControllers.controller('ValidateProAccount', ['$scope', '$http', '$window', function($scope, $http, $window) {
@@ -321,6 +321,8 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
     $scope.confirmpwd_check = function(){$scope.isValidConfirmPwd = !($scope.newPwd == $scope.newPwdConfirm);}
     $scope.email_check = function(){$scope.isValidEmail = !(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test($scope.user.owner_email));}
     $scope.phoneNumber_check = function(){$scope.isValidPhoneNumber = !(/^((\+|00)33\s?|0)[1-9](\s?\d{2}){4}$/.test($scope.user.owner_tel));}
+
+    googleInitialize();
 }]);
 
 surveyManiaControllers.controller('MailVerifyController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
