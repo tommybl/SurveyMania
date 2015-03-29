@@ -299,9 +299,28 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
     
     $scope.addressEdit=false;
     $scope.emailEdit=false;
-    $scope.editProfile= false;
+    $scope.editProfile=false;
+    $scope.phoneEdit=false;
+    $scope.isValidOldPwd=false;
+    $scope.isValidPwd=false;
+    $scope.isValidConfirmPwd=false;
+    $scope.isValidPhoneNumber = false;
+    $scope.isValidEmail = false;
     $scope.editAdress=function($bool){$scope.editProfile=true;$scope.addressEdit=$bool;}
     $scope.editEmail=function($bool){$scope.editProfile=true;$scope.emailEdit=$bool;}
+    $scope.editPhone=function($bool){$scope.editProfile=true;$scope.phoneEdit=$bool;}
+
+    $scope.displayChangePassword=function(){$("#changePassword").toggle();}
+
+    $scope.oldPasswordCompare=function(){
+        $scope.editProfile=true;
+        var password = CryptoJS.SHA256($scope.oldpwd).toString();
+        $scope.isValidOldPwd = !(password == $scope.user.owner_password);
+    }
+    $scope.pwd_check = function(){$scope.isValidPwd = !(/^(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/.test($scope.newPwd));} 
+    $scope.confirmpwd_check = function(){$scope.isValidConfirmPwd = !($scope.newPwd == $scope.newPwdConfirm);}
+    $scope.email_check = function(){$scope.isValidEmail = !(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test($scope.user.owner_email));}
+    $scope.phoneNumber_check = function(){$scope.isValidPhoneNumber = !(/^((\+|00)33\s?|0)[1-9](\s?\d{2}){4}$/.test($scope.user.owner_tel));}
 }]);
 
 surveyManiaControllers.controller('MailVerifyController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {

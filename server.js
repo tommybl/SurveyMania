@@ -347,7 +347,7 @@ app
 .post('/app/getUser', function (req, res) {
         pg.connect(conString, function(err, client, done) {
         if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
-        var query = 'SELECT owner.email AS owner_email, owner.name AS owner_firstname, owner.lastname AS owner_lastname, owner.adress AS owner_adress, owner.postal AS owner_postal, owner.town AS owner_town, owner.country AS owner_country, owner.telephone AS owner_tel, owner.user_type AS owner_type, owner.points AS owner_points ' +
+        var query = 'SELECT owner.email AS owner_email, owner.password AS owner_password, owner.name AS owner_firstname, owner.lastname AS owner_lastname, owner.adress AS owner_adress, owner.postal AS owner_postal, owner.town AS owner_town, owner.country AS owner_country, owner.telephone AS owner_tel, owner.user_type AS owner_type, owner.points AS owner_points ' +
                     'FROM surveymania.users owner WHERE owner.id = ' + req.user.id;
         client.query(query, function(err, result) {
             done();

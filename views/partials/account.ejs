@@ -52,10 +52,38 @@
 					<span class="edit_link" ng-hide="emailEdit" ng-click="editEmail(true)" ng-bind="user.owner_email">
 						<button style="display:none;" type="button" class="btn btn-default button-validate showEdit" ng-click="editEmail(true)"><i class="fafa-pencil-square-o"></i></button>
 					</span>
-					<input class="user_info_edit_input" ng-show="emailEdit" type="text" ng-model="user.owner_email"/>
+					<input class="user_info_edit_input" ng-show="emailEdit" type="text" ng-model="user.owner_email" ng-change="email_check()" required/>
 					<button ng-show="emailEdit" type="button" class="btn btn-default button-validate" ng-click="editEmail(false)"><i class="fa fa-check"></i></button><br/>
-					<br/>Tel: {{user.owner_tel}}</p>
+					<span class="error" ng-show="isValidEmail">Le mail indiqué est invalide</span>
+					<br/>
+
+					Tel:
+					<span class="edit_link" ng-hide="phoneEdit" ng-click="editPhone(true)" ng-bind="user.owner_tel">
+						<button style="display:none;" type="button" class="btn btn-default button-validate showEdit" ng-click="editPhone(true)"><i class="fafa-pencil-square-o"></i></button>
+					</span>
+					<input class="user_info_edit_input" ng-show="phoneEdit" type="text" ng-model="user.owner_tel" ng-change="phoneNumber_check()"/>
+					<button ng-show="phoneEdit" type="button" class="btn btn-default button-validate" ng-click="editPhone(false)"><i class="fa fa-check"></i></button><br/>
+					<span class="error" ng-show="isValidPhoneNumber">Le numéro doit être composé de 10 chiffres ou doit commencer par +33</span>
+					</p>
 				<p>Points: {{user.owner_points}}</p>
+				<span id="newPassWord" ng-click="displayChangePassword()">Changer le mot de passe</span>
+				<div id="changePassword" style="display:none;">
+					<div>
+						<label>Veuillez taper votre mot de passe actuel</label> <span class="link_primary">*</span>
+						<input type="password" class="form-control" ng-model="oldpwd" ng-blur="oldPasswordCompare()" required/>
+						<span class="error" style="position:relative !important;" ng-show="isValidOldPwd">Le mot de passe ne correspond pas à votre mot de passe actuel</span>
+					</div>
+					<div>
+						<label>Tapez votre nouveau mot de passe</label> <span class="link_primary">*</span>
+						<input type="password" class="form-control" ng-model="newPwd" ng-change="pwd_check()" required/>
+						<span class="error" style="position:relative !important;" ng-show="isValidPwd">Votre mot de passe doit contenir au moins une lettre, un chiffre, un caractère spécial et doit excéder 6 caractères</span>
+					</div>
+					<div>
+						<label>Confirmez le mot de passe</label> <span class="link_primary">*</span>
+						<input type="password" class="form-control" ng-model="newPwdConfirm" ng-change="confirmpwd_check()" required/>
+						<span class="error" style="position:relative !important;" ng-show="isValidConfirmPwd">Le mots de passe de sont pas identiques</span>
+					</div>
+				</div>
 				<input ng-show="editProfile" type="submit" value="Enregistrer les modifications" class="btn btn-primary" ng-click="submitProfileChange()"/>
 			</div>
 		</div>
