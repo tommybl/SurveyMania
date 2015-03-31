@@ -1,3 +1,4 @@
+SET SCHEMA 'surveymania';
 
 INSERT INTO user_types VALUES (1, 'user');
 INSERT INTO user_types VALUES (2, 'admin');
