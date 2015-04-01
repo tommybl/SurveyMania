@@ -1397,10 +1397,10 @@ qrcode.decode = function(d) {
                 qrcode.result = qrcode.process(h)
             } catch (m) {
                 console.log(m);
-                qrcode.result = "error decoding QR Code test test test"
+                qrcode.result = "error decoding QR Code";
             }
             if (qrcode.callback != null) {
-                qrcode.callback(qrcode.result)
+                qrcode.callback(qrcode.result);
             }
         };
         c.src = d

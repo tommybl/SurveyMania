@@ -1,11 +1,7 @@
-'use strict';
-
 var timeBtwScans = 3000;
 var gCtx = null;
 var gCanvas = null;
 var gUM = false;
-var canvasWidth = 800;
-var canvasHeight = 600;
 var resultField = document.getElementById("resultField");
 var webcam = document.getElementById('webcam');
 var sourceSelect = document.getElementById('videoSource');
@@ -21,7 +17,7 @@ function gotSources(sourceInfos) {
             sourceSelect.appendChild(option);
         }
     }
-    start();
+    useWebcam();
 }
 
 function isCanvasSupported(){
@@ -43,12 +39,12 @@ function handleFiles(f) {
     }
 }
 
-function initCanvas() {
-    gCanvas = document.getElementById("qr-canvas");
-    gCanvas.width = canvasWidth;
-    gCanvas.height = canvasHeight;
+function initCanvas(can, w, h) {
+    gCanvas = document.getElementById(can);
+    gCanvas.width = w;
+    gCanvas.height = h;
     gCtx = gCanvas.getContext("2d");
-    gCtx.clearRect(0, 0, canvasWidth, canvasHeight);
+    gCtx.clearRect(0, 0, w, h);
 }
 
 function captureToCanvas() {
@@ -84,21 +80,20 @@ function success(stream) {
     webcam.play();
 
     gUM = true;
+    initCanvas("qr-canvas", 800, 600);
     setTimeout(captureToCanvas, timeBtwScans);
 }
         
-function error(error) {
+function useInputFile(reason) {
     gUM = false;
-    // code here for input file
-    resultField.value = "A pas de camera grOoOs";
+    initCanvas("out-canvas", 399, 300);
     return;
 }
 
-function start() {
-    if(isCanvasSupported() && window.File && window.FileReader && sourceSelect.length > 0)
+function useWebcam() {
+    if(window.File && window.FileReader && sourceSelect.length > 0)
     {
-        sourceSelect.onchange = start;
-        initCanvas();
+        sourceSelect.onchange = useWebcam;
         qrcode.callback = read;
         if (!!window.stream) {
             webcam.src = null;
@@ -112,23 +107,31 @@ function start() {
           }]
         }
         };
-        navigator.getUserMedia(constraints, success, error);
+        navigator.getUserMedia(constraints, success, useInputFile);
     }
     else
     {
-        error(null);
+        useInputFile(null);
     }
 }
 
 function qrcodeInit() {
-    if (typeof MediaStreamTrack === 'undefined' || typeof MediaStreamTrack.getSources === 'undefined') {
-        error(null);
+    if (isCanvasSupported()) {
+        if (typeof MediaStreamTrack === 'undefined' || typeof MediaStreamTrack.getSources === 'undefined') {
+            useInputFile(null);
+        } else {
+            MediaStreamTrack.getSources(gotSources);
+        }
     } else {
-        MediaStreamTrack.getSources(gotSources);
+        error();
     }
 }
 
 function qrcodeStop() {
+    // Code here
+}
+
+function error() {
     // Code here
 }
 

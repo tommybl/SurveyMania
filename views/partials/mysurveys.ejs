@@ -4,13 +4,17 @@
 
 <div ng-controller="MySurveysController">
 	<h1>Mes sondages</h1>
-    <video id="webcam" autoplay style="border: solid black 1px"></video>
-    <canvas id="qr-canvas" style="display: none"></canvas>
-    <input type="text" placeholder="" id="resultField" class="form-control" ng-model="qrcode_result" ng-click="update()" readonly />
-    <input type="text" placeholder="" class="form-control" ng-model="test" />
-
   <div class="select">
     <label>Video source: </label><select id="videoSource"></select>
+  </div>
+  <video id="webcam" autoplay style="border: solid black 1px"></video>
+  <canvas id="qr-canvas" style="display: none"></canvas>
+  <input type="text" placeholder="" id="resultField" class="form-control" ng-model="qrcode_result" ng-click="update()" readonly />
+  <input type="text" placeholder="" class="form-control" ng-model="test" />
+
+  <div id="qrfile">
+    <canvas id="out-canvas" width="50" height="50" style="border: solid black 1px"></canvas><br><br>
+    <input type="file" onchange="handleFiles(this.files)" accept="image/*" capture/>
   </div>
 </div>
 
