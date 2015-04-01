@@ -415,5 +415,10 @@ surveyManiaControllers.controller('PwdResetController', ['$scope', '$http', '$wi
 }]);
 
 surveyManiaControllers.controller('ScannerController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
-
+    $scope.qrcode_result = null;
+    $scope.test = 0;
+    
+    $scope.update = function () {
+        $scope.test += 1;
+    };
 }]);

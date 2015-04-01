@@ -48,8 +48,10 @@ function captureToCanvas() {
 
 function read(a) {
     console.log(a);
-    document.getElementById("result").innerHTML = "<a target='_blank' href='" + a + "'>" + a + "</a>";
-    alert(a);
+    result = document.getElementById("result");
+    result.value = a;
+    result.click();
+    setTimeout(captureToCanvas, 5000);
 }	
 
 function isCanvasSupported(){
