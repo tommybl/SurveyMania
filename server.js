@@ -675,6 +675,6 @@ pem.createCertificate({days:365, selfSigned:true}, function (err, keys) {
     console.log('HTTPS Server running at https://localhost:4300/');
 });*/
 
-app.listen(1337, 'localhost');
+app.listen(1337);
 
 console.log('HTTP Server running at http://localhost:1337/');
