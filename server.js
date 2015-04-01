@@ -630,6 +630,11 @@ app
     });
 })
 
+.get('/app/scanner', function (req, res) {
+    res.setHeader("Content-Type", "text/html");
+    res.render('partials/scanner');
+})
+
 .get('/401-unauthorized', function (req, res) {
     res.setHeader("Content-Type", "text/html");
     res.render('401-unauthorized');

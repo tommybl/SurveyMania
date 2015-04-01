@@ -19,6 +19,11 @@ surveyManiaApp.config(['$routeProvider',
             controller: '',
             navigationPart: 'account'
         }).
+        when('/scanner', {
+            templateUrl: '/app/scanner',
+            controller: '',
+            navigationPart: 'scanner'
+        }).
         when('/account/admin/validate/pro', {
             templateUrl: '/app/account/admin/validate/pro',
             controller: '',

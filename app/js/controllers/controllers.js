@@ -413,3 +413,7 @@ surveyManiaControllers.controller('PwdResetController', ['$scope', '$http', '$wi
         });
     };
 }]);
+
+surveyManiaControllers.controller('ScannerController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
+
+}]);
