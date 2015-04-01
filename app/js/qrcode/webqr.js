@@ -1,3 +1,4 @@
+var timeBtwScans = 3000;
 var gCtx = null;
 var gCanvas = null;
 var gUM = false;
@@ -51,7 +52,7 @@ function read(a) {
     result = document.getElementById("result");
     result.value = a;
     result.click();
-    setTimeout(captureToCanvas, 5000);
+    setTimeout(captureToCanvas, timeBtwScans);
 }	
 
 function isCanvasSupported(){

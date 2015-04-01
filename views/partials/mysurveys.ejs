@@ -2,8 +2,8 @@
 <script type="text/javascript" src="js/qrcode/llqrcode.js"></script>
 <script type="text/javascript" src="js/qrcode/webqr.js"></script>
 
-<div ng-controller="ScannerController">  
-
+<div ng-controller="MySurveysController">
+	<h1>Mes sondages</h1>
     <video id="webcam" autoplay width="50" height="50" style="border: solid black 1px"></video>
     <canvas id="qr-canvas" width="800" height="600" style="display: none"></canvas>
     <input type="text" placeholder="" id="result" class="form-control" ng-model="qrcode_result" ng-click="update()" readonly />
@@ -11,4 +11,5 @@
 
     <script type="text/javascript">load();</script>
 </div>
+
 <script src="js/scroll.js"></script>

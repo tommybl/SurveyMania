@@ -630,9 +630,9 @@ app
     });
 })
 
-.get('/app/scanner', function (req, res) {
+.get('/app/mysurveys', function (req, res) {
     res.setHeader("Content-Type", "text/html");
-    res.render('partials/scanner');
+    res.render('partials/mysurveys');
 })
 
 .get('/401-unauthorized', function (req, res) {
