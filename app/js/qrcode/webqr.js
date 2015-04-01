@@ -1,3 +1,5 @@
+'use strict';
+
 var timeBtwScans = 3000;
 var gCtx = null;
 var gCanvas = null;
@@ -5,18 +7,36 @@ var gUM = false;
 var webkit = false;
 var moz = false;
 var v = null;
+var resultField = document.getElementById("resultField");
+var videoElement = document.querySelector('video');
+var videoSelect = document.querySelector('select#videoSource');
+navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+function gotSources(sourceInfos) {
+  for (var i = 0; i !== sourceInfos.length; ++i) {
+    var sourceInfo = sourceInfos[i];
+    var option = document.createElement('option');
+    option.value = sourceInfo.id;
+    if (sourceInfo.kind === 'video') {
+      option.text = sourceInfo.label || 'camera ' + (videoSelect.length + 1);
+      videoSelect.appendChild(option);
+    } else {
+      console.log('Some other kind of source: ', sourceInfo);
+    }
+  }
+}
 
 function handleFiles(f) {
-	var o = [];
-	for(var i = 0; i < f.length; i++) {
+    var o = [];
+    for(var i = 0; i < f.length; i++) {
         var reader = new FileReader();
         reader.onload = (function(theFile) {
         return function(e) {
             gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
-			qrcode.decode(e.target.result);
+            qrcode.decode(e.target.result);
         };
         })(f[i]);
-        reader.readAsDataURL(f[i]);	
+        reader.readAsDataURL(f[i]); 
     }
 }
 
@@ -37,23 +57,21 @@ function captureToCanvas() {
             }
             catch(e){       
                 console.log(e);
-                setTimeout(captureToCanvas, 500);
+                setTimeout(captureToCanvas, timeBtwScans);
             };
         }
         catch(e){       
                 console.log(e);
-                setTimeout(captureToCanvas, 500);
+                setTimeout(captureToCanvas, timeBtwScans);
         };
     }
 }
 
 function read(a) {
-    console.log(a);
-    result = document.getElementById("result");
-    result.value = a;
-    result.click();
+    resultField.value = a;
+    resultField.click();
     setTimeout(captureToCanvas, timeBtwScans);
-}	
+}   
 
 function isCanvasSupported(){
   var elem = document.createElement('canvas');
@@ -64,52 +82,52 @@ function success(stream) {
     v = document.getElementById("webcam");
     v.width = 300;
     v.height = 300;
-    if(webkit)
-        v.src = window.webkitURL.createObjectURL(stream);
-    else if(moz)
-    {
-        v.mozSrcObject = stream;
-        v.play();
-    }
-    else v.src = stream;
+
+    window.stream = stream; // make stream available to console
+    v.src = window.URL.createObjectURL(stream);
+    v.play();
+
     gUM = true;
-    setTimeout(captureToCanvas, 500);
+    setTimeout(captureToCanvas, timeBtwScans);
 }
-		
+        
 function error(error) {
     gUM = false;
     return;
 }
 
-function load() {
-	if(isCanvasSupported() && window.File && window.FileReader)
-	{
-		initCanvas(800, 600);
-		qrcode.callback = read;
-        setwebcam();
-	}
-	else
-	{
-		document.getElementById("mainbody").innerHTML='<p>Browser not supported</p><br>';
-	}
+function start() {
+    if(isCanvasSupported() && window.File && window.FileReader)
+    {
+        initCanvas(800, 600);
+        qrcode.callback = read;
+        if (!!window.stream) {
+            videoElement.src = null;
+            window.stream.stop();
+        }
+        var videoSource = videoSelect.value;
+        var constraints = {
+        video: {
+          optional: [{
+            sourceId: videoSource
+          }]
+        }
+        };
+        navigator.getUserMedia(constraints, success, error);
+    }
+    else
+    {
+        document.getElementById("mainbody").innerHTML='<p>Browser not supported</p><br>';
+    }
 }
 
-function setwebcam() {
-    var n = navigator;
-    v = document.getElementById("webcam");
-
-    if(n.getUserMedia) n.getUserMedia({video: true, audio: false}, success, error);
-    else if(n.webkitGetUserMedia)
-    {
-        webkit=true;
-        n.webkitGetUserMedia({video: true, audio: false}, success, error);
-    }
-    else if(n.mozGetUserMedia)
-    {
-        moz=true;
-        n.mozGetUserMedia({video: true, audio: false}, success, error);
-    }
-    else return;
-
-    setTimeout(captureToCanvas, 500);
+if (typeof MediaStreamTrack === 'undefined' ||
+    typeof MediaStreamTrack.getSources === 'undefined') {
+  alert('This browser does not support MediaStreamTrack.\n\nTry Chrome.');
+} else {
+  MediaStreamTrack.getSources(gotSources);
 }
+
+videoSelect.onchange = start;
+
+start();

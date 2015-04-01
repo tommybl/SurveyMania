@@ -6,10 +6,12 @@
 	<h1>Mes sondages</h1>
     <video id="webcam" autoplay width="50" height="50" style="border: solid black 1px"></video>
     <canvas id="qr-canvas" width="800" height="600" style="display: none"></canvas>
-    <input type="text" placeholder="" id="result" class="form-control" ng-model="qrcode_result" ng-click="update()" readonly />
+    <input type="text" placeholder="" id="resultField" class="form-control" ng-model="qrcode_result" ng-click="update()" readonly />
     <input type="text" placeholder="" class="form-control" ng-model="test" />
 
-    <script type="text/javascript">load();</script>
+  <div class="select">
+    <label for="videoSource">Video source: </label><select id="videoSource"></select>
+  </div>
 </div>
 
 <script src="js/scroll.js"></script>
