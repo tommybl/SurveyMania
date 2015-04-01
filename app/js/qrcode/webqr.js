@@ -9,6 +9,7 @@ var sourceSelect = document.getElementById('videoSource');
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
 function gotSources(sourceInfos) {
+    sourceSelect.innerHTML = "";
     for (var i = 0; i !== sourceInfos.length; ++i) {
         var sourceInfo = sourceInfos[i];
         var option = document.createElement('option');
