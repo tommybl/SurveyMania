@@ -99,7 +99,6 @@ function useWebcam() {
     if(window.File && window.FileReader && sourceSelect.length > 0)
     {
         sourceSelect.onchange = useWebcam;
-        qrcode.callback = read;
         if (!!window.stream) {
             webcam.src = null;
             window.stream.stop();
@@ -113,8 +112,7 @@ function useWebcam() {
         }
         };
         navigator.getUserMedia(constraints, success, useInputFile);
-    }
-    else
+    } else
     {
         useInputFile(null);
     }
@@ -140,6 +138,7 @@ function qrcodeInit() {
     if (!displayed) {
         displayed = true;
         if (isCanvasSupported()) {
+            qrcode.callback = read;
             if (typeof MediaStreamTrack === 'undefined' || typeof MediaStreamTrack.getSources === 'undefined') {
                 useInputFile(null);
             } else {
