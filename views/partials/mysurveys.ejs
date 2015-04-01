@@ -3,19 +3,26 @@
 <script type="text/javascript" src="js/qrcode/webqr.js"></script>
 
 <div ng-controller="MySurveysController">
-	<h1>Mes sondages</h1>
-  <div class="select">
-    <label>Video source: </label><select id="videoSource"></select>
-  </div>
-  <video id="webcam" autoplay style="border: solid black 1px"></video>
-  <canvas id="qr-canvas" style="display: none"></canvas>
-  <input type="text" placeholder="" id="resultField" class="form-control" ng-model="qrcode_result" ng-click="update()" readonly />
-  <input type="text" placeholder="" class="form-control" ng-model="test" />
+  	<h1 onclick="qrcodeInit()">Ajouter un sondage</h1>
+    <div id="add_survey" style="display: none">
+        <div id="add_survey_webcam" style="display: none">
+            <div class="select">
+                <label>Video source: </label><select id="videoSource"></select>
+            </div>
+            <video id="webcam" autoplay style="border: solid black 1px"></video>
+            <canvas id="qr-canvas" style="display: none"></canvas>
+        </div>
 
-  <div id="qrfile">
-    <canvas id="out-canvas" width="50" height="50" style="border: solid black 1px"></canvas><br><br>
-    <input type="file" onchange="handleFiles(this.files)" accept="image/*" capture/>
-  </div>
+        <div id="add_survey_file" style="display: none">
+            <canvas id="out-canvas" width="50" height="50" style="border: solid black 1px"></canvas><br><br>
+            <input type="file" onchange="handleFiles(this.files)" accept="image/*" capture/>
+        </div>
+        <input type="text" placeholder="" id="resultField" class="form-control" ng-model="qrcode_result" ng-click="update()" readonly />
+        <input type="text" placeholder="" class="form-control" ng-model="test" />
+    </div>
 </div>
+   
+
+<h1>Mes sondages
 
 <script src="js/scroll.js"></script>

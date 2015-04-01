@@ -1,7 +1,8 @@
+var displayed = false;
 var timeBtwScans = 3000;
 var gCtx = null;
 var gCanvas = null;
-var gUM = false;
+var running = false;
 var resultField = document.getElementById("resultField");
 var webcam = document.getElementById('webcam');
 var sourceSelect = document.getElementById('videoSource');
@@ -48,7 +49,7 @@ function initCanvas(can, w, h) {
 }
 
 function captureToCanvas() {
-    if(gUM)
+    if(running)
     {
         try{
             gCtx.drawImage(webcam, 0, 0);
@@ -79,15 +80,18 @@ function success(stream) {
     webcam.src = window.URL.createObjectURL(stream);
     webcam.play();
 
-    gUM = true;
+    running = true;
     initCanvas("qr-canvas", 800, 600);
     setTimeout(captureToCanvas, timeBtwScans);
+    document.getElementById("add_survey_webcam").style.display = "block";
+    document.getElementById("add_survey").style.display = "block";
 }
         
 function useInputFile(reason) {
-    gUM = false;
+    running = false;
     initCanvas("out-canvas", 399, 300);
-    return;
+    document.getElementById("add_survey_file").style.display = "block";
+    document.getElementById("add_survey").style.display = "block";
 }
 
 function useWebcam() {
@@ -115,24 +119,37 @@ function useWebcam() {
     }
 }
 
-function qrcodeInit() {
-    if (isCanvasSupported()) {
-        if (typeof MediaStreamTrack === 'undefined' || typeof MediaStreamTrack.getSources === 'undefined') {
-            useInputFile(null);
-        } else {
-            MediaStreamTrack.getSources(gotSources);
-        }
-    } else {
-        error();
-    }
-}
-
 function qrcodeStop() {
-    // Code here
+    document.getElementById("add_survey_file").style.display = "none";
+    document.getElementById("add_survey_webcam").style.display = "none";
+    webcam.pause();
+    if (!!window.stream) {
+        webcam.src = null;
+        window.stream.stop();
+    }
+    running = false;
+    gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
 }
 
 function error() {
     // Code here
 }
 
-qrcodeInit();
+function qrcodeInit() {
+    if (!displayed) {
+        displayed = true;
+        if (isCanvasSupported()) {
+            if (typeof MediaStreamTrack === 'undefined' || typeof MediaStreamTrack.getSources === 'undefined') {
+                useInputFile(null);
+            } else {
+                MediaStreamTrack.getSources(gotSources);
+            }
+        } else {
+            error();
+        }
+    } else {
+        document.getElementById("add_survey").style.display = "none";
+        displayed = false;
+        qrcodeStop();
+    }
+}
