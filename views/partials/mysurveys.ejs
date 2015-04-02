@@ -6,7 +6,7 @@
   	<h1 onclick="qrcodeInit()">Ajouter un sondage</h1>
     <div id="add_survey" style="display: none">
         <div id="add_survey_webcam" style="display: none">
-            <div class="select">
+            <div id="videoSourceDiv" class="select" style="display: none">
                 <label>Video source: </label><select id="videoSource"></select>
             </div>
             <video id="webcam" autoplay style="border: solid black 1px"></video>
@@ -22,7 +22,6 @@
     </div>
 </div>
    
-
 <h1>Mes sondages
 
 <script src="js/scroll.js"></script>
