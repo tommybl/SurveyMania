@@ -91,6 +91,8 @@ function success(stream) {
 }
         
 function useInputFile(reason) {
+    document.getElementById("add_survey_webcam").style.display = "none";
+    document.getElementById('videoSourceDiv').style.display = "none";
     running = false;
     initCanvas("out-canvas", 399, 300);
     document.getElementById("add_survey_file").style.display = "block";
@@ -98,8 +100,7 @@ function useInputFile(reason) {
 }
 
 function useWebcamWithSources() {
-    if(window.File && window.FileReader && sourceSelect.length > 0)
-    {
+    if(window.File && window.FileReader && sourceSelect.length > 0) {
         if (!!window.stream) {
             webcam.src = null;
             window.stream.stop();
@@ -113,8 +114,7 @@ function useWebcamWithSources() {
         }
         };
         navigator.getUserMedia(constraints, success, useInputFile);
-    } else
-    {
+    } else {
         useInputFile(null);
     }
 }
@@ -122,13 +122,8 @@ function useWebcamWithSources() {
 function useWebcamWithoutSource() {
     if(navigator.getUserMedia)
         navigator.getUserMedia({video: true, audio: false}, success, error);
-    else if(navigator.webkitGetUserMedia)
-        navigator.webkitGetUserMedia({video: true, audio: false}, success, error);
-    else if(navigator.mozGetUserMedia)
-        navigator.mozGetUserMedia({video: true, audio: false}, success, error);
-    else if (navigator.msGetUserMedia)
-        navigator.msGetUserMedia({video: true, audio: false}, success, error);
-    else return;
+    else
+        useInputFile(null);
 }
 
 function qrcodeStop() {
