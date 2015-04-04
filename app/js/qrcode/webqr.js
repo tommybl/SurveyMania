@@ -1,3 +1,4 @@
+var has_failed = false;
 var displayed = false;
 var timeBtwScans = 3000;
 var gCtx = null;
@@ -59,7 +60,7 @@ function captureToCanvas() {
             try{
                 qrcode.decode();
             }
-            catch(e){       
+            catch(e){
                 setTimeout(captureToCanvas, timeBtwScans);
             };
         }
@@ -121,7 +122,7 @@ function useWebcamWithSources() {
 
 function useWebcamWithoutSource() {
     if(navigator.getUserMedia)
-        navigator.getUserMedia({video: true, audio: false}, success, error);
+        navigator.getUserMedia({video: true, audio: false}, success, useInputFile);
     else
         useInputFile(null);
 }
@@ -130,17 +131,23 @@ function qrcodeStop() {
     document.getElementById("add_survey_file").style.display = "none";
     document.getElementById("add_survey_webcam").style.display = "none";
     document.getElementById('videoSourceDiv').style.display = "none";
+    document.getElementById('add_survey_error').style.display = "none";
     webcam.pause();
     if (!!window.stream) {
         webcam.src = null;
         window.stream.stop();
     }
     running = false;
-    gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
+    if (!has_failed)
+        gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
 }
 
-function error() {
-    // Code here
+function error(message) {
+    has_failed = true;
+    var errorElement = document.getElementById('add_survey_error');
+    errorElement.style.color = "red";
+    errorElement.innerHTML = message;
+    errorElement.style.display = "block";
 }
 
 function qrcodeInit() {
@@ -158,7 +165,7 @@ function qrcodeInit() {
                 }
             }
         } else {
-            error();
+            error("Votre navigateur n'est pas compatible avec cette fonctionnalité. Veuillez le mettre à jour ou utiliser un navigateur compatible");
         }
     } else {
         document.getElementById("add_survey").style.display = "none";

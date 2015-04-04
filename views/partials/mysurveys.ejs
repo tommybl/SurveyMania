@@ -5,6 +5,8 @@
 <div ng-controller="MySurveysController">
   	<h1 onclick="qrcodeInit()">Ajouter un sondage</h1>
     <div id="add_survey" style="display: none">
+        <div id="add_survey_error" style="diplay: none"></div>
+
         <div id="add_survey_webcam" style="display: none">
             <div id="videoSourceDiv" class="select" style="display: none">
                 <label>Video source: </label><select id="videoSource"></select>
@@ -14,6 +16,7 @@
         </div>
 
         <div id="add_survey_file" style="display: none">
+            <div>Votre navigateur n'est pas compatible pour l'utilisation de la caméra / aucune caméra détectée / permission non accordée.</div>
             <canvas id="out-canvas" width="50" height="50" style="border: solid black 1px"></canvas><br><br>
             <input type="file" onchange="handleFiles(this.files)" accept="image/*" capture/>
         </div>
