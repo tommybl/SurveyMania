@@ -1,4 +1,4 @@
-var has_failed = false;
+var useWebcam = false;
 var displayed = false;
 var timeBtwScans = 3000;
 var gCtx = null;
@@ -92,6 +92,9 @@ function success(stream) {
 }
         
 function useInputFile(reason) {
+    if (useWebcam)
+        error(0, "Votre navigateur n'est pas compatible pour l'utilisation de la caméra / aucune caméra détectée / permission non accordée.");
+    useWebcam = false;
     document.getElementById("add_survey_webcam").style.display = "none";
     document.getElementById('videoSourceDiv').style.display = "none";
     running = false;
@@ -101,6 +104,7 @@ function useInputFile(reason) {
 }
 
 function useWebcamWithSources() {
+    useWebcam = true;
     if(window.File && window.FileReader && sourceSelect.length > 0) {
         if (!!window.stream) {
             webcam.src = null;
@@ -116,15 +120,19 @@ function useWebcamWithSources() {
         };
         navigator.getUserMedia(constraints, success, useInputFile);
     } else {
+        error(0, "Votre navigateur n'est pas compatible pour l'utilisation de la caméra / aucune caméra détectée / permission non accordée.");
         useInputFile(null);
     }
 }
 
 function useWebcamWithoutSource() {
+    useWebcam = true;
     if(navigator.getUserMedia)
         navigator.getUserMedia({video: true, audio: false}, success, useInputFile);
-    else
+    else {
+        error(0, "Votre navigateur n'est pas compatible pour l'utilisation de la caméra / aucune caméra détectée / permission non accordée.");
         useInputFile(null);
+    }
 }
 
 function qrcodeStop() {
@@ -138,14 +146,17 @@ function qrcodeStop() {
         window.stream.stop();
     }
     running = false;
-    if (!has_failed)
+    if (gCtx != null)
         gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
 }
 
-function error(message) {
-    has_failed = true;
+// Type 0 = warning, Type 1 = error
+function error(type, message) {
     var errorElement = document.getElementById('add_survey_error');
-    errorElement.style.color = "red";
+    if (type == 0)
+        errorElement.style.color = "orange";
+    else if (type == 1)
+        errorElement.style.color = "red";
     errorElement.innerHTML = message;
     errorElement.style.display = "block";
 }
@@ -156,6 +167,7 @@ function qrcodeInit() {
         if (isCanvasSupported()) {
             qrcode.callback = read;
             if (typeof MediaStreamTrack === 'undefined') {
+                error(0, "Votre navigateur n'est pas compatible pour l'utilisation de la caméra / aucune caméra détectée / permission non accordée.");
                 useInputFile(null);
             } else {
                 if (typeof MediaStreamTrack.getSources === 'undefined') {
@@ -165,11 +177,31 @@ function qrcodeInit() {
                 }
             }
         } else {
-            error("Votre navigateur n'est pas compatible avec cette fonctionnalité. Veuillez le mettre à jour ou utiliser un navigateur compatible");
+            error(1, "Votre navigateur n'est pas compatible avec cette fonctionnalité. Veuillez le mettre à jour ou utiliser un navigateur compatible");
         }
     } else {
         document.getElementById("add_survey").style.display = "none";
         displayed = false;
         qrcodeStop();
+    }
+}
+
+function switchToFile() {
+    qrcodeStop();
+    useWebcam = false;
+    useInputFile();
+}
+
+function switchToWebcam() {
+    qrcodeStop();
+    if (typeof MediaStreamTrack === 'undefined') {
+        error(0, "Votre navigateur n'est pas compatible pour l'utilisation de la caméra / aucune caméra détectée / permission non accordée.");
+        useInputFile(null);
+    } else {
+        if (typeof MediaStreamTrack.getSources === 'undefined') {
+            useWebcamWithoutSource();
+        } else {
+            MediaStreamTrack.getSources(gotSources);
+        }
     }
 }

@@ -11,12 +11,13 @@
             <div id="videoSourceDiv" class="select" style="display: none">
                 <label>Video source: </label><select id="videoSource"></select>
             </div>
+            <p onclick="switchToFile()">Cliquez ici pour importer une photo</p>
             <video id="webcam" autoplay style="border: solid black 1px"></video>
             <canvas id="qr-canvas" style="display: none"></canvas>
         </div>
 
         <div id="add_survey_file" style="display: none">
-            <div>Votre navigateur n'est pas compatible pour l'utilisation de la caméra / aucune caméra détectée / permission non accordée.</div>
+            <p onclick="switchToWebcam()">Cliquez ici pour activer la caméra</p>
             <canvas id="out-canvas" width="50" height="50" style="border: solid black 1px"></canvas><br><br>
             <input type="file" onchange="handleFiles(this.files)" accept="image/*" capture/>
         </div>
