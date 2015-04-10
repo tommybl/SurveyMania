@@ -30,4 +30,23 @@ INSERT INTO user_achievements (user_id, achiev_id, recieved_dt) VALUES
 (3, 3, '2015-03-25 14:40:00'),
 (5, 1, '2015-03-25 03:11:43'),
 (5, 4, '2015-03-25 03:11:43'),
-(5, 3, '2015-03-25 03:11:43');
+(5, 3, '2015-03-25 03:11:43'),
+(7, 1, '2015-03-25 14:40:00'),
+(7, 2, '2015-03-25 03:11:43'),
+(7, 3, '2015-03-25 03:11:43'),
+(7, 4, '2015-03-25 03:11:43');
+
+INSERT INTO survey_themes (theme_name) VALUES
+('Theme 1');
+
+INSERT INTO survey_headers (organization_id, theme_id, name, instructions, info, points) VALUES
+(3, 1, 'Haricots verts', 'Remplir les questions', 'Vous aimez les haricots ?', 100),
+(3, 1, 'Haricots rouges', 'Remplir les questions', 'Hey', 50),
+(3, 1, 'Cassoulet', 'Remplir les questions', 'Preparez les masques à gaz', 200),
+(3, 1, 'Steak', 'Remplir les questions', 'Bien saignant', 150),
+(3, 1, 'Pack de 6 bières', 'Remplir les questions', 'Avec modération', 100),
+(3, 1, 'Crunch', 'Remplir les questions', 'Chocolat <3', 350);
+
+INSERT INTO user_surveys (user_id, survey_header_id, completed) VALUES
+(7, 4, NULL),
+(7, 5, NULL);
