@@ -657,25 +657,30 @@ app
 
 .post('/app/addUserSurvey/', function (req, res) {
     var user = req.user;
-
     var JsonFormatter = {
+        /*stringify: function (cipherParams) {
+            return cipherParams.ciphertext.toString(CryptoJS.enc.Base64) + cipherParams.salt.toString();
+        },*/
+
         parse: function (jsonStr) {
-            var jsonObj = JSON.parse(jsonStr);
+            var splitted = jsonStr.split("==");
             var cipherParams = CryptoJS.lib.CipherParams.create({
-                ciphertext: CryptoJS.enc.Base64.parse(jsonObj.ct)
+                ciphertext: CryptoJS.enc.Base64.parse(splitted[0] + "==")
             });
-            cipherParams.salt = CryptoJS.enc.Hex.parse(jsonObj.s);
+
+            cipherParams.salt = CryptoJS.enc.Hex.parse(splitted[1]);
+
             return cipherParams;
         }
     };
 
-    /*var encrypted = CryptoJS.AES.encrypt(req.body.qrcode, SurveyManiasecret, { format: JsonFormatter }).toString();
-    var mybase = encrypted.replace(/\+/g, ".");
-    console.log(mybase);*/
+    /*console.log(req.body.qrcode);
+    var encrypted = CryptoJS.AES.encrypt(req.body.qrcode, SurveyManiasecret, { format: JsonFormatter }).toString();
+    var tmp = encrypted.replace(/\+/g, ".");
+    console.log(tmp);*/
 
-    var mybase2 = req.body.qrcode.replace(/\./g, "+");
-    var decrypted = CryptoJS.AES.decrypt(mybase2, SurveyManiasecret, { format: JsonFormatter }).toString(CryptoJS.enc.Utf8).split("=")[1];
-    console.log(decrypted);
+    var myBase = req.body.qrcode.replace(/\./g, "+");
+    var decrypted = CryptoJS.AES.decrypt(myBase, SurveyManiasecret, { format: JsonFormatter }).toString(CryptoJS.enc.Utf8);
 
     pg.connect(conString, function(err, client, done) {
         if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
