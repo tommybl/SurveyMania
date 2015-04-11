@@ -731,6 +731,7 @@ app
 })
 
 .get('/app/mysurveys', function (req, res) {
+    if(req.user.usertypenumber != 1) res.redirect('/401-unauthorized');
     res.setHeader("Content-Type", "text/html");
     res.render('partials/mysurveys');
 })
@@ -794,7 +795,7 @@ app
                                             res.status(200).json({code: 200, message: "Valid", surveyHeader: result.rows[0], encrypted: myBase});
                                         }
                                     }
-                                })
+                                });
                             }
                         }
                     });
@@ -829,7 +830,15 @@ app
                 }
             });
         }
-    })
+    });
+})
+
+.get('/app/organizationPanel', function (req, res) {
+    if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.redirect('/401-unauthorized');
+    else {
+        res.setHeader("Content-Type", "text/html");
+        res.render('partials/organizationPanel');
+    }
 })
 
 .get('/401-unauthorized', function (req, res) {

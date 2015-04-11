@@ -26,7 +26,8 @@
                         <ul class="nav nav-pills" style="width: 300px; float:left; margin-left: 25%;">
                             <li role="presentation" ng-class="{active:(navigationPart==='home')}"><a href="/#/home">Home</a></li>
                             <li role="presentation" ng-class="{active:(navigationPart==='account')}"><a href="/#/account">Account</a></li>
-                            <li role="presentation" ng-class="{active:(navigationPart==='mysurveys')}"><a href="/#/mysurveys">My surveys</a></li>
+                            <li role="presentation" ng-show="isCustomer" ng-class="{active:(navigationPart==='mysurveys')}"><a href="/#/mysurveys">My surveys</a></li>
+                            <li role="presentation" ng-show="isOrganization" ng-class="{active:(navigationPart==='organizationPanel')}"><a href="/#/organizationPanel">Administration</a></li>
                         </ul>
                         <div style="float: right; margin-right: 10px; margin-top:5px;">
                             <button id="logoutBtn" ng-show="isLogged" ng-click="logout()" class="btn btn-default">Logout</button>
