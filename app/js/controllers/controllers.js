@@ -297,6 +297,7 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
         $("#"+$id+"").fadeIn();
     }
     
+    // Edit profile
     $scope.addressEdit=false;
     $scope.emailEdit=false;
     $scope.editProfile=false;
@@ -323,6 +324,43 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
     $scope.phoneNumber_check = function(){$scope.isValidPhoneNumber = !(/^((\+|00)33\s?|0)[1-9](\s?\d{2}){4}$/.test($scope.user.owner_tel));}
 
     googleInitialize();
+
+    // Save changes
+    $scope.submitProfileChange = function()
+    {
+        console.log("okkkk");
+        var password = CryptoJS.SHA256($scope.newPwd).toString();
+        var ownerType;
+        if ($scope.user.owner_type == 1 || $scope.user.owner_type == 2)
+            ownerType = 'particulier';
+        else if($scope.user.owner_type == 3 || $scope.user.owner_type == 4)
+            ownerType = 'professional';
+
+        var edituser = {
+            id: $scope.user.owner_id,
+            type: ownerType,
+            email: $scope.user.owner_email,
+            password: password,
+            adress: ($scope.user.owner_address == '') ? null : $scope.user.owner_address,
+            postal: ($scope.user.owner_postal == '') ? null : $scope.user.owner_postal,
+            town: ($scope.user.owner_town == '') ? null : $scope.user.owner_town,
+            country: ($scope.user.owner_country == '') ? null : $scope.user.owner_country,
+            phone: ($scope.user.owner_tel == '') ? null : $scope.user.owner_tel,
+        }
+
+        $http.post('/editUserProfile', edituser)
+        .success(function (data, status, headers, config) {
+            if (data.error == undefined) {
+                console.log(data);
+                $scope.editSuccMess = "Vos modifications ont bien été prises en compte";
+            }
+            else $scope.editErrMess = data.error + '. ' + data.message;
+        })
+        .error(function (data, status, headers, config) {
+            console.log(data);
+            $scope.signupErrMess = data.error + '. ' + data.message;
+        });
+    }
 }]);
 
 surveyManiaControllers.controller('MailVerifyController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
