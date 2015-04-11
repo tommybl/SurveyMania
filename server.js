@@ -37,6 +37,23 @@ var transporter = nodemailer.createTransport({
     }
 });
 
+var JsonFormatter = {
+    stringify: function (cipherParams) {
+        return cipherParams.ciphertext.toString(CryptoJS.enc.Base64) + cipherParams.salt.toString();
+    },
+
+    parse: function (jsonStr) {
+        var splitted = jsonStr.split("==");
+        var cipherParams = CryptoJS.lib.CipherParams.create({
+            ciphertext: CryptoJS.enc.Base64.parse(splitted[0] + "==")
+        });
+
+        cipherParams.salt = CryptoJS.enc.Hex.parse(splitted[1]);
+
+        return cipherParams;
+    }
+};
+
 // creating a new app with express framework
 var app = express();
 
@@ -740,31 +757,57 @@ app
 
 .post('/app/addUserSurvey/', function (req, res) {
     var user = req.user;
-    var JsonFormatter = {
-        /*stringify: function (cipherParams) {
-            return cipherParams.ciphertext.toString(CryptoJS.enc.Base64) + cipherParams.salt.toString();
-        },*/
-
-        parse: function (jsonStr) {
-            var splitted = jsonStr.split("==");
-            var cipherParams = CryptoJS.lib.CipherParams.create({
-                ciphertext: CryptoJS.enc.Base64.parse(splitted[0] + "==")
-            });
-
-            cipherParams.salt = CryptoJS.enc.Hex.parse(splitted[1]);
-
-            return cipherParams;
-        }
-    };
 
     /*console.log(req.body.qrcode);
     var encrypted = CryptoJS.AES.encrypt(req.body.qrcode, SurveyManiasecret, { format: JsonFormatter }).toString();
     var tmp = encrypted.replace(/\+/g, ".");
     console.log(tmp);*/
+    if (req.body.qrcode == "error decoding QR Code")
+        res.status(200).json({code: 200, message: "Scanning error"});
+    else {
+        var myBase = req.body.qrcode.replace(/\./g, "+");
+        var decrypted = CryptoJS.AES.decrypt(myBase, SurveyManiasecret, { format: JsonFormatter }).toString(CryptoJS.enc.Utf8);
 
-    var myBase = req.body.qrcode.replace(/\./g, "+");
-    var decrypted = CryptoJS.AES.decrypt(myBase, SurveyManiasecret, { format: JsonFormatter }).toString(CryptoJS.enc.Utf8);
+        if (!(/^\d+$/.test(decrypted)))
+            res.status(200).json({code: 200, message: "Not valid"});
+        else {
+            pg.connect(conString, function(err, client, done) {
+                if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                else {
+                    var query = 'SELECT us.id FROM surveymania.user_surveys us WHERE us.user_id = ' + user.id + ' AND us.survey_header_id = ' + decrypted;
+                    client.query(query, function(err, result) {
+                        done();
+                        if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                        else {
+                            if (result.rows.length != 0) res.status(200).json({code: 200, message: "Already scanned"});
+                            else {
+                                var query = 'SELECT o.name AS orgaName, sh.name AS surveyName, sh.points AS points, sh.info AS infos FROM surveymania.survey_headers sh '
+                                    + 'INNER JOIN surveymania.organizations o ON sh.organization_id = o.id WHERE sh.id = ' + decrypted;
+                                client.query(query, function(err, result) {
+                                    done();
+                                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                    else {
+                                        if (result.rows.length == 0){
+                                            res.status(200).json({code: 200, message: "Unknown survey"});
+                                        } else {
+                                            res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+                                            res.status(200).json({code: 200, message: "Valid", surveyHeader: result.rows[0], encrypted: myBase});
+                                        }
+                                    }
+                                })
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    }
+})
 
+.post('/app/validateAddUserSurvey/', function (req, res) {
+    var user = req.user;
+    var encrypted = req.body.qrcode.replace(/\./g, "+");
+    var decrypted = CryptoJS.AES.decrypt(encrypted, SurveyManiasecret, { format: JsonFormatter }).toString(CryptoJS.enc.Utf8);
     pg.connect(conString, function(err, client, done) {
         if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
         else {
@@ -774,19 +817,19 @@ app
                 if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                 else {
                     var query = 'SELECT o.name AS orgaName, sh.name AS surveyName, sh.points AS points, sh.info AS infos, us.completed AS completed FROM surveymania.survey_headers sh INNER JOIN surveymania.user_surveys us ON sh.id = us.survey_header_id '
-                + 'INNER JOIN surveymania.organizations o ON sh.organization_id = o.id INNER JOIN surveymania.users u ON us.user_id = u.id WHERE u.id = ' + req.user.id + ' AND sh.id = ' + decrypted;
+                        + 'INNER JOIN surveymania.organizations o ON sh.organization_id = o.id INNER JOIN surveymania.users u ON us.user_id = u.id WHERE u.id = ' + user.id + ' AND sh.id = ' + decrypted;
                     client.query(query, function(err, result) {
                         done();
                         if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                         else {
                             res.setHeader('Content-Type', 'application/json; charset=UTF-8');
-                            res.json({code: 200, userSurveys: result.rows});
+                            res.json({code: 200, userSurveys: result.rows[0]});
                         }
                     })
                 }
             });
         }
-    });
+    })
 })
 
 .get('/401-unauthorized', function (req, res) {

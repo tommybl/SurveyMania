@@ -1396,7 +1396,6 @@ qrcode.decode = function(d) {
             try {
                 qrcode.result = qrcode.process(h)
             } catch (m) {
-                console.log(m);
                 qrcode.result = "error decoding QR Code";
             }
             if (qrcode.callback != null) {
@@ -1415,14 +1414,12 @@ qrcode.decode_url = function(b) {
     try {
         d = escape(b)
     } catch (c) {
-        console.log(c);
         d = b
     }
     var a = "";
     try {
         a = decodeURIComponent(d)
     } catch (c) {
-        console.log(c);
         a = d
     }
     return a
@@ -1463,7 +1460,6 @@ qrcode.process = function(r) {
     }
     var d = new Date().getTime();
     var b = d - a;
-    console.log(b);
     return qrcode.decode_utf8(l)
 };
 qrcode.getPixel = function(a, b) {

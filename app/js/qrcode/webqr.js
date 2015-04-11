@@ -1,6 +1,6 @@
 var useWebcam = false;
 var displayed = false;
-var timeBtwScans = 3000;
+var timeBtwScans;
 var gCtx = null;
 var gCanvas = null;
 var running = false;
@@ -8,6 +8,22 @@ var resultField = document.getElementById("resultField");
 var webcam = document.getElementById('webcam');
 var sourceSelect = document.getElementById('videoSource');
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+
+function detectmob() { 
+ if( navigator.userAgent.match(/Android/i)
+ || navigator.userAgent.match(/webOS/i)
+ || navigator.userAgent.match(/iPhone/i)
+ || navigator.userAgent.match(/iPad/i)
+ || navigator.userAgent.match(/iPod/i)
+ || navigator.userAgent.match(/BlackBerry/i)
+ || navigator.userAgent.match(/Windows Phone/i)
+ ){
+    return true;
+  }
+ else {
+    return false;
+  }
+}
 
 function gotSources(sourceInfos) {
     sourceSelect.innerHTML = "";
@@ -32,15 +48,15 @@ function isCanvasSupported(){
 
 function handleFiles(f) {
     var o = [];
-    for(var i = 0; i < f.length; i++) {
+    if (f.length != 0) {
         var reader = new FileReader();
         reader.onload = (function(theFile) {
             return function(e) {
                 gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
                 qrcode.decode(e.target.result);
             };
-        })(f[i]);
-        reader.readAsDataURL(f[i]); 
+        })(f[0]);
+        reader.readAsDataURL(f[0]); 
     }
 }
 
@@ -70,14 +86,31 @@ function captureToCanvas() {
     }
 }
 
+function cameraPause(p) {
+    if (useWebcam) {
+        if (p) {
+            running = false;
+            webcam.pause();
+        } else {
+            running = true;
+            webcam.play();
+            setTimeout(captureToCanvas, timeBtwScans);
+        }
+    }
+}
+
 function read(a) {
     angular.element(document.getElementById("mySurveysMain")).scope().addSurvey(a);
-    setTimeout(captureToCanvas, timeBtwScans);
 }
 
 function success(stream) {
     webcam.width = 399;
     webcam.height = 300;
+
+    if (detectmob)
+        timeBtwScans = 2000;
+    else
+        timeBtwScans = 500;
 
     window.stream = stream;
     webcam.src = window.URL.createObjectURL(stream);

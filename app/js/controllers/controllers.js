@@ -453,18 +453,75 @@ surveyManiaControllers.controller('PwdResetController', ['$scope', '$http', '$wi
 }]);
 
 surveyManiaControllers.controller('MySurveysController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
-    $scope.qrcode_result = null;
     $scope.userSurveys = [];
+    $scope.lastAddedSurvey = null;
+    $scope.resultMessage = null;
+    $scope.dismissButton = null;
+    $scope.validateButton = null;
+    $scope.QRcode = null;
 
     $http.post('/app/getUserSurveys/')
         .success(function (data, status, headers, config) {
             $scope.userSurveys = data.userSurveys;
     });
+
+    $('#confirmScanModal')
+        .on('hide.bs.modal', function () {
+            cameraPause(false);
+        })
+        .on('show.bs.modal', function() {
+            cameraPause(true);
+        });
     
     $scope.addSurvey = function (readedQRcode) {
+        $scope.QRcode = null;
         $http.post('/app/addUserSurvey/', {qrcode: readedQRcode})
             .success(function (data, status, header, config) {
-                $scope.userSurveys.unshift({organame: data.userSurveys[0].organame, surveyname: data.userSurveys[0].surveyname, points: data.userSurveys[0].points, infos: data.userSurveys[0].infos, completed: data.userSurveys[0].completed});
-        });
+                switch (data.message.toUpperCase()) {
+                    case "SCANNING ERROR":
+                        $scope.resultMessage = "Le QRcode n'est pas lisible";
+                        $scope.dismissButton = "Réessayer";
+                        $scope.validateButton = null;
+                        break;
+                    case "NOT VALID":
+                        $scope.resultMessage = "Ce QRcode est invalide";
+                        $scope.dismissButton = "Réessayer";
+                        $scope.validateButton = null;
+                        break;
+                    case "ALREADY SCANNED":
+                        $scope.resultMessage = "Vous avez déjà scanné ce QRcode";
+                        $scope.dismissButton = "Réessayer";
+                        $scope.validateButton = null;
+                        break;
+                    case "UNKNOWN SURVEY":
+                        $scope.resultMessage = "Ce QRcode est invalide";
+                        $scope.dismissButton = "Réessayer";
+                        $scope.validateButton = null;
+                        break;
+                    case "VALID":
+                        $scope.resultMessage = "Nouveau sondage disponible : " + data.surveyHeader.surveyname + " pour " + data.surveyHeader.points + " points !";
+                        $scope.validateButton = "Ajouter à ma liste";
+                        $scope.dismissButton = "Annuler";
+                        $scope.QRcode = readedQRcode;
+                        break;
+                    default:
+                        $scope.resultMessage = "Erreur inconnue";
+                        $scope.dismissButton = "Réessayer";
+                }
+            })
+            .error(function (data, status, header, config) {
+                $scope.resultMessage = "Erreur interne";
+                $scope.dismissButton = "Réessayer";
+                $scope.validateButton = null;
+            });
+        $("#confirmScanModal").modal('show');
     };
+
+    $scope.validateAddSurvey = function () {
+        $http.post('/app/validateAddUserSurvey/', {qrcode: $scope.QRcode})
+            .success(function (data, status, header, config) {
+                $scope.userSurveys.unshift({organame: data.userSurveys.organame, surveyname: data.userSurveys.surveyname, points: data.userSurveys.points, infos: data.userSurveys.infos, completed: data.userSurveys.completed});
+            });
+        $("#confirmScanModal").modal('hide');
+    }
 }]);

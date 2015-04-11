@@ -21,6 +21,24 @@
             <canvas id="out-canvas" width="50" height="50" style="border: solid black 1px"></canvas><br><br>
             <input type="file" onchange="handleFiles(this.files)" accept="image/*" capture/>
         </div>
+
+        <div class="modal fade" id="confirmScanModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog row-centered">
+                <div class="modal-content col-xs-6 col-sm-5 col-md-4 col-lg-3 col-centered signup">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Résultat du scan</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>{{resultMessage}}</p>
+                    </div>
+                    <button id="confirmScanModalDismiss" type="button" class="btn btn-default" data-dismiss="modal" ng-show="dismissButton!=null">{{dismissButton}}</button>
+                    <button id="confirmScanModalValidate" type="button" class="btn btn-primary" data-dismiss="modal" ng-show="validateButton!=null" ng-click="validateAddSurvey()">
+                        {{validateButton}}
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <h1>Mes sondages</h1>
