@@ -2,6 +2,20 @@
 
 var surveyManiaControllers = angular.module('surveyManiaControllers', []);
 
+surveyManiaControllers.controller('GlobalController', ['$scope', '$window', '$location', function($scope, $window, $location) {
+    $scope.isLogged;
+    $scope.isLoggedFun = function(){$scope.isLogged = !($window.localStorage.token == undefined);console.log("inside:"+$scope.isLogged+"     isLogged:"+ $scope.isLogged);}
+    $scope.isLoggedFun();
+
+    $scope.logout = function () { 
+        delete $window.localStorage.token;
+        $scope.isLoggedFun();
+        console.log("logout"+$scope.isLogged); 
+        $location.path("/home");
+    };
+}]);
+
+
 surveyManiaControllers.controller('LoginController', ['$rootScope', '$scope', '$http', '$window', '$location', '$route', function($rootScope, $scope, $http, $window, $location, $route) {
     $scope.user = {email: '', password: ''};
     $scope.loginErrMess = undefined;
@@ -14,6 +28,8 @@ surveyManiaControllers.controller('LoginController', ['$rootScope', '$scope', '$
         .success(function (data, status, headers, config) {
             console.log(data);
             if (data.error == undefined) {
+                $window.location.reload(); // O-M-G
+                angular.element(document.getElementById('logoutBtn')).scope().isLoggedFun();
                 $window.localStorage.token = data.token;
                 if (data.usertype == 1 || data.usertype == 3 || data.usertype == 4) {
                     if ($rootScope.navigationPart != "account")
@@ -270,11 +286,6 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
         });
     }
 
-    $scope.logout = function () {
-        delete $window.localStorage.token;
-        $location.path( "/home");
-    };
-
     $scope.reduce = false;
     $scope.tab_hide = function() {
         $("#show_about").hide();
@@ -298,6 +309,7 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
     }
     
     // Edit profile
+    $scope.showEditField=false;
     $scope.addressEdit=false;
     $scope.emailEdit=false;
     $scope.editProfile=false;
@@ -307,6 +319,10 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
     $scope.isValidConfirmPwd=false;
     $scope.isValidPhoneNumber = false;
     $scope.isValidEmail = false;
+    $scope.editField = function()
+    {
+        $scope.showEditField = !$scope.showEditField;
+    }
     $scope.editAdress=function($bool){$scope.editProfile=true;$scope.addressEdit=$bool;}
     $scope.editEmail=function($bool){$scope.editProfile=true;$scope.emailEdit=$bool;}
     $scope.editPhone=function($bool){$scope.editProfile=true;$scope.phoneEdit=$bool;}
