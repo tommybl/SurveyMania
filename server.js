@@ -876,7 +876,8 @@ app
 .post('/app/category/add', function (req, res) {
     if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
     else {
-
+        res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+        res.json({code: 200});
     }
 })
 

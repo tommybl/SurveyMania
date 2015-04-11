@@ -555,9 +555,19 @@ surveyManiaControllers.controller('MySurveysController', ['$scope', '$http', '$w
 
 surveyManiaControllers.controller('OrganizationPanel', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
     $scope.categories = null;
+    $scope.newCategory = {name: "", color: ""};
 
     $http.post('/app/category/get')
         .success(function (data, status, header, config) {
             $scope.categories = data.categories;
         });
+
+    $scope.addCategory = function () {
+        $http.post('/app/category/add', {newCategory: $scope.newCategory})
+            .success(function (data, status, header, config) {
+                $scope.categories.unshift({name: $scope.newCategory.name, color: $scope.newCategory.color});
+            })
+            .error(function (data, status, header, config) {
+            });
+    };
 }]);
