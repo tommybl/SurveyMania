@@ -17,20 +17,23 @@
         <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places"></script>
         <script src="js/google/google-address.js"></script>
     </head>
-    <body>
+    <body ng-controller="GlobalController">
         <div id="wrapper">
             <div id="page-wrapper" class="view-container">
                 <header>
                     <a href="/#/home"><span class="brand">SurveyMania</span></a>
-                    <div style="width: 300px; margin: auto; padding-top: 5px;">
-                        <ul class="nav nav-pills">
+                    <div style="padding-top: 5px;">
+                        <ul class="nav nav-pills" style="width: 300px; float:left; margin-left: 25%;">
                             <li role="presentation" ng-class="{active:(navigationPart==='home')}"><a href="/#/home">Home</a></li>
                             <li role="presentation" ng-class="{active:(navigationPart==='account')}"><a href="/#/account">Account</a></li>
                             <li role="presentation" ng-class="{active:(navigationPart==='mysurveys')}"><a href="/#/mysurveys">My surveys</a></li>
                         </ul>
+                        <div style="float: right; margin-right: 10px; margin-top:5px;">
+                            <button id="logoutBtn" ng-show="isLogged" ng-click="logout()" class="btn btn-default">Logout</button>
+                            <button ng-hide="isLogged" type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal2">S'identifier</button> 
+                            <button ng-hide="isLogged" type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">S'inscrire</button>
+                        </div>
                     </div>
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" style="float: right">S'inscrire</button>
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal2" style="float: right; margin-right: 10px">S'identifier</button> 
                 </header>
                 <div ng-include="'/login'"></div>
                 <div ng-include="'/signup'"></div>

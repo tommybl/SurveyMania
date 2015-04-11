@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <div ng-controller="AccountController">
-	<button ng-click="logout()" class="btn btn-default">Logout</button>
 	<div id="profil_bg" class="col-md-12">
 		<div id="default_profil" ng-click="tab_hide()">
 			<img id="profil_img" src="img/default_profil.png" alt="image de profil"/>
@@ -33,87 +32,105 @@
 	<div id="show_about" style="display:none;">
 		<div class="row-centered">
 			<div class="col-md-6 col-centered">
-				<div id="edit-success" class="alert alert-success alert-dismissible fade in" role="alert" ng-show="editSuccMess!=undefined">
+				<div id="edit-success" style="margin-top: 25px;" class="alert alert-success alert-dismissible fade in" role="alert" ng-show="editSuccMess!=undefined">
 				    <button type="button" class="close" ng-click="editSuccMess=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
 				    <span>{{editSuccMess}}</span>
 				</div>
-				<div id="edit-error" class="alert alert-danger alert-dismissible fade in" role="alert" ng-show="editErrMess!=undefined">
+				<div id="edit-error" style="margin-top: 25px;" class="alert alert-danger alert-dismissible fade in" role="alert" ng-show="editErrMess!=undefined">
 				    <button type="button" class="close" ng-click="editErrMess=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
 				    <span>{{editErrMess}}</span>
 				</div>
-				<h1>User informations</h1>
-				<p>Type de compte: 
-					<span ng-if="user.owner_type == 1">Particulier</span>
-					<span ng-if="user.owner_type == 2">Administrateur</span>
-					<span ng-if="user.owner_type == 3">Professionnel</span>
-					<span ng-if="user.owner_type == 4">Administrateur professionnel</span>
-				</p>
-				<p class="edit_link" ng-hide="addressEdit" ng-click="editAdress(true)">Adresse:<br/>
-					<span ng-bind="user.owner_adress"></span>
-					{{user.owner_postal}} {{user.owner_town}}<br/>{{user.owner_country}}
-				</p>
-				<div ng-show="addressEdit">
-					<div class="col-sm-12">
-						<label>Indiquez votre adresse ici</label>
-						<div class="col-sm-11" style="padding-left:0px !important"><input type="text" id="googleAddressAccount-autocomplete" placeholder="" class="form-control" onFocus="googleAddress.geolocate()" /></div>
-						<button ng-show="addressEdit" type="button" class="col-sm-1 btn btn-default button-validate" ng-click="editAdress(false)"><i class="fa fa-check"></i></button>
-					</div>
-					<div class="professionnal_form col-sm-6"> 
-						<label>Route</label> <span class="link_primary" hidden >*</span>
-						<input type="text" placeholder="" id="googleAddress2sign-route" class="form-control" ng-model="user.owner_adress" readonly />
-					</div>
-					<div class="professionnal_form col-sm-6">
-						<label>Code postal</label> <span class="link_primary" hidden >*</span>
-						<input type="text" placeholder="" id="sign-postal" class="form-control" ng-model="user.owner_postal" readonly />
-					</div>
-					<div class="professionnal_form col-sm-3">
-						<label>Ville</label> <span class="link_primary" hidden >*</span>
-						<input type="text" placeholder="" id="sign-locality" class="form-control" ng-model="user.owner_town" readonly />
-					</div>
-					<div class="professionnal_form col-sm-3">
-						<label>Pays</label> <span class="link_primary" hidden >*</span>
-						<input type="text" placeholder="" id="sign-country" class="form-control" ng-model="user.owner_country" readonly />
-					</div>
-				</div>
-				<div style="clear:both;">
-				<p>E-mail:
-					<span class="edit_link" ng-hide="emailEdit" ng-click="editEmail(true)" ng-bind="user.owner_email">
-						<button style="display:none;" type="button" class="btn btn-default button-validate showEdit" ng-click="editEmail(true)"><i class="fafa-pencil-square-o"></i></button>
-					</span>
-					<input class="user_info_edit_input" ng-show="emailEdit" type="text" ng-model="user.owner_email" ng-change="email_check()" required/>
-					<button ng-show="emailEdit" type="button" class="btn btn-default button-validate" ng-click="editEmail(false)"><i class="fa fa-check"></i></button><br/>
-					<span class="error" ng-show="isValidEmail">Le mail indiqué est invalide</span>
-					<br/>
-
-					Tel:
-					<span class="edit_link" ng-hide="phoneEdit" ng-click="editPhone(true)" ng-bind="user.owner_tel">
-						<button style="display:none;" type="button" class="btn btn-default button-validate showEdit" ng-click="editPhone(true)"><i class="fafa-pencil-square-o"></i></button>
-					</span>
-					<input class="user_info_edit_input" ng-show="phoneEdit" type="text" ng-model="user.owner_tel" ng-change="phoneNumber_check()"/>
-					<button ng-show="phoneEdit" type="button" class="btn btn-default button-validate" ng-click="editPhone(false)"><i class="fa fa-check"></i></button><br/>
-					<span class="error" ng-show="isValidPhoneNumber">Le numéro doit être composé de 10 chiffres ou doit commencer par +33</span>
-					</p>
-				</div>
-				<p>Points: {{user.owner_points}}</p>
-				<span id="newPassWord" ng-click="displayChangePassword()">Changer le mot de passe</span>
-				<div id="changePassword" style="display:none;">
-					<div>
-						<label>Veuillez taper votre mot de passe actuel</label> <span class="link_primary">*</span>
-						<input type="password" class="form-control" ng-model="oldpwd" ng-blur="oldPasswordCompare()" required/>
-						<span class="error" style="position:relative !important;" ng-show="isValidOldPwd">Le mot de passe ne correspond pas à votre mot de passe actuel</span>
-					</div>
-					<div>
-						<label>Tapez votre nouveau mot de passe</label> <span class="link_primary">*</span>
-						<input type="password" class="form-control" ng-model="newPwd" ng-change="pwd_check()" required/>
-						<span class="error" style="position:relative !important;" ng-show="isValidPwd">Votre mot de passe doit contenir au moins une lettre, un chiffre, un caractère spécial et doit excéder 6 caractères</span>
-					</div>
-					<div>
-						<label>Confirmez le mot de passe</label> <span class="link_primary">*</span>
-						<input type="password" class="form-control" ng-model="newPwdConfirm" ng-change="confirmpwd_check()" required/>
-						<span class="error" style="position:relative !important;" ng-show="isValidConfirmPwd">Le mots de passe de sont pas identiques</span>
+				<h1 style="display: inline-block;">User informations</h1>
+				<button type="button" style="float:right; margin-top:25px;"class="col-sm-1 btn btn-default button-validate" ng-click="editField()"><i class="fa fa-pencil"></i></button>
+				<div class="col-sm-12" style="padding:0px;">
+					<div class="panel panel-default" id="profile-settings" ng-show="showEditField">
+						<div class="panel-heading"><i class="fa fa-th"></i> Edition profil</div>
+						<div class="panel-body">
+							<div id="accountEditProfile">
+								<div class="col-sm-12">
+									<label>Indiquez votre adresse ici</label>
+									<input type="text" id="googleAddressAccount-autocomplete" placeholder="" class="form-control" onFocus="googleAddress.geolocate()" />
+								</div>
+								<div class="professionnal_form col-sm-6"> 
+									<label>Route</label> <span class="link_primary" hidden >*</span>
+									<input type="text" placeholder="" id="googleAddress2sign-route" class="form-control" ng-model="user.owner_adress" readonly />
+								</div>
+								<div class="professionnal_form col-sm-6">
+									<label>Code postal</label> <span class="link_primary" hidden >*</span>
+									<input type="text" placeholder="" id="sign-postal" class="form-control" ng-model="user.owner_postal" readonly />
+								</div>
+								<div class="professionnal_form col-sm-3">
+									<label>Ville</label> <span class="link_primary" hidden >*</span>
+									<input type="text" placeholder="" id="sign-locality" class="form-control" ng-model="user.owner_town" readonly />
+								</div>
+								<div class="professionnal_form col-sm-3">
+									<label>Pays</label> <span class="link_primary" hidden >*</span>
+									<input type="text" placeholder="" id="sign-country" class="form-control" ng-model="user.owner_country" readonly />
+								</div>
+								<div class="professionnal_form col-sm-6" style="clear:both;">
+									<label>E-mail</label> <span class="link_primary" hidden >*</span>
+									<input class="user_info_edit_input form-control" type="text" ng-model="user.owner_email" ng-change="email_check()" required/>
+									<span class="error" ng-show="isValidEmail">Le mail indiqué est invalide</span>
+								</div>
+								<div class="col-sm-6" style="clear:both;">
+									<label>Numéro</label>
+									<input class="user_info_edit_input form-control" type="text" ng-model="user.owner_tel" ng-change="phoneNumber_check()"/>
+									<span class="error" ng-show="isValidPhoneNumber">Le numéro doit être composé de 10 chiffres ou doit commencer par +33</span>
+								</div>
+								<div style="clear:both;" class="col-sm-6">
+									<label>Veuillez taper votre mot de passe actuel</label> <span class="link_primary">*</span>
+									<input type="password" class="form-control" ng-model="oldpwd" ng-blur="oldPasswordCompare()" required/>
+									<span class="error" style="position:relative !important;" ng-show="isValidOldPwd">Le mot de passe ne correspond pas à votre mot de passe actuel</span>
+								</div>
+								<div style="clear:both;" class="col-sm-6">
+									<label>Tapez votre nouveau mot de passe</label> <span class="link_primary">*</span>
+									<input type="password" class="form-control" ng-model="newPwd" ng-change="pwd_check()" required/>
+									<span class="error" style="position:relative !important;" ng-show="isValidPwd">Votre mot de passe doit contenir au moins une lettre, un chiffre, un caractère spécial et doit excéder 6 caractères</span>
+								</div>
+								<div class="col-sm-6">
+									<label>Confirmez le mot de passe</label> <span class="link_primary">*</span>
+									<input type="password" class="form-control" ng-model="newPwdConfirm" ng-change="confirmpwd_check()" required/>
+									<span class="error" style="position:relative !important;" ng-show="isValidConfirmPwd">Le mots de passe de sont pas identiques</span>
+								</div>
+								<div class="col-sm-6" style="clear:both;margin-bottom:20px;">
+									<input type="submit" value="Enregistrer les modifications" class="btn btn-primary" ng-click="submitProfileChange()"/>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
-				<input ng-show="editProfile" type="submit" value="Enregistrer les modifications" class="btn btn-primary" ng-click="submitProfileChange()"/>
+				<div class="col-sm-12" style="padding:0px;">
+					<div class="panel panel-default" id="profile-settings" ng-hide="showEditField">
+						<div class="panel-heading"><i class="fa fa-th"></i> Profil</div>
+						<div class="panel-body">
+							<div class="form-group  group-clear">
+								<label class="col-sm-3 control-label">Type de compte:</label>
+								<div class="col-sm-8">
+									<span ng-if="user.owner_type == 1">Particulier</span>
+									<span ng-if="user.owner_type == 2">Administrateur</span>
+									<span ng-if="user.owner_type == 3">Professionnel</span>
+									<span ng-if="user.owner_type == 4">Administrateur professionnel</span>
+								</div>
+							</div>
+							<div class="form-group group-clear">
+								<label class="col-sm-3 control-label">Adresse:</label>
+								<div class="col-sm-8">{{user.owner_adress}} {{user.owner_postal}} {{user.owner_town}} {{user.owner_country}}</div>
+							</div>
+							<div class="form-group group-clear">
+								<label class="col-sm-3 control-label">E-mail:</label>
+								<div class="col-sm-8"><span ng-bind="user.owner_email"></span></div>
+							</div>
+							<div class="form-group group-clear">
+								<label class="col-sm-3 control-label">Téléphone:</label>
+								<div class="col-sm-8"><span ng-bind="user.owner_tel"></span></div>
+							</div>
+							<div class="form-group group-clear">
+								<label class="col-sm-3 control-label">Points:</label>
+								<div class="col-sm-8">{{user.owner_points}}</div>
+							</div>
+						</div>	
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
