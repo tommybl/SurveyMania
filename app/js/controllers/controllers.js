@@ -269,12 +269,30 @@ surveyManiaControllers.controller('ValidateProAccount', ['$scope', '$http', '$wi
 surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
 
     var oldUser;
+    var oldOrganization;
     $http.post('/app/getUser/')
         .success(function (data, status, headers, config) {
             console.log(data);
             if (data.error == undefined) {
-                oldUser = data.user;
+                oldUser = angular.copy(data.user);
                 $scope.user = data.user;
+
+                if ($scope.user.owner_type == 3)
+                {
+                    console.log("idorga:"+$scope.user.owner_organization);
+                    $http.post('/app/getUserOrganization/', {userOrganization:$scope.user.owner_organization})
+                    .success(function (data, status, headers, config) {
+                        console.log(data);
+                        if (data.error == undefined) {
+                            oldOrganization = angular.copy(data.organization);
+                            $scope.organization = data.organization;
+                        }
+                        else $scope.verifErrMess = data.error + '. ' + data.message;
+                    })
+                    .error(function (data, status, headers, config) {
+                        $scope.verifErrMess = data.error + '. ' + data.message;
+                    });
+                }
             }
             else $scope.verifErrMess = data.error + '. ' + data.message;
         })
@@ -365,6 +383,8 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
 
         var edituser = {
             id: $scope.user.owner_id,
+            firstname: $scope.user.owner_firstname,
+            lastname: $scope.user.owner_lastname,
             type: ownerType,
             email: $scope.user.owner_email,
             password: password,
@@ -377,15 +397,26 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
 
         $http.post('/editUserProfile', edituser)
         .success(function (data, status, headers, config) {
-            if (data.error == undefined) {
+            if(data.verifMail)
+            {
+                $scope.editSuccMess = "Un mail vous a été envoyé pour confirmer votre nouvelle adresse e-mail";
+                $scope.user.owner_email = oldUser.owner_email;
+            }
+
+            else if (data.error == undefined) {
                 $scope.showEditField = false;
                 $scope.editSuccMess = "Vos modifications ont bien été prises en compte";
             }
-            else $scope.editErrMess = data.error + '. ' + data.message;
+            else
+            {
+                $scope.editErrMess = data.error + '. ' + data.message;
+                if (data.code == 1)
+                    $scope.user.owner_email = oldUser.owner_email;
+            }
         })
         .error(function (data, status, headers, config) {
             console.log(data);
-            $scope.signupErrMess = data.error + '. ' + data.message;
+            $scope.editErrMess = data.error + '. ' + data.message;
         });
     }
 }]);
