@@ -416,9 +416,17 @@ surveyManiaControllers.controller('PwdResetController', ['$scope', '$http', '$wi
 
 surveyManiaControllers.controller('MySurveysController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
     $scope.qrcode_result = null;
-    $scope.test = 0;
+    $scope.userSurveys = [];
+
+    $http.post('/app/getUserSurveys/')
+        .success(function (data, status, headers, config) {
+            $scope.userSurveys = data.userSurveys;
+    });
     
-    $scope.update = function () {
-        $scope.test += 1;
+    $scope.addSurvey = function (readedQRcode) {
+        $http.post('/app/addUserSurvey/', {qrcode: readedQRcode})
+            .success(function (data, status, header, config) {
+                $scope.userSurveys.unshift({organame: data.userSurveys[0].organame, surveyname: data.userSurveys[0].surveyname, points: data.userSurveys[0].points, infos: data.userSurveys[0].infos, completed: data.userSurveys[0].completed});
+        });
     };
 }]);

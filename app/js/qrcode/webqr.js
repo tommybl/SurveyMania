@@ -71,8 +71,7 @@ function captureToCanvas() {
 }
 
 function read(a) {
-    resultField.value = a;
-    resultField.click();
+    angular.element(document.getElementById("mySurveysMain")).scope().addSurvey(a);
     setTimeout(captureToCanvas, timeBtwScans);
 }
 

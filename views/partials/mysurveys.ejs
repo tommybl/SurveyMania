@@ -2,7 +2,7 @@
 <script type="text/javascript" src="js/qrcode/llqrcode.js"></script>
 <script type="text/javascript" src="js/qrcode/webqr.js"></script>
 
-<div ng-controller="MySurveysController">
+<div id="mySurveysMain" ng-controller="MySurveysController">
   	<h1 onclick="qrcodeInit()">Ajouter un sondage</h1>
     <div id="add_survey" style="display: none">
         <div id="add_survey_error" style="diplay: none"></div>
@@ -21,11 +21,32 @@
             <canvas id="out-canvas" width="50" height="50" style="border: solid black 1px"></canvas><br><br>
             <input type="file" onchange="handleFiles(this.files)" accept="image/*" capture/>
         </div>
-        <input type="text" placeholder="" id="resultField" class="form-control" ng-model="qrcode_result" ng-click="update()" readonly />
-        <input type="text" placeholder="" class="form-control" ng-model="test" />
+    </div>
+
+    <h1>Mes sondages</h1>
+    <div class="col-md-6">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Entreprise</th>
+                    <th>Nom du sondage</th>
+                    <th>Points</th>
+                    <th>Informations</th>
+                    <th>Complété</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr ng-repeat="userSurvey in userSurveys">
+                    <td>{{userSurvey.organame}}</td>
+                    <td>{{userSurvey.surveyname}}</td>
+                    <td>{{userSurvey.points}}</td>
+                    <td>{{userSurvey.infos}}</td>
+                    <td>{{userSurvey.completed}}</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
-   
-<h1>Mes sondages
 
 <script src="js/scroll.js"></script>

@@ -635,6 +635,72 @@ app
     res.render('partials/mysurveys');
 })
 
+.post('/app/getUserSurveys', function (req, res) {
+    var user = req.user;
+    var survey_headers = [];
+    pg.connect(conString, function(err, client, done) {
+        if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+        else {
+            var query = 'SELECT o.name AS orgaName, sh.name AS surveyName, sh.points AS points, sh.info AS infos, us.completed AS completed FROM surveymania.survey_headers sh INNER JOIN surveymania.user_surveys us ON sh.id = us.survey_header_id '
+                + 'INNER JOIN surveymania.organizations o ON sh.organization_id = o.id INNER JOIN surveymania.users u ON us.user_id = u.id WHERE u.id = ' + req.user.id;
+            client.query(query, function(err, result) {
+                done();
+                if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                else {
+                    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+                    res.json({code: 200, userSurveys: result.rows});
+                }
+            });
+        }
+    });
+})
+
+.post('/app/addUserSurvey/', function (req, res) {
+    var user = req.user;
+
+    var JsonFormatter = {
+        parse: function (jsonStr) {
+            var jsonObj = JSON.parse(jsonStr);
+            var cipherParams = CryptoJS.lib.CipherParams.create({
+                ciphertext: CryptoJS.enc.Base64.parse(jsonObj.ct)
+            });
+            cipherParams.salt = CryptoJS.enc.Hex.parse(jsonObj.s);
+            return cipherParams;
+        }
+    };
+
+    /*var encrypted = CryptoJS.AES.encrypt(req.body.qrcode, SurveyManiasecret, { format: JsonFormatter }).toString();
+    var mybase = encrypted.replace(/\+/g, ".");
+    console.log(mybase);*/
+
+    var mybase2 = req.body.qrcode.replace(/\./g, "+");
+    var decrypted = CryptoJS.AES.decrypt(mybase2, SurveyManiasecret, { format: JsonFormatter }).toString(CryptoJS.enc.Utf8).split("=")[1];
+    console.log(decrypted);
+
+    pg.connect(conString, function(err, client, done) {
+        if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+        else {
+            var query = 'INSERT INTO surveymania.user_surveys (user_id, survey_header_id, completed) VALUES (' + user.id + ', ' + decrypted + ', NULL)';
+            client.query(query, function(err, result) {
+                done();
+                if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                else {
+                    var query = 'SELECT o.name AS orgaName, sh.name AS surveyName, sh.points AS points, sh.info AS infos, us.completed AS completed FROM surveymania.survey_headers sh INNER JOIN surveymania.user_surveys us ON sh.id = us.survey_header_id '
+                + 'INNER JOIN surveymania.organizations o ON sh.organization_id = o.id INNER JOIN surveymania.users u ON us.user_id = u.id WHERE u.id = ' + req.user.id + ' AND sh.id = ' + decrypted;
+                    client.query(query, function(err, result) {
+                        done();
+                        if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                        else {
+                            res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+                            res.json({code: 200, userSurveys: result.rows});
+                        }
+                    })
+                }
+            });
+        }
+    });
+})
+
 .get('/401-unauthorized', function (req, res) {
     res.setHeader("Content-Type", "text/html");
     res.render('401-unauthorized');
