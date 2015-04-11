@@ -357,7 +357,7 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
             type: ownerType,
             email: $scope.user.owner_email,
             password: password,
-            adress: ($scope.user.owner_address == '') ? null : $scope.user.owner_address,
+            adress: ($scope.user.owner_adress == '') ? null : $scope.user.owner_adress,
             postal: ($scope.user.owner_postal == '') ? null : $scope.user.owner_postal,
             town: ($scope.user.owner_town == '') ? null : $scope.user.owner_town,
             country: ($scope.user.owner_country == '') ? null : $scope.user.owner_country,

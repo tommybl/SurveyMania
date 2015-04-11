@@ -221,3 +221,13 @@ header
 #accountEditProfile div{
     margin-top:30px;
 }
+
+#accountEditProfile div:first-child{
+    margin-top:0px !important;
+}
+
+.group-clear
+{
+    clear: both;
+    padding-bottom:20px;
+}
