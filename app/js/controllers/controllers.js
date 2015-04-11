@@ -312,7 +312,6 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
     $scope.showEditField=false;
     $scope.addressEdit=false;
     $scope.emailEdit=false;
-    $scope.editProfile=false;
     $scope.phoneEdit=false;
     $scope.isValidOldPwd=false;
     $scope.isValidPwd=false;
@@ -323,10 +322,6 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
     {
         $scope.showEditField = !$scope.showEditField;
     }
-    $scope.editAdress=function($bool){$scope.editProfile=true;$scope.addressEdit=$bool;}
-    $scope.editEmail=function($bool){$scope.editProfile=true;$scope.emailEdit=$bool;}
-    $scope.editPhone=function($bool){$scope.editProfile=true;$scope.phoneEdit=$bool;}
-
     $scope.displayChangePassword=function(){$("#changePassword").toggle();}
 
     $scope.oldPasswordCompare=function(){
@@ -344,8 +339,13 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
     // Save changes
     $scope.submitProfileChange = function()
     {
-        console.log("okkkk");
-        var password = CryptoJS.SHA256($scope.newPwd).toString();
+        console.log("okkkk "+$scope.newPwd);
+        var password;
+        if($scope.newPwd == undefined)
+            password = $scope.user.owner_password;
+        else
+            password = CryptoJS.SHA256($scope.newPwd).toString();
+
         var ownerType;
         if ($scope.user.owner_type == 1 || $scope.user.owner_type == 2)
             ownerType = 'particulier';
@@ -367,7 +367,7 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
         $http.post('/editUserProfile', edituser)
         .success(function (data, status, headers, config) {
             if (data.error == undefined) {
-                console.log(data);
+                $scope.showEditField = false;
                 $scope.editSuccMess = "Vos modifications ont bien été prises en compte";
             }
             else $scope.editErrMess = data.error + '. ' + data.message;
