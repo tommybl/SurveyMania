@@ -354,6 +354,7 @@ CREATE TABLE  surveymania.user_surveys (
   survey_header_id INT NOT NULL,
   completed TIMESTAMP NULL DEFAULT NULL,
   PRIMARY KEY (id),
+  UNIQUE (user_id, survey_header_id),
   CONSTRAINT fk_user_id
     FOREIGN KEY (user_id)
     REFERENCES surveymania.users (id)
