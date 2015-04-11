@@ -1,3 +1,24 @@
 <!DOCTYPE html>
-<h1>panel</h1>
+
+<div ng-controller="OrganizationPanel">
+    <h1>Catégories</h1>
+    <div class="col-md-6">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Couleur</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr ng-repeat="category in categories">
+                    <td>{{category.name}}</td>
+                    <td>{{category.color}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
 <script src="js/scroll.js"></script>

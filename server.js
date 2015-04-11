@@ -732,105 +732,116 @@ app
 
 .get('/app/mysurveys', function (req, res) {
     if(req.user.usertypenumber != 1) res.redirect('/401-unauthorized');
-    res.setHeader("Content-Type", "text/html");
-    res.render('partials/mysurveys');
+    else {
+        res.setHeader("Content-Type", "text/html");
+        res.render('partials/mysurveys');
+    }
 })
 
 .post('/app/getUserSurveys', function (req, res) {
-    var user = req.user;
-    var survey_headers = [];
-    pg.connect(conString, function(err, client, done) {
-        if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
-        else {
-            var query = 'SELECT o.name AS orgaName, sh.name AS surveyName, sh.points AS points, sh.info AS infos, us.completed AS completed FROM surveymania.survey_headers sh INNER JOIN surveymania.user_surveys us ON sh.id = us.survey_header_id '
-                + 'INNER JOIN surveymania.organizations o ON sh.organization_id = o.id INNER JOIN surveymania.users u ON us.user_id = u.id WHERE u.id = ' + req.user.id;
-            client.query(query, function(err, result) {
-                done();
-                if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
-                else {
-                    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
-                    res.json({code: 200, userSurveys: result.rows});
-                }
-            });
-        }
-    });
+    if(req.user.usertypenumber != 1) res.status(500).json({code: 500});
+    else {
+        var user = req.user;
+        var survey_headers = [];
+        pg.connect(conString, function(err, client, done) {
+            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+            else {
+                var query = 'SELECT o.name AS orgaName, sh.name AS surveyName, sh.points AS points, sh.info AS infos, us.completed AS completed FROM surveymania.survey_headers sh INNER JOIN surveymania.user_surveys us ON sh.id = us.survey_header_id '
+                    + 'INNER JOIN surveymania.organizations o ON sh.organization_id = o.id INNER JOIN surveymania.users u ON us.user_id = u.id WHERE u.id = ' + req.user.id;
+                client.query(query, function(err, result) {
+                    done();
+                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                    else {
+                        res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+                        res.json({code: 200, userSurveys: result.rows});
+                    }
+                });
+            }
+        });
+    }
 })
 
 .post('/app/addUserSurvey/', function (req, res) {
-    var user = req.user;
-
-    /*console.log(req.body.qrcode);
-    var encrypted = CryptoJS.AES.encrypt(req.body.qrcode, SurveyManiasecret, { format: JsonFormatter }).toString();
-    var tmp = encrypted.replace(/\+/g, ".");
-    console.log(tmp);*/
-    if (req.body.qrcode == "error decoding QR Code")
-        res.status(200).json({code: 200, message: "Scanning error"});
+    if(req.user.usertypenumber != 1) res.status(500).json({code: 500});
     else {
-        var myBase = req.body.qrcode.replace(/\./g, "+");
-        var decrypted = CryptoJS.AES.decrypt(myBase, SurveyManiasecret, { format: JsonFormatter }).toString(CryptoJS.enc.Utf8);
+        var user = req.user;
 
-        if (!(/^\d+$/.test(decrypted)))
-            res.status(200).json({code: 200, message: "Not valid"});
+        /*console.log(req.body.qrcode);
+        var encrypted = CryptoJS.AES.encrypt(req.body.qrcode, SurveyManiasecret, { format: JsonFormatter }).toString();
+        var tmp = encrypted.replace(/\+/g, ".");
+        console.log(tmp);*/
+        if (req.body.qrcode == "error decoding QR Code")
+            res.status(200).json({code: 200, message: "Scanning error"});
         else {
-            pg.connect(conString, function(err, client, done) {
-                if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
-                else {
-                    var query = 'SELECT us.id FROM surveymania.user_surveys us WHERE us.user_id = ' + user.id + ' AND us.survey_header_id = ' + decrypted;
-                    client.query(query, function(err, result) {
-                        done();
-                        if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
-                        else {
-                            if (result.rows.length != 0) res.status(200).json({code: 200, message: "Already scanned"});
+            var myBase = req.body.qrcode.replace(/\./g, "+");
+            var decrypted = CryptoJS.AES.decrypt(myBase, SurveyManiasecret, { format: JsonFormatter }).toString(CryptoJS.enc.Utf8);
+
+            if (!(/^\d+$/.test(decrypted)))
+                res.status(200).json({code: 200, message: "Not valid"});
+            else {
+                pg.connect(conString, function(err, client, done) {
+                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                    else {
+                        var query = 'SELECT us.id FROM surveymania.user_surveys us WHERE us.user_id = ' + user.id + ' AND us.survey_header_id = ' + decrypted;
+                        client.query(query, function(err, result) {
+                            done();
+                            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                             else {
-                                var query = 'SELECT o.name AS orgaName, sh.name AS surveyName, sh.points AS points, sh.info AS infos FROM surveymania.survey_headers sh '
-                                    + 'INNER JOIN surveymania.organizations o ON sh.organization_id = o.id WHERE sh.id = ' + decrypted;
-                                client.query(query, function(err, result) {
-                                    done();
-                                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
-                                    else {
-                                        if (result.rows.length == 0){
-                                            res.status(200).json({code: 200, message: "Unknown survey"});
-                                        } else {
-                                            res.setHeader('Content-Type', 'application/json; charset=UTF-8');
-                                            res.status(200).json({code: 200, message: "Valid", surveyHeader: result.rows[0], encrypted: myBase});
+                                if (result.rows.length != 0) res.status(200).json({code: 200, message: "Already scanned"});
+                                else {
+                                    var query = 'SELECT o.name AS orgaName, sh.name AS surveyName, sh.points AS points, sh.info AS infos FROM surveymania.survey_headers sh '
+                                        + 'INNER JOIN surveymania.organizations o ON sh.organization_id = o.id WHERE sh.id = ' + decrypted;
+                                    client.query(query, function(err, result) {
+                                        done();
+                                        if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                        else {
+                                            if (result.rows.length == 0){
+                                                res.status(200).json({code: 200, message: "Unknown survey"});
+                                            } else {
+                                                res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+                                                res.status(200).json({code: 200, message: "Valid", surveyHeader: result.rows[0], encrypted: myBase});
+                                            }
                                         }
-                                    }
-                                });
+                                    });
+                                }
                             }
-                        }
-                    });
-                }
-            });
+                        });
+                    }
+                });
+            }
         }
     }
 })
 
 .post('/app/validateAddUserSurvey/', function (req, res) {
-    var user = req.user;
-    var encrypted = req.body.qrcode.replace(/\./g, "+");
-    var decrypted = CryptoJS.AES.decrypt(encrypted, SurveyManiasecret, { format: JsonFormatter }).toString(CryptoJS.enc.Utf8);
-    pg.connect(conString, function(err, client, done) {
-        if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
-        else {
-            var query = 'INSERT INTO surveymania.user_surveys (user_id, survey_header_id, completed) VALUES (' + user.id + ', ' + decrypted + ', NULL)';
-            client.query(query, function(err, result) {
-                done();
-                if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
-                else {
-                    var query = 'SELECT o.name AS orgaName, sh.name AS surveyName, sh.points AS points, sh.info AS infos, us.completed AS completed FROM surveymania.survey_headers sh INNER JOIN surveymania.user_surveys us ON sh.id = us.survey_header_id '
-                        + 'INNER JOIN surveymania.organizations o ON sh.organization_id = o.id INNER JOIN surveymania.users u ON us.user_id = u.id WHERE u.id = ' + user.id + ' AND sh.id = ' + decrypted;
-                    client.query(query, function(err, result) {
-                        done();
-                        if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
-                        else {
-                            res.setHeader('Content-Type', 'application/json; charset=UTF-8');
-                            res.json({code: 200, userSurveys: result.rows[0]});
-                        }
-                    })
-                }
-            });
-        }
-    });
+    if(req.user.usertypenumber != 1) res.status(500).json({code: 500});
+    else {
+        var user = req.user;
+        var encrypted = req.body.qrcode.replace(/\./g, "+");
+        var decrypted = CryptoJS.AES.decrypt(encrypted, SurveyManiasecret, { format: JsonFormatter }).toString(CryptoJS.enc.Utf8);
+        pg.connect(conString, function(err, client, done) {
+            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+            else {
+                var query = 'INSERT INTO surveymania.user_surveys (user_id, survey_header_id, completed) VALUES (' + user.id + ', ' + decrypted + ', NULL)';
+                client.query(query, function(err, result) {
+                    done();
+                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                    else {
+                        var query = 'SELECT o.name AS orgaName, sh.name AS surveyName, sh.points AS points, sh.info AS infos, us.completed AS completed FROM surveymania.survey_headers sh INNER JOIN surveymania.user_surveys us ON sh.id = us.survey_header_id '
+                            + 'INNER JOIN surveymania.organizations o ON sh.organization_id = o.id INNER JOIN surveymania.users u ON us.user_id = u.id WHERE u.id = ' + user.id + ' AND sh.id = ' + decrypted;
+                        client.query(query, function(err, result) {
+                            done();
+                            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                            else {
+                                res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+                                res.json({code: 200, userSurveys: result.rows[0]});
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
 })
 
 .get('/app/organizationPanel', function (req, res) {
@@ -838,6 +849,41 @@ app
     else {
         res.setHeader("Content-Type", "text/html");
         res.render('partials/organizationPanel');
+    }
+})
+
+.post('/app/category/get', function (req, res) {
+    if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
+    else {
+        var orgaid = req.user.organization;
+        pg.connect(conString, function(err, client, done) {
+            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+            else {
+                var query = 'SELECT name, color FROM surveymania.organization_categories WHERE organization_id = ' + orgaid;
+                client.query(query, function(err, result) {
+                    done();
+                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                    else {
+                        res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+                        res.json({code: 200, categories: result.rows});
+                    }
+                });
+            }
+        });
+    }
+})
+
+.post('/app/category/add', function (req, res) {
+    if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
+    else {
+
+    }
+})
+
+.post('/app/category/update', function (req, res) {
+    if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
+    else {
+
     }
 })
 

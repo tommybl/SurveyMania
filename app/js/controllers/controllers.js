@@ -552,3 +552,12 @@ surveyManiaControllers.controller('MySurveysController', ['$scope', '$http', '$w
         $("#confirmScanModal").modal('hide');
     };
 }]);
+
+surveyManiaControllers.controller('OrganizationPanel', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
+    $scope.categories = null;
+
+    $http.post('/app/category/get')
+        .success(function (data, status, header, config) {
+            $scope.categories = data.categories;
+        });
+}]);
