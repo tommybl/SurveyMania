@@ -4,12 +4,22 @@ var surveyManiaControllers = angular.module('surveyManiaControllers', []);
 
 surveyManiaControllers.controller('GlobalController', ['$scope', '$window', '$location', function($scope, $window, $location) {
     $scope.isLogged;
-    $scope.isLoggedFun = function(){$scope.isLogged = !($window.localStorage.token == undefined);console.log("inside:"+$scope.isLogged+"     isLogged:"+ $scope.isLogged);}
+    $scope.isLoggedFun = function(){$scope.isLogged = !($window.localStorage.token == undefined);console.log("inside:"+$scope.isLogged+"     isLogged:"+ $scope.isLogged);};
     $scope.isLoggedFun();
 
-    $scope.logout = function () { 
+    $scope.isCustomer;
+    $scope.isOrganization;
+    $scope.initUserType = function () {
+        var type = $window.localStorage.userType; $scope.isCustomer = false; $scope.isOrganization = false;
+        if (type == 1) {$scope.isCustomer = true;} else {if (type == 2 || type == 3) {$scope.isOrganization = true}};
+    };
+    $scope.initUserType();
+
+    $scope.logout = function () {
         delete $window.localStorage.token;
+        delete $window.localStorage.userType;
         $scope.isLoggedFun();
+        $scope.initUserType();
         console.log("logout"+$scope.isLogged); 
         $location.path("/home");
     };
@@ -31,6 +41,7 @@ surveyManiaControllers.controller('LoginController', ['$rootScope', '$scope', '$
                 $window.location.reload(); // O-M-G
                 angular.element(document.getElementById('logoutBtn')).scope().isLoggedFun();
                 $window.localStorage.token = data.token;
+                $window.localStorage.userType = data.usertype;
                 if (data.usertype == 1 || data.usertype == 3 || data.usertype == 4) {
                     if ($rootScope.navigationPart != "account")
                         $location.path( "/account");
@@ -570,5 +581,24 @@ surveyManiaControllers.controller('MySurveysController', ['$scope', '$http', '$w
                 $scope.userSurveys.unshift({organame: data.userSurveys.organame, surveyname: data.userSurveys.surveyname, points: data.userSurveys.points, infos: data.userSurveys.infos, completed: data.userSurveys.completed});
             });
         $("#confirmScanModal").modal('hide');
-    }
+    };
+}]);
+
+surveyManiaControllers.controller('OrganizationPanel', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
+    $scope.categories = null;
+    $scope.newCategory = {name: "", color: ""};
+
+    $http.post('/app/category/get')
+        .success(function (data, status, header, config) {
+            $scope.categories = data.categories;
+        });
+
+    $scope.addCategory = function () {
+        $http.post('/app/category/add', {newCategory: $scope.newCategory})
+            .success(function (data, status, header, config) {
+                $scope.categories.unshift({name: $scope.newCategory.name, color: $scope.newCategory.color});
+            })
+            .error(function (data, status, header, config) {
+            });
+    };
 }]);

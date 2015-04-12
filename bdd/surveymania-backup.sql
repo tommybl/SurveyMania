@@ -50,3 +50,8 @@ INSERT INTO survey_headers (organization_id, theme_id, name, instructions, info,
 INSERT INTO user_surveys (user_id, survey_header_id, completed) VALUES
 (7, 4, NULL),
 (7, 5, NULL);
+
+INSERT INTO organization_categories (organization_id, name, color) VALUES
+(3, 'Technologie', '#B9121B'),
+(3, 'Boulangerie', '#BD8D46'),
+(3, 'Conserves', '#96CA2D');
