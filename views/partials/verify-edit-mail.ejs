@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<div ng-controller="MailVerifyController" class="signup" style="width: 600px;margin: auto; color: black">
+    <h1>Verification d'email</h1>
+    <% if (token == undefined || token == 'new' || code == 1 || code == 2) { %>
+        <div>
+            <p>
+                <% if (token == undefined) { %>
+                <strong>Code de vérification invalide.<br><br></strong>
+                <% } %>
+                <% if (code == 1) { %>
+                <strong>Token invalide.<br><br></strong>
+                <% } %>
+                <% if (code == 2) { %>
+                <strong>Problème lors de l'actualisation de l'adresse e-mail.<br><br></strong>
+                <% } %>
+            </p>
+        </div>
+    <% } else { %>
+        <div>
+            <div class="alert alert-success alert-dismissible fade in" role="alert">
+                <button type="button" class="close" ng-click="verifSuccMess=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <span>Votre nouvelle adresse e-mail a été enregistrée !</span>
+            </div>
+            Vous pouvez vous rendre sur <a href="#/account" style="color:#f5c950;">votre compte</a> pour voir la modification.
+        </div>
+    <% } %>
+</div>

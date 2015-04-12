@@ -19,6 +19,11 @@ surveyManiaApp.config(['$routeProvider',
             controller: '',
             navigationPart: 'account'
         }).
+        when('/accounts/verifyEmail/:token', {
+            templateUrl: function(params){ return '/accounts/verifyEmail/' + params.token; },
+            controller: '',
+            navigationPart: 'accounts/verifyEmail'
+        }).
         when('/mysurveys', {
             templateUrl: '/app/mysurveys',
             controller: '',

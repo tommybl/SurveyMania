@@ -41,10 +41,12 @@
 				    <span>{{editErrMess}}</span>
 				</div>
 				<h1 style="display: inline-block;">User informations</h1>
-				<button type="button" style="float:right; margin-top:25px;"class="col-sm-1 btn btn-default button-validate" ng-click="editField()"><i class="fa fa-pencil"></i></button>
 				<div class="col-sm-12" style="padding:0px;">
 					<div class="panel panel-default" id="profile-settings" ng-show="showEditField">
-						<div class="panel-heading"><i class="fa fa-th"></i> Edition profil</div>
+						<div class="panel-heading">
+							<i class="fa fa-th"></i> Edition profil
+							<button type="button" style="float:right; margin-top:-7px;"class="col-sm-1 btn btn-default button-validate" ng-click="editField()"><i class="fa fa-pencil"></i></button>
+						</div>
 						<div class="panel-body">
 							<div id="accountEditProfile">
 								<div class="col-sm-12">
@@ -101,7 +103,10 @@
 				</div>
 				<div class="col-sm-12" style="padding:0px;">
 					<div class="panel panel-default" id="profile-settings" ng-hide="showEditField">
-						<div class="panel-heading"><i class="fa fa-th"></i> Profil</div>
+						<div class="panel-heading">
+							<i class="fa fa-th"></i> Profil
+							<button type="button" style="float:right; margin-top:-7px;"class="col-sm-1 btn btn-default button-validate" ng-click="editField()"><i class="fa fa-pencil"></i></button>
+						</div>
 						<div class="panel-body">
 							<div class="form-group  group-clear">
 								<label class="col-sm-3 control-label">Type de compte:</label>
@@ -127,6 +132,32 @@
 							<div class="form-group group-clear">
 								<label class="col-sm-3 control-label">Points:</label>
 								<div class="col-sm-8">{{user.owner_points}}</div>
+							</div>
+						</div>	
+					</div>
+				</div>
+
+				<div class="col-sm-12" style="padding:0px;" ng-if="user.owner_type == 3 || user.owner_type == 4">
+					<div class="panel panel-default" id="profile-settings" ng-hide="showEditField">
+						<div class="panel-heading"><i class="fa fa-th"></i> Profil entreprise</div>
+						<div class="panel-body">
+							<div class="form-group group-clear">
+								<label class="col-sm-3 control-label">Name:</label>
+								<div class="col-sm-8"><span ng-bind="organization.organization_name"></span></div>
+							</div>
+							<div class="form-group group-clear">
+								<label class="col-sm-3 control-label">Description:</label>
+								<div class="col-sm-8"><span ng-bind="organization.organization_description"></span></div>
+							</div>
+							<div class="form-group group-clear">
+								<label class="col-sm-3 control-label">Adresse:</label>
+								<div class="col-sm-8">
+									{{organization.organization_adress}} {{organization.organization_postal}} {{organization.organization_town}} {{organization.organization_country}}
+								</div>
+							</div>
+							<div class="form-group group-clear">
+								<label class="col-sm-3 control-label">Téléphone:</label>
+								<div class="col-sm-8"><span ng-bind="organization.organization_tel"></span></div>
 							</div>
 						</div>	
 					</div>
