@@ -549,6 +549,7 @@ CREATE TABLE  surveymania.organization_categories (
   name VARCHAR(255) NOT NULL,
   color VARCHAR(7) NOT NULL,
   PRIMARY KEY (id),
+  UNIQUE (organization_id, name),
   CONSTRAINT fk_organization_id
     FOREIGN KEY (organization_id)
     REFERENCES surveymania.organizations (id)

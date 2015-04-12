@@ -616,20 +616,39 @@ surveyManiaControllers.controller('MySurveysController', ['$scope', '$http', '$w
 }]);
 
 surveyManiaControllers.controller('OrganizationPanel', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
-    $scope.categories = null;
+    $scope.categories = [];
     $scope.newCategory = {name: "", color: ""};
+    $scope.updatedCategory = {name: "", color: ""};
+    $scope.oldCategory;
+    $scope.isValidCategoryName = true;
+    $scope.isValidCategoryColor = true;
 
     $http.post('/app/category/get')
         .success(function (data, status, header, config) {
             $scope.categories = data.categories;
         });
 
+    $scope.categoryNameCheck = function () {$scope.isValidCategoryName = (/^.{2,25}$/.test($scope.newCategory.name));}
+    $scope.categoryColorCheck = function () {$scope.isValidCategoryColor = (/^#(\d|[A-F]){6}$/.test($scope.newCategory.color));}
+
     $scope.addCategory = function () {
         $http.post('/app/category/add', {newCategory: $scope.newCategory})
             .success(function (data, status, header, config) {
-                $scope.categories.unshift({name: $scope.newCategory.name, color: $scope.newCategory.color});
+                if (data.message == "done")
+                    $scope.categories.unshift({name: $scope.newCategory.name, color: $scope.newCategory.color});
             })
             .error(function (data, status, header, config) {
+
             });
     };
+
+    $scope.updateCategory = function () {
+        $http.post('/app/category/update', {category: $scope.updatedCategory, old_category: $scope.oldCategory})
+            .success(function (data, status, header, config) {
+                alert(data.message);
+            })
+            .error(function (data, status, header, config) {
+
+            });
+    }
 }]);

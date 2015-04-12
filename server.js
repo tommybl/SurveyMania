@@ -944,15 +944,70 @@ app
 .post('/app/category/add', function (req, res) {
     if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
     else {
-        res.setHeader('Content-Type', 'application/json; charset=UTF-8');
-        res.json({code: 200});
+        var orgaid = req.user.organization;
+        var newCategory = req.body.newCategory;
+        if(!(/^.{2,25}$/.test(newCategory.name))) {res.status(200).json({code: 200, message: "Invalid name"}); return;}
+        if(!(/^#(\d|[A-F]){6}$/.test(newCategory.color))) {res.status(200).json({code: 200, message: "Invalid color"}); return;}
+        pg.connect(conString, function(err, client, done) {
+            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+            else {
+                var query = 'SELECT name FROM surveymania.organization_categories WHERE organization_id = ' + orgaid + 'AND name = \'' + newCategory.name + '\'';
+                client.query(query, function(err, result) {
+                    done();
+                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                    else {
+                        if (result.rows.length != 0) res.status(200).json({code: 200, message: "Duplicate category"});
+                        else{
+                            var query = 'INSERT INTO surveymania.organization_categories (organization_id, name, color) VALUES (' + orgaid + ', \'' + newCategory.name + '\', \'' + newCategory.color + '\')';
+                            client.query(query, function(err, result) {
+                                done();
+                                if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                else {
+                                    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+                                    res.status(200).json({code: 200, message: 'done'});
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
     }
 })
 
 .post('/app/category/update', function (req, res) {
     if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
     else {
-
+        var orgaid = req.user.organization;
+        var category = req.body.category;
+        var old_category = req.body.old_category;
+        if(!(/^.{2,25}$/.test(category.name))) {res.status(200).json({code: 200, message: "Invalid name"}); return;}
+        if(!(/^#(\d|[A-F]){6}$/.test(category.color))) {res.status(200).json({code: 200, message: "Invalid color"}); return;}
+        pg.connect(conString, function(err, client, done) {
+            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+            else {
+                var query = 'SELECT name FROM surveymania.organization_categories WHERE organization_id = ' + orgaid + 'AND name = \'' + category.name + '\'';
+                client.query(query, function(err, result) {
+                    done();
+                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                    else {
+                        if (result.rows.length != 0) res.status(200).json({code: 200, message: "Duplicate category"});
+                        else{
+                            var query = 'UPDATE surveymania.organization_categories SET name=\'' + category.name + '\', color=\'' + category.color + '\' WHERE organization_id=' + orgaid + ' AND name=\'' + old_category + '\'';
+                            console.log(query);
+                            client.query(query, function(err, result) {
+                                done();
+                                if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                else {
+                                    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+                                    res.status(200).json({code: 200, message: 'done'});
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
     }
 })
 

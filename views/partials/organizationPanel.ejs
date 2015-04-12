@@ -19,9 +19,15 @@
             </tbody>
         </table>
 
-        <form ng-submit="addCategory()">
-            <input ng-model="newCategory.name" type="text" name="name" placeholder="name" class="form-control" /> <br>
-            <input ng-model="newCategory.color" type="text" name="color" placeholder="color" class="form-control" /> <br>
+        <form ng-submit="updateCategory()">
+            <label>Nom de la catégorie</label> <span class="link_primary">*</span>
+            <input ng-model="newCategory.name" type="text" name="name" placeholder="name" class="form-control" ng-change="categoryNameCheck()" required/>
+            <span class="error" ng-show="!isValidCategoryName">Le nom d'une catégorie doit contenir entre 2 et 25 caractères</span>
+
+            <label>Nom de la catégorie</label> <span class="link_primary">*</span>
+            <input ng-model="newCategory.color" type="text" name="color" placeholder="color" class="form-control" ng-change="categoryColorCheck()" required/>
+            <span class="error" ng-show="!isValidCategoryColor">La couleur doit correspondre au format "#A14DEA"</span>
+
             <input type="submit" value="Ajouter" class="btn btn-primary" />
         </form>
     </div>
