@@ -383,7 +383,7 @@ app
         pg.connect(conString, function(err, client, done) {
         if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
         var query = 'SELECT orga.id AS organization_id, orga.description AS organization_description, orga.adress AS organization_adress, orga.postal AS organization_postal, '+
-                    'orga.town AS organizations_town, orga.country AS organization_country, orga.telephone AS organization_tel, orga.name AS organization_name ' +
+                    'orga.town AS organization_town, orga.country AS organization_country, orga.telephone AS organization_tel, orga.name AS organization_name ' +
                     'FROM surveymania.organizations orga WHERE orga.id = ' + req.body.userOrganization;
         client.query(query, function(err, result) {
             done();
@@ -425,7 +425,6 @@ app
 .post('/editUserProfile', function (req, res) {
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
     res.setHeader('Accept', 'application/json');
-    var inviter = null;
     var error = false;
 
     if (req.body.type == 'particulier' && req.body.email != null && req.body.password != null) {
@@ -505,61 +504,36 @@ app
             }
         });
     }
-    /*else if (req.body.type == 'professional' && req.body.email != null && req.body.password != null && req.body.firmdescription != null && req.body.phone != null && 
-             req.body.adress != null && req.body.postal != null && req.body.town != null && req.body.country != null)
-    {
-        pg.connect(conString, function(err, client, done) {
-            if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
-            else {
-                var query = 'SELECT getuser.email AS user_email, getuser.id AS user_id FROM surveymania.users getuser WHERE getuser.email = \'' + req.body.email + '\' ';
-                client.query(query, function(err, result) {
-                    done();
-                    if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query verifying email"});
-                    else if (result.rows.length && result.rows[0].user_email == req.body.email)
-                        res.status(200).json({code: 200, error: "Conflict", message: "Email already used for an existing account"});
-                    else {
-                        var email = '\'' + req.body.email + '\'';
-                        var password = '\'' + req.body.password + '\'';
-                        var telephone = (req.body.phone == null) ? 'NULL' : '\'' + req.body.phone + '\'';
-                        var adress = (req.body.adress == null) ? 'NULL' : '\'' + req.body.adress + '\'';
-                        var postal = (req.body.postal == null) ? 'NULL' : '\'' + req.body.postal + '\'';
-                        var town = (req.body.town == null) ? 'NULL' : '\'' + req.body.town + '\'';
-                        var country = (req.body.country == null) ? 'NULL' : '\'' + req.body.country + '\'';
-                        var firmname = (req.body.firmname == null) ? 'NULL' : '\'' + req.body.firmname + '\'';
-                        var firmdescription = (req.body.firmdescription == null) ? 'NULL' : '\'' + req.body.firmdescription + '\'';
-                        var logo_img = req.body.logo_img;
-                        var logo_type = req.body.logo_type;
-                        var logo_skip = req.body.logo_skip;
-                        var query = 'INSERT INTO surveymania.organizations(name, description, adress, postal, town, country, telephone, logo_path, url_add_discount, url_verify_discount, url_remove_discount, current_points, verified) ' +
-                            'VALUES (' + firmname + ', ' + firmdescription + ', ' + adress + ', ' + postal + ', ' + town + ', ' + country + ', ' + telephone + ', \'img/default_profil.jpg\', \'url\', \'url\', \'url\', 50, false) ' +
-                            'RETURNING id';
-                        client.query(query, function(err, result) {
-                            done();
-                            if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query inserting new organization"});
-                            else {
-                                var orgaid = result.rows[0].id;
-                                var query = 'INSERT INTO surveymania.users(user_organization, email, password, user_type, name, lastname, telephone, adress, postal, town, country, creation_dt, last_dt, points, verified) ' +
-                                    'VALUES (' + orgaid + ', ' + email + ', ' + password + ', 3, ' + firstname + ', ' + lastname + ', ' + telephone + ', ' + adress + ', ' + postal + ', ' + town + ', ' + country + ', ' +  dateNow + ', ' + dateNow + ', 200, false) ' +
-                                    'RETURNING id';
-                                client.query(query, function(err, result) {
-                                    done();
-                                    if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query inserting new user"});
-                                    else 
-                                        res.status(200).json({code: 200, message: "Account successfully created"});
-                                });
-                            }
-                        });
-                    }
-                });
-            }
-        });
-    }*/
     else res.status(500).json({code: 500, error: "Internal server error", message: "Bad user infos"});
 })
 
+.post('/editFirmProfile', function (req, res) {
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    res.setHeader('Accept', 'application/json');
+    pg.connect(conString, function(err, client, done) {
+        if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
+        else 
+        {
+            var telephone = (req.body.phone == null) ? 'NULL' : '\'' + req.body.phone + '\'';
+            var adress = (req.body.adress == null) ? 'NULL' : '\'' + req.body.adress + '\'';
+            var postal = (req.body.postal == null) ? 'NULL' : '\'' + req.body.postal + '\'';
+            var town = (req.body.town == null) ? 'NULL' : '\'' + req.body.town + '\'';
+            var country = (req.body.country == null) ? 'NULL' : '\'' + req.body.country + '\'';
+            var firmdescription = (req.body.description == null) ? 'NULL' : '\'' + req.body.description + '\'';
+              
+            var query = 'UPDATE surveymania.organizations SET description = '+firmdescription+', telephone = ' + telephone + ', adress=' + adress + ', postal =' + postal + ', town = ' + town + ', country = ' + country +
+                        ' WHERE id = '+req.body.id;
+            client.query(query, function(err, result) {
+                done();
+                if(err) {console.log(err);res.status(500).json({code: 500, error: "Internal server error", message: "Error running query inserting new organization"});}
+                else 
+                    res.status(200).json({code: 200, message: "Les modifications ont été sauvegardés !"});
+            })
+        }
+    });
+})
 
 .get('/accounts/verifyEmail/:token', function (req, res) {
-    console.log("okkk");
     var code = 1;
     res.setHeader("Content-Type", "text/html");
     var token = req.params.token;

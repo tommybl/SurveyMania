@@ -12,9 +12,18 @@ var googleAddress2 = {
     components: ["street_number", "route", "locality", "country", "postal_code"]
 };
 
+var googleAddress3 = {
+    placeSearch: null,
+    autocomplete: null,
+    divId: "googleAddress3",
+    components: ["street_number", "route", "locality", "country", "postal_code"]
+};
+
 function googleInitialize() {
     googleAddress.autocomplete = new google.maps.places.Autocomplete((document.getElementById('googleAddress-autocomplete')), { types: ['geocode'] });
+    googleAddress3.autocomplete = new google.maps.places.Autocomplete((document.getElementById('googleAddressFirm-autocomplete')), { types: ['geocode'] });
     googleAddress2.autocomplete = new google.maps.places.Autocomplete((document.getElementById('googleAddressAccount-autocomplete')), { types: ['geocode'] });
+    google.maps.event.addListener(googleAddress3.autocomplete, 'place_changed', function() {fillInAddress(googleAddress3);});
     google.maps.event.addListener(googleAddress.autocomplete, 'place_changed', function() {fillInAddress(googleAddress);});
     google.maps.event.addListener(googleAddress2.autocomplete, 'place_changed', function() {fillInAddress(googleAddress2);});
 }
@@ -59,6 +68,14 @@ function fillInAddress($googleAddr) {
         scope.user.owner_country = country;
         if (locality == "") scope.user.owner_town = sublocality;
         else scope.user.owner_town = locality;
+    }
+     else if($googleAddr.divId == "googleAddress3")
+    {
+        scope.organization.organization_adress = num + route;
+        scope.organization.organization_postal = postal;
+        scope.organization.organization_country = country;
+        if (locality == "") scope.organization.organization_town = sublocality;
+        else scope.organization.organization_town = locality;
     }
     scope.$apply();
 }

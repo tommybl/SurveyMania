@@ -338,7 +338,7 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
     }
     
     // Edit profile
-    $scope.showEditField=false;
+    $scope.showEditProfileField=false;
     $scope.addressEdit=false;
     $scope.emailEdit=false;
     $scope.phoneEdit=false;
@@ -347,10 +347,7 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
     $scope.isValidConfirmPwd=false;
     $scope.isValidPhoneNumber = false;
     $scope.isValidEmail = false;
-    $scope.editField = function()
-    {
-        $scope.showEditField = !$scope.showEditField;
-    }
+    $scope.editProfileField = function(){$scope.showEditProfileField = !$scope.showEditProfileField;}
     $scope.displayChangePassword=function(){$("#changePassword").toggle();}
 
     $scope.oldPasswordCompare=function(){
@@ -363,12 +360,18 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
     $scope.email_check = function(){$scope.isValidEmail = !(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test($scope.user.owner_email));}
     $scope.phoneNumber_check = function(){$scope.isValidPhoneNumber = !(/^((\+|00)33\s?|0)[1-9](\s?\d{2}){4}$/.test($scope.user.owner_tel));}
 
+    //Edit firm profile
+
+    $scope.isValidFirmPhoneNumber = false;
+    $scope.showEditFirmField=false;
+    $scope.firmPhoneNumber_check = function(){$scope.isValidFirmPhoneNumber = !(/^((\+|00)33\s?|0)[1-9](\s?\d{2}){4}$/.test($scope.organization.organization_tel));}
+    $scope.editFirmField = function(){$scope.showEditFirmField = !$scope.showEditFirmField;}
+
     googleInitialize();
 
-    // Save changes
+    // Save profile changes
     $scope.submitProfileChange = function()
     {
-        console.log("okkkk "+$scope.newPwd);
         var password;
         if($scope.newPwd == undefined)
             password = $scope.user.owner_password;
@@ -419,6 +422,34 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
             $scope.editErrMess = data.error + '. ' + data.message;
         });
     }
+
+    //Save firm changes
+    $scope.submitFirmChange = function()
+    {
+         var editfirm = {
+            id: $scope.organization.organization_id,
+            adress: ($scope.organization.organization_adress == '') ? null : $scope.organization.organization_adress,
+            postal: ($scope.organization.organization_postal == '') ? null : $scope.organization.organization_postal,
+            town: ($scope.organization.organization_town == '') ? null : $scope.organization.organization_town,
+            country: ($scope.organization.organization_country == '') ? null : $scope.organization.organization_country,
+            phone: ($scope.organization.organization_tel == '') ? null : $scope.organization.organization_tel,
+            description: ($scope.organization.organization_description == '') ? null : $scope.organization.organization_description
+        }
+
+        $http.post('/editFirmProfile', editfirm)
+        .success(function (data, status, headers, config) {
+            if (data.error == undefined) {
+                $scope.showEditFirmField = false;
+                $scope.editSuccMess = "Vos modifications ont bien été prises en compte";
+            }
+            else
+                $scope.editErrMess = data.error + '. ' + data.message;
+        })
+        .error(function (data, status, headers, config) {
+            $scope.editErrMess = data.error + '. ' + data.message;
+        });
+    }
+
 }]);
 
 surveyManiaControllers.controller('MailVerifyController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
