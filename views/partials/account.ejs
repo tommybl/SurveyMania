@@ -49,7 +49,7 @@
 						</div>
 						<div class="panel-body">
 							<div id="accountEditProfile">
-								<div ng-if="user.owner_type == 3">
+								<div ng-if="user.owner_type == 3 || user.owner_type == 1">
 									<div class="col-sm-12">
 										<label>Indiquez votre adresse ici</label>
 										<input type="text" id="googleAddressAccount-autocomplete" placeholder="" class="form-control" onFocus="googleAddress.geolocate()" />

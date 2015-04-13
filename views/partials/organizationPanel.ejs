@@ -14,7 +14,7 @@
             <tbody>
                 <tr ng-repeat="category in categories">
                     <td>{{category.name}}</td>
-                    <td><div class="col-md-4" style="background-color:{{category.color}}">{{category.color}}</div></td>
+                    <td><div class="col-md-4" ng-style="{'background-color': category.color}" >{{category.color}}</div></td>
                 </tr>
             </tbody>
         </table>
@@ -23,11 +23,11 @@
             <label>Nom de la catégorie</label> <span class="link_primary">*</span>
             <input ng-model="newCategory.name" type="text" name="name" placeholder="name" class="form-control" ng-change="categoryNameCheck()" required/>
             <span class="error" ng-show="!isValidCategoryName">Le nom d'une catégorie doit contenir entre 2 et 25 caractères</span>
-
-            <label>Nom de la catégorie</label> <span class="link_primary">*</span>
+            <br>
+            <label>Couleur de la catégorie</label> <span class="link_primary">*</span>
             <input ng-model="newCategory.color" type="text" name="color" placeholder="color" class="form-control" ng-change="categoryColorCheck()" required/>
             <span class="error" ng-show="!isValidCategoryColor">La couleur doit correspondre au format "#A14DEA"</span>
-
+            <br>
             <input type="submit" value="Ajouter" class="btn btn-primary" />
         </form>
     </div>

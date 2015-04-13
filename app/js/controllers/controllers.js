@@ -9,9 +9,12 @@ surveyManiaControllers.controller('GlobalController', ['$scope', '$window', '$lo
 
     $scope.isCustomer;
     $scope.isOrganization;
+    $scope.isAdmin;
     $scope.initUserType = function () {
-        var type = $window.localStorage.userType; $scope.isCustomer = false; $scope.isOrganization = false;
-        if (type == 1) {$scope.isCustomer = true;} else {if (type == 2 || type == 3) {$scope.isOrganization = true}};
+        var type = $window.localStorage.userType; $scope.isCustomer = false; $scope.isOrganization = false; $scope.isAdmin = false;
+        if (type == 1) $scope.isCustomer = true;
+        else if (type == 4 || type == 3) $scope.isOrganization = true;
+        else if (type == 2) $scope.isAdmin = true;
     };
     $scope.initUserType();
 
@@ -38,10 +41,11 @@ surveyManiaControllers.controller('LoginController', ['$rootScope', '$scope', '$
         .success(function (data, status, headers, config) {
             console.log(data);
             if (data.error == undefined) {
-                $window.location.reload(); // O-M-G
-                angular.element(document.getElementById('logoutBtn')).scope().isLoggedFun();
+                //$window.location.reload(); // O-M-G
                 $window.localStorage.token = data.token;
                 $window.localStorage.userType = data.usertype;
+                $scope.isLoggedFun();
+                $scope.initUserType();
                 if (data.usertype == 1 || data.usertype == 3 || data.usertype == 4) {
                     if ($rootScope.navigationPart != "account")
                         $location.path( "/account");
@@ -234,9 +238,7 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
         });
     };
 
-    // IMPORTANT
-    if ($location.$$path != "/account")
-        googleInitialize();
+    googleInitialize();
 }]);
 
 surveyManiaControllers.controller('ValidateProAccount', ['$scope', '$http', '$window', function($scope, $http, $window) {
@@ -367,7 +369,7 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
     $scope.firmPhoneNumber_check = function(){$scope.isValidFirmPhoneNumber = !(/^((\+|00)33\s?|0)[1-9](\s?\d{2}){4}$/.test($scope.organization.organization_tel));}
     $scope.editFirmField = function(){$scope.showEditFirmField = !$scope.showEditFirmField;}
 
-    googleInitialize();
+    googleInitializeAccount();
 
     // Save profile changes
     $scope.submitProfileChange = function()
