@@ -369,7 +369,7 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
     $scope.firmPhoneNumber_check = function(){$scope.isValidFirmPhoneNumber = !(/^((\+|00)33\s?|0)[1-9](\s?\d{2}){4}$/.test($scope.organization.organization_tel));}
     $scope.editFirmField = function(){$scope.showEditFirmField = !$scope.showEditFirmField;}
 
-    googleInitializeAccount();
+    googleInitialize();
 
     // Save profile changes
     $scope.submitProfileChange = function()
