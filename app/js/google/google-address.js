@@ -21,10 +21,14 @@ var googleAddress3 = {
 
 function googleInitialize() {
     googleAddress.autocomplete = new google.maps.places.Autocomplete((document.getElementById('googleAddress-autocomplete')), { types: ['geocode'] });
-    //googleAddress3.autocomplete = new google.maps.places.Autocomplete((document.getElementById('googleAddressFirm-autocomplete')), { types: ['geocode'] });
-    //googleAddress2.autocomplete = new google.maps.places.Autocomplete((document.getElementById('googleAddressAccount-autocomplete')), { types: ['geocode'] });
-    //google.maps.event.addListener(googleAddress3.autocomplete, 'place_changed', function() {fillInAddress(googleAddress3);});
     google.maps.event.addListener(googleAddress.autocomplete, 'place_changed', function() {fillInAddress(googleAddress);});
+}
+
+function googleAccountInitialize()
+{
+    //googleAddress2.autocomplete = new google.maps.places.Autocomplete((document.getElementById('googleAddressAccount-autocomplete')), { types: ['geocode'] });
+    googleAddress3.autocomplete = new google.maps.places.Autocomplete((document.getElementById('googleAddressFirm-autocomplete')), { types: ['geocode'] });
+    google.maps.event.addListener(googleAddress3.autocomplete, 'place_changed', function() {fillInAddress(googleAddress3);});
     //google.maps.event.addListener(googleAddress2.autocomplete, 'place_changed', function() {fillInAddress(googleAddress2);});
 }
 
