@@ -238,7 +238,8 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
         });
     };
 
-    googleInitialize();
+    if ($location.$$path != "/account")
+        googleInitialize();
 }]);
 
 surveyManiaControllers.controller('ValidateProAccount', ['$scope', '$http', '$window', function($scope, $http, $window) {
