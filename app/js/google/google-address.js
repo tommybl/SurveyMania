@@ -33,8 +33,6 @@ function googleAccountInitialize()
 }
 
 function fillInAddress($googleAddr) {
-    document.getElementById('message').html($googleAddr);
-    console.log($googleAddr);
     var place = $googleAddr.autocomplete.getPlace();
     var num = "", route = "", postal = "", locality = "", sublocality = "", country = "";
     console.log(place);

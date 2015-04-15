@@ -279,7 +279,7 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
                 oldUser = angular.copy(data.user);
                 $scope.user = data.user;
 
-                if ($scope.user.owner_type == 3)
+                if ($scope.user.owner_type == 3 || $scope.user.owner_type == 4)
                 {
                     console.log("idorga:"+$scope.user.owner_organization);
                     $http.post('/app/getUserOrganization/', {userOrganization:$scope.user.owner_organization})
