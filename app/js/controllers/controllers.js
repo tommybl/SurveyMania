@@ -701,7 +701,7 @@ surveyManiaControllers.directive('categoryRender', function ($timeout) {
             }
         }
     }
-}]);
+});
 
 surveyManiaControllers.controller('ShopAdmins', ['$scope', '$http', '$window', function($scope, $http, $window) {
     $scope.actionErrMess = undefined;
