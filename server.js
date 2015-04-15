@@ -807,12 +807,11 @@ app
     if(req.user.usertypenumber != 1) res.status(500).json({code: 500});
     else {
         var user = req.user;
-        var survey_headers = [];
         pg.connect(conString, function(err, client, done) {
             if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
             else {
                 var query = 'SELECT o.name AS orgaName, sh.name AS surveyName, sh.points AS points, sh.info AS infos, us.completed AS completed FROM surveymania.survey_headers sh INNER JOIN surveymania.user_surveys us ON sh.id = us.survey_header_id '
-                    + 'INNER JOIN surveymania.organizations o ON sh.organization_id = o.id INNER JOIN surveymania.users u ON us.user_id = u.id WHERE u.id = ' + req.user.id;
+                    + 'INNER JOIN surveymania.organizations o ON sh.organization_id = o.id INNER JOIN surveymania.users u ON us.user_id = u.id WHERE u.id = ' + user.id;
                 client.query(query, function(err, result) {
                     done();
                     if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
@@ -944,7 +943,7 @@ app
         var orgaid = req.user.organization;
         var newCategory = req.body.newCategory;
         if(!(/^.{2,25}$/.test(newCategory.name))) {res.status(200).json({code: 200, message: "Invalid name"}); return;}
-        if(!(/^#(\d|[A-F]){6}$/.test(newCategory.color))) {res.status(200).json({code: 200, message: "Invalid color"}); return;}
+        if(!(/^#(\d|[A-Fa-f]){6}$/.test(newCategory.color))) {res.status(200).json({code: 200, message: "Invalid color"}); return;}
         pg.connect(conString, function(err, client, done) {
             if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
             else {
@@ -978,8 +977,10 @@ app
         var orgaid = req.user.organization;
         var category = req.body.category;
         var old_category = req.body.old_category;
+        var updateName = req.body.n;
+
         if(!(/^.{2,25}$/.test(category.name))) {res.status(200).json({code: 200, message: "Invalid name"}); return;}
-        if(!(/^#(\d|[A-F]){6}$/.test(category.color))) {res.status(200).json({code: 200, message: "Invalid color"}); return;}
+        if(!(/^#(\d|[A-Fa-f]){6}$/.test(category.color))) {res.status(200).json({code: 200, message: "Invalid color"}); return;}
         pg.connect(conString, function(err, client, done) {
             if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
             else {
@@ -988,10 +989,9 @@ app
                     done();
                     if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                     else {
-                        if (result.rows.length != 0) res.status(200).json({code: 200, message: "Duplicate category"});
+                        if (result.rows.length != 0 && updateName === true) res.status(200).json({code: 200, message: "Duplicate category"});
                         else{
                             var query = 'UPDATE surveymania.organization_categories SET name=\'' + category.name + '\', color=\'' + category.color + '\' WHERE organization_id=' + orgaid + ' AND name=\'' + old_category + '\'';
-                            console.log(query);
                             client.query(query, function(err, result) {
                                 done();
                                 if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
@@ -1001,6 +1001,27 @@ app
                                 }
                             });
                         }
+                    }
+                });
+            }
+        });
+    }
+})
+
+.post('/app/survey/getOrganizationSurveys', function (req, res) {
+    if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
+    else {
+        var orgaid = req.user.organization;
+        pg.connect(conString, function(err, client, done) {
+            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+            else {
+                var query = 'SELECT sh.name AS surveyName, sh.points AS points, sh.info AS infos FROM surveymania.survey_headers sh WHERE sh.organization_id = ' + orgaid;
+                client.query(query, function(err, result) {
+                    done();
+                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                    else {
+                        res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+                        res.json({code: 200, orgaSurveys: result.rows});
                     }
                 });
             }
@@ -1095,7 +1116,6 @@ app
             }
         });
     }
-    else res.status(500).json({code: 500, error: "Internal server error", message: "Bad shop admin infos"});
 })
 
 .get('/app/account/pro/del/shopadmin', function (req, res) {

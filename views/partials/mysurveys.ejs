@@ -2,47 +2,49 @@
 <script type="text/javascript" src="js/qrcode/llqrcode.js"></script>
 <script type="text/javascript" src="js/qrcode/webqr.js"></script>
 
-<div id="mySurveysMain" ng-controller="MySurveysController">
-  	<h1 onclick="qrcodeInit()" style="cursor: pointer">Ajouter un sondage</h1>
-    <div id="add_survey" style="display: none">
-        <div id="add_survey_error" style="diplay: none"></div>
+<div id="mySurveysMain" ng-controller="MySurveysController" class="col-md-12 row-centered">
+    <div class="col-md-6 col-centered">
+      	<h1 onclick="qrcodeInit()" style="cursor: pointer">Ajouter un sondage</h1>
+        <div id="add_survey" style="display: none">
+            <div id="add_survey_error" style="diplay: none"></div>
 
-        <div id="add_survey_webcam" style="display: none">
-            <div id="videoSourceDiv" class="select" style="display: none">
-                <label>Video source: </label><select id="videoSource"></select>
+            <div id="add_survey_webcam" style="display: none">
+                <div id="videoSourceDiv" class="select" style="display: none">
+                    <label>Video source: </label><select id="videoSource"></select>
+                </div>
+                <p onclick="switchToFile()" style="cursor: pointer">Cliquez ici pour importer une photo</p>
+                <video id="webcam" autoplay style="border: solid black 1px"></video>
+                <canvas id="qr-canvas" style="display: none"></canvas>
             </div>
-            <p onclick="switchToFile()" style="cursor: pointer">Cliquez ici pour importer une photo</p>
-            <video id="webcam" autoplay style="border: solid black 1px"></video>
-            <canvas id="qr-canvas" style="display: none"></canvas>
-        </div>
 
-        <div id="add_survey_file" style="display: none">
-            <p onclick="switchToWebcam()" style="cursor: pointer">Cliquez ici pour activer la caméra</p>
-            <canvas id="out-canvas" width="50" height="50" style="border: solid black 1px"></canvas><br><br>
-            <input type="file" onchange="handleFiles(this.files)" accept="image/*" capture/>
-        </div>
+            <div id="add_survey_file" style="display: none">
+                <p onclick="switchToWebcam()" style="cursor: pointer">Cliquez ici pour activer la caméra</p>
+                <canvas id="out-canvas" width="50" height="50" style="border: solid black 1px"></canvas><br><br>
+                <input type="file" onchange="handleFiles(this.files)" accept="image/*" capture/>
+            </div>
 
-        <div class="modal fade" id="confirmScanModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <div class="modal-dialog row-centered">
-                <div class="modal-content col-xs-6 col-sm-5 col-md-4 col-lg-3 col-centered signup">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="myModalLabel">Résultat du scan</h4>
+            <div class="modal fade" id="confirmScanModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog row-centered">
+                    <div class="modal-content col-xs-6 col-sm-5 col-md-4 col-lg-3 col-centered signup">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModalLabel">Résultat du scan</h4>
+                        </div>
+                        <div class="modal-body">
+                            <p>{{resultMessage}}</p>
+                        </div>
+                        <button id="confirmScanModalDismiss" type="button" class="btn btn-default" data-dismiss="modal" ng-show="dismissButton!=null">{{dismissButton}}</button>
+                        <button id="confirmScanModalValidate" type="button" class="btn btn-primary" data-dismiss="modal" ng-show="validateButton!=null" ng-click="validateAddSurvey()">
+                            {{validateButton}}
+                        </button>
                     </div>
-                    <div class="modal-body">
-                        <p>{{resultMessage}}</p>
-                    </div>
-                    <button id="confirmScanModalDismiss" type="button" class="btn btn-default" data-dismiss="modal" ng-show="dismissButton!=null">{{dismissButton}}</button>
-                    <button id="confirmScanModalValidate" type="button" class="btn btn-primary" data-dismiss="modal" ng-show="validateButton!=null" ng-click="validateAddSurvey()">
-                        {{validateButton}}
-                    </button>
                 </div>
             </div>
         </div>
+        <br/><br/><h1>Mes sondages</h1>
     </div>
 
-    <h1>Mes sondages</h1>
-    <div class="col-md-6">
+    <div class="col-md-12 col-centered">
         <table class="table">
             <thead>
                 <tr>
