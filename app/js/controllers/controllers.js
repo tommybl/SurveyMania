@@ -1,4 +1,3 @@
-'use strict';
 
 var surveyManiaControllers = angular.module('surveyManiaControllers', []);
 
@@ -751,11 +750,12 @@ surveyManiaControllers.controller('ShopAdmins', ['$scope', '$http', '$window', f
     };
     $scope.del_shopadmin = function($id)
     {
-        $http.post('/app/account/pro/del/shopadmin', {shopadminId: $id})
+        var shopadminId = $id;
+        $http.post('/app/account/pro/del/shopadmin', {shopadminId: shopadminId})
         .success(function (data, status, headers, config) {
             console.log(data);
             if (data.error == undefined) {
-                index = $scope.getIndex($id);
+                index = $scope.getIndex(shopadminId);
                 $scope.shopadmins.splice(index, (index < 0) ? 0 : 1);
                 $scope.actionSuccMess = 'L\'administrateur de magasin a bien été supprimé';
             }

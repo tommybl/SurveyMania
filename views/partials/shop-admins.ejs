@@ -12,12 +12,12 @@
             <span>{{actionErrMess}}</span>
         </div>
 
-        <input type="search" ng-model="q" placeholder="Filtrer les comptes"/>
+        <input type="search" ng-model="q" placeholder="Filtrer les comptes" class="form-control" style="width: 300px" /> <br> 
         <ul class="row account-pro" style="padding: 0 20px">
-            <li class="animate-repeat" ng-repeat="shopadmin in shopadmins | filter:q as results">
+            <li class="animate-repeat" ng-repeat="shopadmin in shopadmins | filter:q as results"> 
                 <h3>Administrateur <strong>{{shopadmin.admin_firstname}} {{shopadmin.admin_lastname}}</strong></h3>
                 <div class="col-md-12">{{shopadmin.admin_email}}</div>
-                <div class="col-md-12"><button type="button" class="btn btn-default button-cancel" ng-click="del_shopadmin({{shopadmin.admin_id}})"><i class="fa fa-times"></i></button></div>
+                <div class="col-md-12"><button type="button" class="btn btn-default button-cancel" ng-click="del_shopadmin(shopadmin.admin_id)"><i class="fa fa-times"></i></button></div>
                 <hr class="col-md-12">
             </li>
             <li class="col col-md-12 animate-repeat" ng-if="results.length == 0">

@@ -1,6 +1,6 @@
 'use strict';
 
-var surveyManiaApp = angular.module('surveyManiaApp', ['ngRoute', 'surveyManiaConfig', 'surveyManiaControllers', 'surveyManiaServices', 'surveyManiaFilters', 'ngSanitize']);
+var surveyManiaApp = angular.module('surveyManiaApp', ['ngRoute', 'surveyManiaConfig', 'surveyManiaControllers', 'surveyManiaServices', 'surveyManiaFilters', 'ngSanitize', 'ngAnimate']);
 
 surveyManiaApp.config(['$routeProvider',
     function($routeProvider) {
@@ -122,6 +122,7 @@ surveyManiaApp.run(function ($rootScope, $location, $route, $templateCache, $inj
     $rootScope.$on("$routeChangeStart", function(event, next, current) {
         // remove all partial views from angularjs cache, to render modifications according to user infos updates
         $templateCache.removeAll();
+        $(".sp-container").remove();
     });
 
     // after the route was successfully changed

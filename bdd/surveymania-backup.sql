@@ -21,7 +21,10 @@ INSERT INTO users (email, password, user_type, user_organization, name, lastname
 ('lopes.tommy@epita.fr', '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', 3, 1, 'Alo', 'Moto', '0123456789', '1, rue Charles Lorilleux', '92800', 'Puteaux', 'France', '2015-03-25 08:05:10', '2015-03-25 08:05:10', NULL, NULL, 50, true, NULL),
 ('lopes_t@epita.fr', '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', 1, NULL, 'Toto', 'Tata', NULL, NULL, NULL, NULL, NULL, '2015-03-18 06:44:06', '2015-03-18 06:44:06', NULL, NULL, 550, true, '2015-03-25 03:11:43'),
 ('bourdinclement95@gmail.com', 'afa6c0952e63538841419d750772621df34c9656b41a1b3b439bafadf928f72c', 3, 3, 'Jean', 'Pierre', '0663638061', '19, Rue Lucien Boxtael', '95370', 'Montigny-Lès-Cormeilles', 'France', '2015-03-18 06:44:06', '2015-03-18 06:44:06', NULL, NULL, 50, true, '2015-03-25 03:11:43'),
-('bourdi_c@epita.fr', 'afa6c0952e63538841419d750772621df34c9656b41a1b3b439bafadf928f72c', 1, NULL, 'Clément', 'Bourdin', '0663638061', '19, Rue Lucien Boxtael', '95370', 'Montigny-Lès-Cormeilles', 'France', '2015-03-18 06:44:06', '2015-03-18 06:44:06', NULL, NULL, 50, true, '2015-03-25 03:11:43');
+('bourdi_c@epita.fr', 'afa6c0952e63538841419d750772621df34c9656b41a1b3b439bafadf928f72c', 1, NULL, 'Clément', 'Bourdin', '0663638061', '19, Rue Lucien Boxtael', '95370', 'Montigny-Lès-Cormeilles', 'France', '2015-03-18 06:44:06', '2015-03-18 06:44:06', NULL, NULL, 50, true, '2015-03-25 03:11:43'),
+('tommyblopes+5@gmail.com', '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', 4, 3, 'Alé', 'Louya', NULL, NULL, NULL, NULL, NULL, '2015-03-15 01:20:11', '2015-03-15 01:20:11', NULL, NULL, 50, true, '2015-03-19 04:33:32'),
+('tommyblopes+7@gmail.com', '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', 4, 3, 'Kiri', 'Kou', NULL, NULL, NULL, NULL, NULL, '2015-03-15 01:20:11', '2015-03-15 01:20:11', NULL, NULL, 50, true, '2015-03-19 04:33:32'),
+('tommyblopes+8@gmail.com', '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', 4, 3, 'Toto', 'Tata', NULL, NULL, NULL, NULL, NULL, '2015-03-15 01:20:11', '2015-03-15 01:20:11', NULL, NULL, 50, true, '2015-03-19 04:33:32');
 
 INSERT INTO user_achievements (user_id, achiev_id, recieved_dt) VALUES
 (3, 1, '2015-03-25 14:40:00'),

@@ -1060,7 +1060,7 @@ app
     }
 })
 
-.get('/app/account/pro/add/shopadmin', function (req, res) {
+.post('/app/account/pro/add/shopadmin', function (req, res) {
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
     res.setHeader('Accept', 'application/json');
     if(req.user.usertypenumber != 3) {res.status(401).json({code: 401, error: "Unauthorized", message: "Unauthorized, you have to be a shop owner"}); return;}
@@ -1118,7 +1118,7 @@ app
     }
 })
 
-.get('/app/account/pro/del/shopadmin', function (req, res) {
+.post('/app/account/pro/del/shopadmin', function (req, res) {
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
     res.setHeader('Accept', 'application/json');
     if(req.user.usertypenumber != 3) {res.status(401).json({code: 401, error: "Unauthorized", message: "Unauthorized, you have to be a shop owner"}); return;}
