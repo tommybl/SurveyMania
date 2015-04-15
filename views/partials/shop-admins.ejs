@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <div class="row-centered" ng-controller="ShopAdmins">
     <div class="validate-pro col-xs-10 col-sm-10 col-md-8 col-lg-6 col-centered">
-        <h1>Ajouter ou supprimer un administrateur de magasin</h1>
+        <h1>Ajouter ou supprimer un administrateur de magasin </h1>
+        <h3><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalAddAdmin"><i class="fa fa-plus"></i> Ajouter un admin</button></h3>
         <hr>
         <div id="action-success" class="alert alert-success alert-dismissible fade in" role="alert" ng-show="actionSuccMess!=undefined">
             <button type="button" class="close" ng-click="actionSuccMess=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
@@ -13,16 +14,84 @@
         </div>
 
         <input type="search" ng-model="q" placeholder="Filtrer les comptes" class="form-control" style="width: 300px" /> <br> 
-        <ul class="row account-pro" style="padding: 0 20px">
-            <li class="animate-repeat" ng-repeat="shopadmin in shopadmins | filter:q as results"> 
-                <h3>Administrateur <strong>{{shopadmin.admin_firstname}} {{shopadmin.admin_lastname}}</strong></h3>
+        <div class="row account-pro" style="padding: 0 20px">
+            <div class="animate-repeat" ng-repeat="shopadmin in shopadmins | filter:q as results"> 
+                <h3>Administrateur <strong>{{shopadmin.admin_firstname}} {{shopadmin.admin_lastname}}</strong>
+                    <button type="button" class="btn btn-default button-cancel" ng-click="delConfirm_shopadmin(shopadmin.admin_id)" style="float: right; margin-top: 20px; margin-right: 30%"><i class="fa fa-times"></i></button></h3>
                 <div class="col-md-12">{{shopadmin.admin_email}}</div>
-                <div class="col-md-12"><button type="button" class="btn btn-default button-cancel" ng-click="del_shopadmin(shopadmin.admin_id)"><i class="fa fa-times"></i></button></div>
                 <hr class="col-md-12">
-            </li>
-            <li class="col col-md-12 animate-repeat" ng-if="results.length == 0">
+            </div>
+            <div class="col col-md-12 animate-repeat" ng-if="results.length == 0">
                 <strong>Aucun administrateurs de magasin trouvés !</strong>
-            </li>
-        </ul>
+            </div>
+        </div>
+
+        <div class="modal fade" id="modalAddAdmin" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+            <div class="modal-dialog row-centered">
+                <div class="modal-content col-xs-6 col-sm-5 col-md-4 col-lg-3 col-centered signup">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Ajoutez un admin magasin !</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="addAdmin-success" class="alert alert-success alert-dismissible fade in" role="alert" ng-show="addAdminSuccMess!=undefined">
+                            <button type="button" class="close" ng-click="addAdminSuccMess=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                            <span>{{addAdminSuccMess}}</span>
+                        </div>
+                        <div id="addAdmin-error" class="alert alert-danger alert-dismissible fade in" role="alert" ng-show="addAdminErrMess!=undefined">
+                            <button type="button" class="close" ng-click="addAdminErrMess=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                            <span>{{addAdminErrMess}}</span>
+                        </div>
+                        <form name="myForm" ng-submit="add_shopadmin()">
+                            <div class="col-sm-12">
+                                <label>Indiquez l'adresse e-mail</label> <span class="link_primary">*</span>
+                                <input ng-change="email_check()" ng-model="user.email" type="text" placeholder="email@provider.com" class="form-control" required/>
+                                <span class="error" ng-show="isValidEmail">Le mail indiqué est invalide</span>
+                            </div>
+                            <div class="col-sm-12" style="clear:both">
+                                <label>Indiquez le prénom</label> <span class="link_primary">*</span>
+                                <input type="text" placeholder="Prénom" class="form-control" name="firstname" ng-model="user.firstname" ng-change="firstName_check()" required="true"/>
+                                <span class="error" ng-show="isValidFirstName">Le prénom de doit contenir que des lettres et des traits d'union et doit être composé au minimum de 2 caractères</span>
+                            </div>
+                            <div class="col-sm-12">
+                                <label>Indiquez le nom</label> <span class="link_primary">*</span>
+                                <input type="text" placeholder="Nom" class="form-control" name="lastname" ng-model="user.lastname" ng-change="lastName_check()" required="true"/>
+                                <span class="error" ng-show="isValidLastName">Le prénom de doit contenir que des lettres et des traits d'union</span>
+                            </div>
+                            
+                            <div class="col-sm-2" style="clear:both;">
+                                <input type="submit" class="btn btn-primary" value="Ajouter"/>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="modalDelAdmin" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+            <div class="modal-dialog row-centered">
+                <div class="modal-content col-xs-6 col-sm-5 col-md-4 col-lg-3 col-centered signup">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Suppression de compte !</h4>
+                    </div>
+                    <div class="modal-body">
+                            <div class="col-sm-12">
+                                <label>Êtes-vous sûr de vouloir supprimer ce compte administrateur de magasin ?<br><br>
+                                    <span style="font-size: 18px!important; font-weight: bold!important">'{{shopadminDel.admin_email}}'</span> <br><br>
+                                    Cette action est irreversible.</label>
+                            </div>
+                            <div class="col-sm-5">
+                                <button type="button" class="btn btn-primary" ng-click="hide_modal('modalDelAdmin')"  style="width: 120px"><i class="fa fa-times"></i> Annuler</button>
+                            </div>
+                            <div class="col-sm-1"></div>
+                            <div class="col-sm-5">
+                                <button type="button" class="btn btn-primary" ng-click="del_shopadmin()"  style="width: 120px"><i class="fa fa-check"></i> Supprimer</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

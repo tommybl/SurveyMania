@@ -12,6 +12,7 @@ var fs = require('fs');
 var mkdirp = require('mkdirp');
 var CryptoJS = require("crypto-js");
 var nodemailer = require('nodemailer');
+var generatePassword = require('password-generator');
 var SurveyManiaURL = 'http://localhost:1337/';
 var SurveyManiasecret = 'secret-df4b8fn5fn6f1vw1cxbuthf4g4n7dty87ng41nsrg35';
 var pg = require('pg');
@@ -1053,7 +1054,7 @@ app
             if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
             else {
                 var query = 'SELECT admin.id AS admin_id, admin.email AS admin_email, admin.name AS admin_firstname, admin.lastname AS admin_lastname ' +
-                            'FROM surveymania.users admin WHERE admin.user_type = 4';
+                            'FROM surveymania.users admin WHERE admin.user_type = 4 AND admin.user_organization = ' + req.user.organization;
                 client.query(query, function(err, result) {
                     done();
                     if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
@@ -1082,8 +1083,8 @@ app
                     else {
                         var dateNow = '\'' + moment().format("YYYY-MM-DD HH:mm:ss") + '\'';
                         var email = '\'' + req.body.email + '\'';
-                        var password = '\'1234\'';
-                        var passwordCrypted = '\'03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4\'';
+                        var password = generatePassword(12, false, /[\d\W\w\p]/);
+                        var passwordCrypted = '\'' + CryptoJS.SHA256(password).toString() + '\'';
                         var firstname = '\'' + req.body.firstname + '\'';
                         var lastname = '\'' + req.body.lastname + '\'';
                         var query = 'INSERT INTO surveymania.users(user_organization, email, password, user_type, name, lastname, creation_dt, last_dt, points, verified) ' +
@@ -1131,11 +1132,19 @@ app
         pg.connect(conString, function(err, client, done) {
             if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
             else {
-                var query = 'DELETE FROM surveymania.users WHERE surveymania.users.id = ' + req.body.shopadminId;
+                var query = 'SELECT * FROM surveymania.users admin WHERE admin.id = ' + req.body.shopadminId + ' AND admin.user_type = 4 AND admin.user_organization = ' + req.user.organization;
                 client.query(query, function(err, result) {
                     done();
-                    if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query deleting shop admin"});
-                    else res.status(200).json({code: 200, message: "Shop admin successfully deleted"});
+                    if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query verifying shop admin"});
+                    else if (!result.rows.length) res.status(200).json({code: 200, error: "Unauthorized", message: "You don't gave the permission to delete this shop admin"});
+                    else {
+                        var query = 'DELETE FROM surveymania.users WHERE surveymania.users.id = ' + req.body.shopadminId;
+                        client.query(query, function(err, result) {
+                            done();
+                            if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query deleting shop admin"});
+                            else res.status(200).json({code: 200, message: "Shop admin successfully deleted"});
+                        });
+                    }
                 });
             }
         });
