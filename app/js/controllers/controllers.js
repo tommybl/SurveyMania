@@ -623,11 +623,17 @@ surveyManiaControllers.controller('OrganizationPanel', ['$scope', '$http', '$win
     $scope.newCategory = {name: "", color: "#000000"};
     $scope.isValidCategoryName = true;
     $scope.isValidCategoryColor = true;
+    $scope.orgaSurveys = [];
 
     $http.post('/app/category/get')
         .success(function (data, status, header, config) {
             $scope.categories = data.categories;
         });
+
+    $http.post('/app/survey/getOrganizationSurveys')
+        .success(function (data, status, headers, config) {
+            $scope.orgaSurveys = data.orgaSurveys;
+    });
 
     $scope.categoryNameCheck = function () {$scope.isValidCategoryName = (/^.{2,25}$/.test($scope.newCategory.name));}
     $scope.categoryColorCheck = function () {$scope.isValidCategoryColor = (/^#(\d|[A-Fa-f]){6}$/.test($scope.newCategory.color));}

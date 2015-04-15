@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 
-<script src='js/spectrum/spectrum.js'></script>
 <link rel='stylesheet' href='js/spectrum/spectrum.css' />
-
+<script src='js/spectrum/spectrum.js'></script>
+<script type="text/javascript">
+    $('#addCatColorPicker').spectrum({
+        preferredFormat: "hex",
+    });
+</script>
 
 <div ng-controller="OrganizationPanel">
     <h1>Catégories</h1>
-    <div class="col-md-6">
+    <div class="col-md-12">
         <table class="table">
             <thead>
                 <tr>
@@ -17,8 +21,8 @@
 
             <tbody>
                 <tr ng-repeat="category in categories" value="50" category-render="ngRepeatFinished">
-                    <td><input value="{{category.name}}" onChange="angular.element(this).scope().updateCategoryName(this)" required></input></td>
-                    <td><input value="{{category.color}}" onChange="angular.element(this).scope().updateCategoryColor(this)" class="categoryColorPicker" id="catNaFoLi{{category.name}}" required></input></td>
+                    <td><input value="{{category.name}}" onChange="angular.element(this).scope().updateCategoryName(this)" required/></td>
+                    <td><input value="{{category.color}}" onChange="angular.element(this).scope().updateCategoryColor(this)" class="categoryColorPicker" id="catNaFoLi{{category.name}}" required/></td>
                 </tr>
             </tbody>
         </table>
@@ -30,18 +34,35 @@
             <span class="error" ng-show="!isValidCategoryName">Le nom d'une catégorie doit contenir entre 2 et 25 caractères</span>
             <br>
             <label>Couleur de la catégorie</label> <span class="link_primary">*</span>
-            <input id="addCatColorPicker" ng-model="newCategory.color" ng-change="categoryColorCheck()"></input>
+            <input id="addCatColorPicker" ng-model="newCategory.color" ng-change="categoryColorCheck()"/>
             <span class="error" ng-show="!isValidCategoryColor">La couleur doit correspondre au format hexadécimal (ex : "#A14DEA")</span>
             <br>
             <input type="submit" value="Ajouter" class="btn btn-primary" />
         </form>
+        <br/><br/>
+    </div>
+
+
+    <h1>Sondages</h1>
+    <div class="col-md-12">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nom du sondage</th>
+                    <th>Points</th>
+                    <th>Informations</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr ng-repeat="orgaSurvey in orgaSurveys">
+                    <td>{{orgaSurvey.surveyname}}</td>
+                    <td>{{orgaSurvey.points}}</td>
+                    <td>{{orgaSurvey.infos}}</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
-
-<script type="text/javascript">
-    $('#addCatColorPicker').spectrum({
-        preferredFormat: "hex",
-    });
-</script>
 
 <script src="js/scroll.js"></script>

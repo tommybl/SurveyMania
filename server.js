@@ -810,12 +810,11 @@ app
     if(req.user.usertypenumber != 1) res.status(500).json({code: 500});
     else {
         var user = req.user;
-        var survey_headers = [];
         pg.connect(conString, function(err, client, done) {
             if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
             else {
                 var query = 'SELECT o.name AS orgaName, sh.name AS surveyName, sh.points AS points, sh.info AS infos, us.completed AS completed FROM surveymania.survey_headers sh INNER JOIN surveymania.user_surveys us ON sh.id = us.survey_header_id '
-                    + 'INNER JOIN surveymania.organizations o ON sh.organization_id = o.id INNER JOIN surveymania.users u ON us.user_id = u.id WHERE u.id = ' + req.user.id;
+                    + 'INNER JOIN surveymania.organizations o ON sh.organization_id = o.id INNER JOIN surveymania.users u ON us.user_id = u.id WHERE u.id = ' + user.id;
                 client.query(query, function(err, result) {
                     done();
                     if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
@@ -1005,6 +1004,27 @@ app
                                 }
                             });
                         }
+                    }
+                });
+            }
+        });
+    }
+})
+
+.post('/app/survey/getOrganizationSurveys', function (req, res) {
+    if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
+    else {
+        var orgaid = req.user.organization;
+        pg.connect(conString, function(err, client, done) {
+            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+            else {
+                var query = 'SELECT sh.name AS surveyName, sh.points AS points, sh.info AS infos FROM surveymania.survey_headers sh WHERE sh.organization_id = ' + orgaid;
+                client.query(query, function(err, result) {
+                    done();
+                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                    else {
+                        res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+                        res.json({code: 200, orgaSurveys: result.rows});
                     }
                 });
             }
