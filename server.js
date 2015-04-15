@@ -838,7 +838,12 @@ app
             res.status(200).json({code: 200, message: "Scanning error"});
         else {
             var myBase = req.body.qrcode.replace(/\./g, "+");
-            var decrypted = CryptoJS.AES.decrypt(myBase, SurveyManiasecret, { format: JsonFormatter }).toString(CryptoJS.enc.Utf8);
+            try {
+                var decrypted = CryptoJS.AES.decrypt(myBase, SurveyManiasecret, { format: JsonFormatter }).toString(CryptoJS.enc.Utf8);
+            } catch (err) {
+                res.status(200).json({code: 200, message: "Scanning error"});
+                return;
+            }
 
             if (!(/^\d+$/.test(decrypted)))
                 res.status(200).json({code: 200, message: "Not valid"});

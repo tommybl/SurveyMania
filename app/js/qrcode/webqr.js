@@ -104,9 +104,6 @@ function read(a) {
 }
 
 function success(stream) {
-    webcam.width = 399;
-    webcam.height = 300;
-
     if (detectmob)
         timeBtwScans = 2000;
     else

@@ -13,13 +13,16 @@
                     <label>Video source: </label><select id="videoSource"></select>
                 </div>
                 <p onclick="switchToFile()" style="cursor: pointer">Cliquez ici pour importer une photo</p>
-                <video id="webcam" autoplay style="border: solid black 1px"></video>
+                <div style="width:400px; height:300px; position:relative;">
+                    <video id="webcam" style="position:absolute; width:400px; height:300px; border: solid black 1px; border-radius: 20px" autoplay></video>
+                    <img style="position:absolute; width:400px; height:300px;" src="img/cadrePhoto.png"></img>
+                </div>
                 <canvas id="qr-canvas" style="display: none"></canvas>
             </div>
 
             <div id="add_survey_file" style="display: none">
                 <p onclick="switchToWebcam()" style="cursor: pointer">Cliquez ici pour activer la caméra</p>
-                <canvas id="out-canvas" width="50" height="50" style="border: solid black 1px"></canvas><br><br>
+                <canvas id="out-canvas" style="border: solid black 1px"></canvas><br><br>
                 <input type="file" onchange="handleFiles(this.files)" accept="image/*" capture/>
             </div>
 
