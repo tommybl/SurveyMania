@@ -39,6 +39,11 @@ surveyManiaApp.config(['$routeProvider',
             controller: '',
             navigationPart: 'account/admin/validate/pro'
         }).
+        when('/account/pro/shop-admins', {
+            templateUrl: '/app/account/pro/shopadmins',
+            controller: '',
+            navigationPart: 'account/pro/shop-admins'
+        }).
         when('/accounts/verify/:token', {
             templateUrl: function(params){ return '/accounts/verify/' + params.token; },
             controller: '',

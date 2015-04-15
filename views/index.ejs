@@ -23,11 +23,13 @@
                 <header>
                     <a href="/#/home"><span class="brand">SurveyMania</span></a>
                     <div style="padding-top: 5px;">
-                        <ul class="nav nav-pills" style="width: 300px; float:left; margin-left: 25%;">
+                        <ul class="nav nav-pills" style="width: 600px; float:left; margin-left: 10%;">
                             <li role="presentation" ng-class="{active:(navigationPart==='home')}"><a href="/#/home">Home</a></li>
                             <li role="presentation" ng-show="isLogged" ng-class="{active:(navigationPart==='account')}"><a href="/#/account">Account</a></li>
+                            <li role="presentation" ng-show="isAdmin" ng-class="{active:(navigationPart==='account/admin/validate/pro')}"><a href="/#/account/admin/validate/pro">Valider pros</a></li>
                             <li role="presentation" ng-show="isCustomer" ng-class="{active:(navigationPart==='mysurveys')}"><a href="/#/mysurveys">My surveys</a></li>
                             <li role="presentation" ng-show="isOrganization" ng-class="{active:(navigationPart==='organizationPanel')}"><a href="/#/organizationPanel">Administration</a></li>
+                            <li role="presentation" ng-show="isOrganization" ng-class="{active:(navigationPart==='account/pro/shop-admins')}"><a href="/#/account/pro/shop-admins">Administrateurs</a></li>
                         </ul>
                         <div style="float: right; margin-right: 10px; margin-top:5px;">
                             <button id="logoutBtn" ng-show="isLogged" ng-click="logout()" class="btn btn-default">Logout</button>

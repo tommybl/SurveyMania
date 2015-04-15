@@ -427,84 +427,81 @@ app
     res.setHeader('Accept', 'application/json');
     var error = false;
 
-    if (req.body.type == 'particulier' && req.body.email != null && req.body.password != null) {
-        pg.connect(conString, function(err, client, done) {
-            if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
-            else 
-            {
-                var email = '\'' + req.body.email + '\'';
-                var password = '\'' + req.body.password + '\'';
-                var telephone = (req.body.phone == null) ? 'NULL' : '\'' + req.body.phone + '\'';
-                var adress = (req.body.adress == null) ? 'NULL' : '\'' + req.body.adress + '\'';
-                var postal = (req.body.postal == null) ? 'NULL' : '\'' + req.body.postal + '\'';
-                var town = (req.body.town == null) ? 'NULL' : '\'' + req.body.town + '\'';
-                var country = (req.body.country == null) ? 'NULL' : '\'' + req.body.country + '\'';
-                console.log("email:"+email+"    pawd:"+password+"     adress:"+adress+"    postal:"+postal
-                            +"     town:"+town+"    country:"+country+"      id:"+req.body.id);
-                //Verify email
-                var emailQuery = 'SELECT owner.id AS owner_id FROM surveymania.users owner WHERE owner.email = '+ email;
-                client.query(emailQuery, function(err, result) {
-                    done();
-                    if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query retrieving email"});
-                    else if (result.rows.length)
+    pg.connect(conString, function(err, client, done) {
+        if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
+        else 
+        {
+            var email = '\'' + req.body.email + '\'';
+            var password = '\'' + req.body.password + '\'';
+            var telephone = (req.body.phone == null) ? 'NULL' : '\'' + req.body.phone + '\'';
+            var adress = (req.body.adress == null) ? 'NULL' : '\'' + req.body.adress + '\'';
+            var postal = (req.body.postal == null) ? 'NULL' : '\'' + req.body.postal + '\'';
+            var town = (req.body.town == null) ? 'NULL' : '\'' + req.body.town + '\'';
+            var country = (req.body.country == null) ? 'NULL' : '\'' + req.body.country + '\'';
+            console.log("email:"+email+"    pawd:"+password+"     adress:"+adress+"    postal:"+postal
+                        +"     town:"+town+"    country:"+country+"      id:"+req.body.id);
+            //Verify email
+            var emailQuery = 'SELECT owner.id AS owner_id FROM surveymania.users owner WHERE owner.email = '+ email;
+            client.query(emailQuery, function(err, result) {
+                done();
+                if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query retrieving email"});
+                else if (result.rows.length)
+                {
+                    // if true, user didn't edit his email : no problem here
+                    if(result.rows[0].owner_id == req.body.id)
                     {
-                        // if true, user didn't edit his email : no problem here
-                        if(result.rows[0].owner_id == req.body.id)
-                        {
-                            var query = 'UPDATE surveymania.users SET email = ' + email + ', password = ' + password + ', telephone = ' + telephone + ', adress=' + adress + ', postal =' + postal + ', town = ' + town + ', country = ' + country +
-                            'WHERE id = '+req.body.id;
-                            client.query(query, function(err, result) {
-                                done();
-                                if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query editing user"});
-                                else
-                                    res.status(200).json({code: 200, message: "Les modifications ont été sauvegardés !"});
-                            });
-                        }
-                        // if false, the email belongs to somebody else: 
-                        else
-                            res.status(200).json({code: 1, error: "Conflit d'e-mail", message: "Cet e-mail existe déjà"});
-                    }
-                    // Sending confirm mail and update the rest of the informations
-                    else
-                    {
-                        var query = 'UPDATE surveymania.users SET password = ' + password + ', telephone = ' + telephone + ', adress=' + adress + ', postal =' + postal + ', town = ' + town + ', country = ' + country +
+                        var query = 'UPDATE surveymania.users SET email = ' + email + ', password = ' + password + ', telephone = ' + telephone + ', adress=' + adress + ', postal =' + postal + ', town = ' + town + ', country = ' + country +
                         'WHERE id = '+req.body.id;
                         client.query(query, function(err, result) {
                             done();
                             if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query editing user"});
                             else
-                                res.status(200).json({verifMail:"verif", code: 200, message: "Les modifications ont été sauvegardés !"});
-                        });
-
-                        //Sending mail
-                        var userid = req.body.id;
-                        var hash = CryptoJS.HmacMD5(userid + "" + (new Date().getTime()), SurveyManiasecret).toString();
-                        var verifyURL = SurveyManiaURL + '#/accounts/verifyEmail/' + hash;
-                        new EditMailToken({token: hash, userid: userid, usermail: req.body.email}).save(function (err, obj) {
-                            if (err) console.log(err);
-                        });
-
-                        var mailOptions = {
-                            from: 'webmaster@surveymania.com',
-                            to: req.body.email,
-                            subject: 'Confirmation de votre changement d\'e-mail',
-                            html: 'Bonjour ' + req.body.firstname + ' ' + req.body.lastname + ',<br>' +
-                                  'Vous avez demandé un changement d\'e-mail lié à ce compte.,<br>' +
-                                  'Pour des raisons de sécurité, veuillez cliquer sur le lien ci-dessous pour valider ce changement auprès de nos services.' +
-                                  '<a href="' + verifyURL + '">' + verifyURL + '</a><br><br>' +
-                                  'Merci pour votre confiance.<br><br>' +
-                                  'L\'équipe SurveyMania'
-                        };
-                        transporter.sendMail(mailOptions, function(error, info){
-                            if (error) console.log(error);
-                            else console.log('Message sent: ' + info.response);
+                                res.status(200).json({code: 200, message: "Les modifications ont été sauvegardés !"});
                         });
                     }
-                });     
-            }
-        });
-    }
-    else res.status(500).json({code: 500, error: "Internal server error", message: "Bad user infos"});
+                    // if false, the email belongs to somebody else: 
+                    else
+                        res.status(200).json({code: 1, error: "Conflit d'e-mail", message: "Cet e-mail existe déjà"});
+                }
+                // Sending confirm mail and update the rest of the informations
+                else
+                {
+                    var query = 'UPDATE surveymania.users SET password = ' + password + ', telephone = ' + telephone + ', adress=' + adress + ', postal =' + postal + ', town = ' + town + ', country = ' + country +
+                    'WHERE id = '+req.body.id;
+                    client.query(query, function(err, result) {
+                        done();
+                        if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query editing user"});
+                        else
+                            res.status(200).json({verifMail:"verif", code: 200, message: "Les modifications ont été sauvegardés !"});
+                    });
+
+                    //Sending mail
+                    var userid = req.body.id;
+                    var hash = CryptoJS.HmacMD5(userid + "" + (new Date().getTime()), SurveyManiasecret).toString();
+                    var verifyURL = SurveyManiaURL + '#/accounts/verifyEmail/' + hash;
+                    new EditMailToken({token: hash, userid: userid, usermail: req.body.email}).save(function (err, obj) {
+                        if (err) console.log(err);
+                    });
+
+                    var mailOptions = {
+                        from: 'webmaster@surveymania.com',
+                        to: req.body.email,
+                        subject: 'Confirmation de votre changement d\'e-mail',
+                        html: 'Bonjour ' + req.body.firstname + ' ' + req.body.lastname + ',<br>' +
+                              'Vous avez demandé un changement d\'e-mail lié à ce compte.,<br>' +
+                              'Pour des raisons de sécurité, veuillez cliquer sur le lien ci-dessous pour valider ce changement auprès de nos services.' +
+                              '<a href="' + verifyURL + '">' + verifyURL + '</a><br><br>' +
+                              'Merci pour votre confiance.<br><br>' +
+                              'L\'équipe SurveyMania'
+                    };
+                    transporter.sendMail(mailOptions, function(error, info){
+                        if (error) console.log(error);
+                        else console.log('Message sent: ' + info.response);
+                    });
+                }
+            });     
+        }
+    });
 })
 
 .post('/editFirmProfile', function (req, res) {
@@ -1009,6 +1006,116 @@ app
             }
         });
     }
+})
+
+.get('/app/account/pro/shopadmins', function (req, res) {
+    if(req.user.usertypenumber != 3) res.redirect('/401-unauthorized');
+    else
+    {
+        res.setHeader("Content-Type", "text/html");
+        res.render('partials/shop-admins');
+    }
+})
+
+.get('/app/account/pro/get/shopadmins', function (req, res) {
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    res.setHeader('Accept', 'application/json');
+    if(req.user.usertypenumber != 3) {res.status(401).json({code: 401, error: "Unauthorized", message: "Unauthorized, you have to be a shop owner"}); return;}
+    else
+    {
+        pg.connect(conString, function(err, client, done) {
+            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+            else {
+                var query = 'SELECT admin.id AS admin_id, admin.email AS admin_email, admin.name AS admin_firstname, admin.lastname AS admin_lastname ' +
+                            'FROM surveymania.users admin WHERE admin.user_type = 4';
+                client.query(query, function(err, result) {
+                    done();
+                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                    else if (result.rows.length) res.json({code: 200, shopadmins: result.rows});
+                    else res.json({code: 200, message: "No shop admins found"});
+                });
+            }
+        });
+    }
+})
+
+.get('/app/account/pro/add/shopadmin', function (req, res) {
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    res.setHeader('Accept', 'application/json');
+    if(req.user.usertypenumber != 3) {res.status(401).json({code: 401, error: "Unauthorized", message: "Unauthorized, you have to be a shop owner"}); return;}
+    else if (req.body.email != null && req.body.firstname != null && req.body.lastname != null) {
+        pg.connect(conString, function(err, client, done) {
+            if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
+            else {
+                var query = 'SELECT getuser.email AS user_email, getuser.id AS user_id FROM surveymania.users getuser WHERE getuser.email = \'' + req.body.email + '\' ';
+                client.query(query, function(err, result) {
+                    done();
+                    if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query verifying email"});
+                    else if (result.rows.length && result.rows[0].user_email == req.body.email)
+                        res.status(200).json({code: 200, error: "Conflict", message: "Email already used for an existing account"});
+                    else {
+                        var dateNow = '\'' + moment().format("YYYY-MM-DD HH:mm:ss") + '\'';
+                        var email = '\'' + req.body.email + '\'';
+                        var password = '\'1234\'';
+                        var passwordCrypted = '\'03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4\'';
+                        var firstname = '\'' + req.body.firstname + '\'';
+                        var lastname = '\'' + req.body.lastname + '\'';
+                        var query = 'INSERT INTO surveymania.users(user_organization, email, password, user_type, name, lastname, creation_dt, last_dt, points, verified) ' +
+                            'VALUES (' + req.user.organization + ', ' + email + ', ' + passwordCrypted + ', 4, ' + firstname + ', ' + lastname + ', ' + dateNow + ', ' + dateNow + ', 200, true) ' +
+                            'RETURNING id';
+                        client.query(query, function(err, result) {
+                            done();
+                            if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query inserting new shop admin"});
+                            else {
+                                var shopadminId = result.rows[0].id;
+                                var url = 'http://localhost:1337/';
+                                var mailOptions = {
+                                    from: 'webmaster@surveymania.com',
+                                    to: req.body.email,
+                                    subject: 'New shop admin account',
+                                    html: 'Hello ' + req.body.firstname + ' ' + req.body.lastname + ', welcome to SurveyMania!<br><br>' +
+                                          'You have been added as a new shop administrator<br>' +
+                                          'Please log in your account on <a href="' + url + '">' + url + '</a> and update your password in your user informations.<br><br>' +
+                                          'Your login informations are<br>' +
+                                          'Email: ' + req.body.email + '<br>' +
+                                          'Password: ' + password + '<br><br>' +
+                                          'Thank you for your trust and enjoy our services.<br><br>' +
+                                          'SurveyMania Team'
+                                };
+                                transporter.sendMail(mailOptions, function(error, info){
+                                    if (error) console.log(error);
+                                    else console.log('Message sent: ' + info.response);
+                                });
+                                var shopadmin = {admin_id: shopadminId, admin_email: req.body.email, admin_firstname: req.body.firstname, admin_lastname: req.body.lastname}
+                                res.status(200).json({code: 200, shopadmin: shopadmin, message: "Shop admin successfully created"});
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
+    else res.status(500).json({code: 500, error: "Internal server error", message: "Bad shop admin infos"});
+})
+
+.get('/app/account/pro/del/shopadmin', function (req, res) {
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    res.setHeader('Accept', 'application/json');
+    if(req.user.usertypenumber != 3) {res.status(401).json({code: 401, error: "Unauthorized", message: "Unauthorized, you have to be a shop owner"}); return;}
+    else if (req.body.shopadminId != null) {
+        pg.connect(conString, function(err, client, done) {
+            if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
+            else {
+                var query = 'DELETE FROM surveymania.users WHERE surveymania.users.id = ' + req.body.shopadminId;
+                client.query(query, function(err, result) {
+                    done();
+                    if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query deleting shop admin"});
+                    else res.status(200).json({code: 200, message: "Shop admin successfully deleted"});
+                });
+            }
+        });
+    }
+    else res.status(500).json({code: 500, error: "Internal server error", message: "Bad shop admin infos"});
 })
 
 .get('/401-unauthorized', function (req, res) {

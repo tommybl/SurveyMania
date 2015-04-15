@@ -191,7 +191,22 @@ header
     right: 40px;
 }
 
+.validate-pro .cancel_btn
+{
+    background-image: url('../img/glyphicons-halflings.png');
+    width: 15px;
+    position: absolute;
+    height: 15px;
+    top: 10px;
+    background-position:-312px 0px;
+    right: 40px;
+}
+
 .validate-pro .button-validate {
+    margin-top: 15px;
+}
+
+.validate-pro .button-cancel {
     margin-top: 15px;
 }
 

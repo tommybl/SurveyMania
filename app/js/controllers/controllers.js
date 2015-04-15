@@ -655,3 +655,69 @@ surveyManiaControllers.controller('OrganizationPanel', ['$scope', '$http', '$win
             });
     }
 }]);
+
+surveyManiaControllers.controller('ShopAdmins', ['$scope', '$http', '$window', function($scope, $http, $window) {
+    $scope.actionErrMess = undefined;
+    $scope.actionSuccMess = undefined;
+    $scope.shopadmins = [];
+    $scope.adminEmail = "";
+    $scope.adminFirstname = "";
+    $scope.adminLastname = "";
+    $scope.getIndex = function (shopadminId) {
+        for (var i = 0; i < $scope.shopadmins.length; i++) {
+            if ($scope.shopadmins[i].admin_id == shopadminId) return i;
+        }
+        return -1;
+    };
+    $scope.get_shopadmins = function()
+    {
+        $http.get('/app/account/pro/get/shopadmins')
+        .success(function (data, status, headers, config) {
+            console.log(data);
+            if (data.error == undefined) {
+                if (data.shopadmins != undefined) $scope.shopadmins = data.shopadmins;
+            }
+            else $scope.actionErrMess = data.error + '. ' + data.message;
+        })
+        .error(function (data, status, headers, config) {
+            console.log(data);
+            $scope.actionErrMess = data.error + '. ' + data.message;
+        });
+    };
+    $scope.add_shopadmin = function()
+    {
+        $http.post('/app/account/pro/add/shopadmin', {email: $scope.adminEmail, firstname: $scope.adminFirstname, lastname: $scope.adminLastname})
+        .success(function (data, status, headers, config) {
+            console.log(data);
+            if (data.error == undefined) {
+                if (data.shopadmin != undefined) {
+                    $scope.shopadmins.splice(0, 0, data.shopadmin);
+                    $scope.actionSuccMess = 'L\'administrateur de magasin a bien été ajouté';
+                }
+            }
+            else $scope.actionErrMess = data.error + '. ' + data.message;
+        })
+        .error(function (data, status, headers, config) {
+            console.log(data);
+            $scope.actionErrMess = data.error + '. ' + data.message;
+        });
+    };
+    $scope.del_shopadmin = function($id)
+    {
+        $http.post('/app/account/pro/del/shopadmin', {shopadminId: $id})
+        .success(function (data, status, headers, config) {
+            console.log(data);
+            if (data.error == undefined) {
+                index = $scope.getIndex($id);
+                $scope.shopadmins.splice(index, (index < 0) ? 0 : 1);
+                $scope.actionSuccMess = 'L\'administrateur de magasin a bien été supprimé';
+            }
+            else $scope.actionErrMess = data.error + '. ' + data.message;
+        })
+        .error(function (data, status, headers, config) {
+            console.log(data);
+            $scope.actionErrMess = data.error + '. ' + data.message;
+        });
+    };
+    $scope.get_shopadmins();
+}]);
