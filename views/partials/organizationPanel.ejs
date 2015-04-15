@@ -1,5 +1,9 @@
 <!DOCTYPE html>
 
+<script src='js/spectrum/spectrum.js'></script>
+<link rel='stylesheet' href='js/spectrum/spectrum.css' />
+
+
 <div ng-controller="OrganizationPanel">
     <h1>Catégories</h1>
     <div class="col-md-6">
@@ -12,25 +16,32 @@
             </thead>
 
             <tbody>
-                <tr ng-repeat="category in categories">
-                    <td>{{category.name}}</td>
-                    <td><div class="col-md-4" ng-style="{'background-color': category.color}" >{{category.color}}</div></td>
+                <tr ng-repeat="category in categories" value="50" category-render="ngRepeatFinished">
+                    <td><input value="{{category.name}}" onChange="angular.element(this).scope().updateCategoryName(this)" required></input></td>
+                    <td><input value="{{category.color}}" onChange="angular.element(this).scope().updateCategoryColor(this)" class="categoryColorPicker" id="catNaFoLi{{category.name}}" required></input></td>
                 </tr>
             </tbody>
         </table>
 
-        <form ng-submit="updateCategory()">
+        <h3>Ajouter une catégorie</h3>
+        <form ng-submit="addCategory()">
             <label>Nom de la catégorie</label> <span class="link_primary">*</span>
-            <input ng-model="newCategory.name" type="text" name="name" placeholder="name" class="form-control" ng-change="categoryNameCheck()" required/>
+            <input ng-model="newCategory.name" type="text" placeholder="name" class="form-control" ng-change="categoryNameCheck()" required/>
             <span class="error" ng-show="!isValidCategoryName">Le nom d'une catégorie doit contenir entre 2 et 25 caractères</span>
             <br>
             <label>Couleur de la catégorie</label> <span class="link_primary">*</span>
-            <input ng-model="newCategory.color" type="text" name="color" placeholder="color" class="form-control" ng-change="categoryColorCheck()" required/>
-            <span class="error" ng-show="!isValidCategoryColor">La couleur doit correspondre au format "#A14DEA"</span>
+            <input id="addCatColorPicker" ng-model="newCategory.color" ng-change="categoryColorCheck()"></input>
+            <span class="error" ng-show="!isValidCategoryColor">La couleur doit correspondre au format hexadécimal (ex : "#A14DEA")</span>
             <br>
             <input type="submit" value="Ajouter" class="btn btn-primary" />
         </form>
     </div>
 </div>
+
+<script type="text/javascript">
+    $('#addCatColorPicker').spectrum({
+        preferredFormat: "hex",
+    });
+</script>
 
 <script src="js/scroll.js"></script>

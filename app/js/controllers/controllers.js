@@ -620,9 +620,7 @@ surveyManiaControllers.controller('MySurveysController', ['$scope', '$http', '$w
 
 surveyManiaControllers.controller('OrganizationPanel', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
     $scope.categories = [];
-    $scope.newCategory = {name: "", color: ""};
-    $scope.updatedCategory = {name: "", color: ""};
-    $scope.oldCategory;
+    $scope.newCategory = {name: "", color: "#000000"};
     $scope.isValidCategoryName = true;
     $scope.isValidCategoryColor = true;
 
@@ -632,26 +630,69 @@ surveyManiaControllers.controller('OrganizationPanel', ['$scope', '$http', '$win
         });
 
     $scope.categoryNameCheck = function () {$scope.isValidCategoryName = (/^.{2,25}$/.test($scope.newCategory.name));}
-    $scope.categoryColorCheck = function () {$scope.isValidCategoryColor = (/^#(\d|[A-F]){6}$/.test($scope.newCategory.color));}
+    $scope.categoryColorCheck = function () {$scope.isValidCategoryColor = (/^#(\d|[A-Fa-f]){6}$/.test($scope.newCategory.color));}
 
     $scope.addCategory = function () {
         $http.post('/app/category/add', {newCategory: $scope.newCategory})
             .success(function (data, status, header, config) {
-                if (data.message == "done")
-                    $scope.categories.unshift({name: $scope.newCategory.name, color: $scope.newCategory.color});
+                alert(data.message);
+                if (data.message == "done") {
+                    $scope.categories.push({name: $scope.newCategory.name, color: $scope.newCategory.color});
+                }
             })
             .error(function (data, status, header, config) {
 
             });
     };
 
-    $scope.updateCategory = function () {
-        $http.post('/app/category/update', {category: $scope.updatedCategory, old_category: $scope.oldCategory})
+    $scope.updateCategoryName = function (a) {
+        var color = document.getElementById("catNaFoLi" + a.defaultValue);
+        if (a.value != a.defaultValue) {
+            $http.post('/app/category/update', {category: {name: a.value, color: color.value}, old_category: a.defaultValue, n: true})
+                .success(function (data, status, header, config) {
+                    alert(data.message);
+                    if (data.message == "done") {
+                        a.defaultValue = a.value;
+                        color.id = "catNaFoLi" + a.defaultValue;
+                    } else {
+                        a.value = a.defaultValue;
+                    }
+                })
+                .error(function (data, status, header, config) {
+                    alert(data.message);
+                });
+        }
+    };
+
+    $scope.updateCategoryColor = function (a) {
+        $http.post('/app/category/update', {category: {name: a.id.substr(9), color: a.value}, old_category: a.id.substr(9), n: false})
             .success(function (data, status, header, config) {
                 alert(data.message);
             })
             .error(function (data, status, header, config) {
-
+                alert(data.message);
             });
-    }
+    };
+
+    $scope.$on('ngRepeatFinished', function(ngRepeatFinishedEvent) {
+       $('.categoryColorPicker').each(function(){
+            $(this).spectrum({
+                preferredFormat: "hex",
+                color : $(this).attr('value')
+            });
+        });
+    });
 }]);
+
+surveyManiaControllers.directive('categoryRender', function ($timeout) {
+    return {
+        restrict: 'A',
+        link: function (scope, element, attr) {
+            if (scope.$last === true) {
+                $timeout(function () {
+                    scope.$emit('ngRepeatFinished');
+                });
+            }
+        }
+    }
+});
