@@ -615,6 +615,10 @@ surveyManiaControllers.controller('MySurveysController', ['$scope', '$http', '$w
             });
         $("#confirmScanModal").modal('hide');
     };
+
+    $scope.$on("$destroy", function(){
+        qrcodeStop();
+    });
 }]);
 
 surveyManiaControllers.controller('OrganizationPanel', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
