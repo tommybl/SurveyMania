@@ -9,10 +9,10 @@ INSERT INTO achievements (name, image_path, description) VALUES
 ('Coupe 1', 'img/achievements/cup1.png', 'Vous avez gagné la coupe 1.'),
 ('Médaille 1', 'img/achievements/medal1.png', 'Vous avez gagné la médaille 1.');
 
-INSERT INTO organizations (name, description, adress, postal, town, country, telephone, logo_path, url_add_discount, url_verify_discount, url_remove_discount, current_points, verified, verified_dt) VALUES 
-('EPITA', 'Ecole d''ingénieurs en informatique', '14 rue Voltaire', '94276', 'Kremlin Bicêtre', 'France', '0144080101', 'https://pbs.twimg.com/profile_images/534363526521819136/WLpToBj__bigger.jpeg', 'url', 'url', 'url', 50, false, NULL),
-('EPF', 'Ecole d''ingénieurs généraliste', '3 rue lakanal', '92330', 'Sceaux', 'France', '0141130151', 'https://pbs.twimg.com/profile_images/891709693/Phi_normal.jpg', 'url', 'url', 'url', 50, false, NULL),
-('Thales', 'Armement', '19, Rue Lucien Boxtael', '95370', 'Montigny-Lès-Cormeilles', 'France', '0663638061', 'img/organizations/3/logo.png', 'url', 'url', 'url', 50, true, '2015-03-23 08:27:48');
+INSERT INTO organizations (name, description, adress, postal, town, country, telephone, logo_path, current_points, verified, verified_dt) VALUES
+('EPITA', 'Ecole d''ingénieurs en informatique', '14 rue Voltaire', '94276', 'Kremlin Bicêtre', 'France', '0144080101', 'https://pbs.twimg.com/profile_images/534363526521819136/WLpToBj__bigger.jpeg', 50, false, NULL),
+('EPF', 'Ecole d''ingénieurs généraliste', '3 rue lakanal', '92330', 'Sceaux', 'France', '0141130151', 'https://pbs.twimg.com/profile_images/891709693/Phi_normal.jpg', 50, false, NULL),
+('Thales', 'Armement', '19, Rue Lucien Boxtael', '95370', 'Montigny-Lès-Cormeilles', 'France', '0663638061', 'img/organizations/3/logo.png', 50, true, '2015-03-23 08:27:48');
 
 INSERT INTO users (email, password, user_type, user_organization, name, lastname, telephone, adress, postal, town, country, creation_dt, last_dt, invite_dt, inviter_id, points, verified, verified_dt) VALUES 
 ('tommyblopes@gmail.com', '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', 2, NULL, 'Foo', 'Bar', NULL, NULL, NULL, NULL, NULL, '2015-03-15 01:20:11', '2015-03-15 01:20:11', NULL, NULL, 50, true, '2015-03-19 04:33:32'),

@@ -28,9 +28,6 @@ CREATE TABLE  surveymania.organizations (
   country VARCHAR(45) NOT NULL,
   telephone VARCHAR(20) NOT NULL,
   logo_path VARCHAR(255) NOT NULL,
-  url_add_discount VARCHAR(255) NOT NULL,
-  url_verify_discount VARCHAR(255) NOT NULL,
-  url_remove_discount VARCHAR(255) NOT NULL,
   current_points INT NOT NULL,
   verified BOOLEAN NOT NULL,
   verified_dt TIMESTAMP NULL DEFAULT NULL,
@@ -262,25 +259,6 @@ CREATE TABLE  surveymania.user_survey_sections (
 
 
 -- -----------------------------------------------------
--- Table surveymania.cashier
--- -----------------------------------------------------
-DROP TABLE IF EXISTS surveymania.cashier CASCADE;
-
-CREATE TABLE  surveymania.cashier (
-  id SERIAL NOT NULL ,
-  organization_id INT NOT NULL,
-  code VARCHAR(15) NOT NULL,
-  num INT NOT NULL,
-  password VARCHAR(255) NOT NULL,
-  PRIMARY KEY (id),
-  CONSTRAINT fk_organization_id
-    FOREIGN KEY (organization_id)
-    REFERENCES surveymania.organizations (id)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
 -- Table surveymania.option_choices
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS surveymania.option_choices CASCADE;
@@ -368,69 +346,6 @@ CREATE TABLE  surveymania.user_surveys (
 
 
 -- -----------------------------------------------------
--- Table surveymania.discount
--- -----------------------------------------------------
-DROP TABLE IF EXISTS surveymania.discount CASCADE;
-
-CREATE TABLE  surveymania.discount (
-  id SERIAL NOT NULL ,
-  discount_price INT NOT NULL,
-  discount_perc INT NULL DEFAULT NULL,
-  creation_dt TIMESTAMP NOT NULL,
-  barcode INT NOT NULL,
-  image_path VARCHAR(255) NULL DEFAULT NULL,
-  available BOOLEAN NOT NULL,
-  PRIMARY KEY (id));
-
-
--- -----------------------------------------------------
--- Table surveymania.user_discounts
--- -----------------------------------------------------
-DROP TABLE IF EXISTS surveymania.user_discounts CASCADE;
-
-CREATE TABLE  surveymania.user_discounts (
-  id SERIAL NOT NULL ,
-  user_id INT NOT NULL,
-  discount_id INT NOT NULL,
-  recieved_dt TIMESTAMP NOT NULL,
-  used_dt TIMESTAMP NULL,
-  used BOOLEAN NOT NULL,
-  PRIMARY KEY (id),
-  CONSTRAINT fk_user_id
-    FOREIGN KEY (user_id)
-    REFERENCES surveymania.users (id)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT fk_discount_id
-    FOREIGN KEY (discount_id)
-    REFERENCES surveymania.discount (id)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table surveymania.surveys_discounts
--- -----------------------------------------------------
-DROP TABLE IF EXISTS surveymania.surveys_discounts CASCADE;
-
-CREATE TABLE  surveymania.surveys_discounts (
-  id SERIAL NOT NULL ,
-  survey_id INT NOT NULL,
-  discount_id INT NOT NULL,
-  PRIMARY KEY (id),
-  CONSTRAINT fk_survey_id
-    FOREIGN KEY (survey_id)
-    REFERENCES surveymania.survey_headers (id)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT fk_discount_id
-    FOREIGN KEY (discount_id)
-    REFERENCES surveymania.discount (id)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
 -- Table surveymania.question_medias
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS surveymania.question_medias CASCADE;
@@ -445,26 +360,6 @@ CREATE TABLE  surveymania.question_medias (
   CONSTRAINT fk_question_id
     FOREIGN KEY (question_id)
     REFERENCES surveymania.questions (id)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-
-
--- -----------------------------------------------------
--- Table surveymania.user_tokens
--- -----------------------------------------------------
-DROP TABLE IF EXISTS surveymania.user_tokens CASCADE;
-
-CREATE TABLE  surveymania.user_tokens (
-  id SERIAL NOT NULL ,
-  user_id INT NOT NULL,
-  token VARCHAR(255) NOT NULL,
-  creation_dt TIMESTAMP NOT NULL,
-  expiration_dt TIMESTAMP NOT NULL,
-  valide BOOLEAN NOT NULL,
-  PRIMARY KEY (id),
-  CONSTRAINT fk_user_id
-    FOREIGN KEY (user_id)
-    REFERENCES surveymania.users (id)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);
 
@@ -520,23 +415,6 @@ CREATE TABLE  surveymania.user_achievements (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);
 
-
--- -----------------------------------------------------
--- Table surveymania.user_verifications
--- -----------------------------------------------------
-DROP TABLE IF EXISTS surveymania.user_verifications CASCADE;
-
-CREATE TABLE  surveymania.user_verifications (
-  id SERIAL NOT NULL ,
-  user_id INT NOT NULL,
-  code VARCHAR(255) NOT NULL,
-  creation_dt TIMESTAMP NOT NULL,
-  PRIMARY KEY (id),
-  CONSTRAINT fk_user_id
-    FOREIGN KEY (user_id)
-    REFERENCES surveymania.users (id)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
 
 -- -----------------------------------------------------
 -- Table surveymania.organization_categories

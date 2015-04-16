@@ -224,8 +224,8 @@ app
                         var logo_img = req.body.logo_img;
                         var logo_type = req.body.logo_type;
                         var logo_skip = req.body.logo_skip;
-                        var query = 'INSERT INTO surveymania.organizations(name, description, adress, postal, town, country, telephone, logo_path, url_add_discount, url_verify_discount, url_remove_discount, current_points, verified) ' +
-                            'VALUES (' + firmname + ', ' + firmdescription + ', ' + adress + ', ' + postal + ', ' + town + ', ' + country + ', ' + telephone + ', \'img/default_profil.jpg\', \'url\', \'url\', \'url\', 50, false) ' +
+                        var query = 'INSERT INTO surveymania.organizations(name, description, adress, postal, town, country, telephone, logo_path, current_points, verified) ' +
+                            'VALUES (' + firmname + ', ' + firmdescription + ', ' + adress + ', ' + postal + ', ' + town + ', ' + country + ', ' + telephone + ', \'img/default_profil.jpg\', 50, false) ' +
                             'RETURNING id';
                         client.query(query, function(err, result) {
                             done();
