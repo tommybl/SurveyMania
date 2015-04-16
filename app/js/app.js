@@ -122,7 +122,6 @@ surveyManiaApp.run(function ($rootScope, $location, $route, $templateCache, $inj
     $rootScope.$on("$routeChangeStart", function(event, next, current) {
         // remove all partial views from angularjs cache, to render modifications according to user infos updates
         $templateCache.removeAll();
-        $(".sp-container").remove();
     });
 
     // after the route was successfully changed

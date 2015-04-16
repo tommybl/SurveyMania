@@ -691,6 +691,13 @@ surveyManiaControllers.controller('OrganizationPanel', ['$scope', '$http', '$win
             });
         });
     });
+
+    $scope.$on("$destroy", function(){
+        $('.categoryColorPicker').each(function(){
+            $(this).spectrum("destroy");
+        });
+        $('.sp-container').remove();
+    });
 }]);
 
 surveyManiaControllers.directive('categoryRender', function ($timeout) {
