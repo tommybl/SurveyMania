@@ -9,7 +9,7 @@
 
 @font-face{
 	font-family:'quicksand';
-	src: url('../fonts/Quicksand_Light.otf');
+	src: url('../fonts/Quicksand_Light.ttf');
 }
 
 header
@@ -266,4 +266,20 @@ header
 .animate-repeat.ng-enter.ng-enter-active {
   opacity:1;
   max-height:300px;
+}
+
+
+/* ******************************************* */
+/* *************** DRAGANDDROP *************** */
+/* ******************************************* */
+
+.dragitem
+{
+    list-style: none;
+    background: #f2f2f2;
+    border:1px solid #333;
+    width: 150px;
+    border-radius: 5px;
+    margin-top:10px;
+    padding:10px;
 }

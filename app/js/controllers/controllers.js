@@ -39,7 +39,6 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
 
         $scope.answer ="";
         
-
         $scope.hideMe = function() {
             return $scope.list4.length > 0;
         }
@@ -58,15 +57,6 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
         $scope.delete = function($index){
             $scope.list4.splice($index, 1);
         }
-
-        $scope.testfun = function()
-        {
-            console.log("----")
-            console.log($scope.list1);
-            console.log($scope.list2);
-            console.log($scope.list4);
-        }
-
     }]);
 
 
