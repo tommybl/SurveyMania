@@ -711,6 +711,7 @@ surveyManiaControllers.controller('OrganizationPanel', ['$scope', '$http', '$win
                 })
                 .error(function (data, status, header, config) {
                     alert(data.message);
+                    a.value = a.defaultValue;
                 });
         }
     };
