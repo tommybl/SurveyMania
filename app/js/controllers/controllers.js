@@ -28,14 +28,15 @@ surveyManiaControllers.controller('GlobalController', ['$scope', '$window', '$lo
 }]);
 
 
-surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$timeout', '$sce',
-    function($scope, $routeParams, $timeout, $sce){
+surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$timeout', '$sce', '$http', 
+    function($scope, $routeParams, $timeout, $sce, $http){
         $scope.list1 = [{'id':'0','title': 'Titre', 'label': $sce.trustAsHtml('<h5>question</h5>'), 'code' : $sce.trustAsHtml('<h3 ng-bind="title">Titre</h3>'), 'show':true},
                         {'id':'1','title': 'Réponse libre', 'label':$sce.trustAsHtml('<h5>question</h5>'), 'code' : $sce.trustAsHtml('<textarea></textarea>'), 'show':true},
                         {'id':'2','title': 'Oui/Non', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<input type="radio" name="yesno" value="0"> Oui<br><input type="radio" name="yesno" value="1" checked> Non'), 'show':true},
                         {'id':'3','title': 'Test', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<span ng-bind="firstName"></span>'), 'show':true}]; 
 
         $scope.list4 = [];
+        $scope.categories = [];
 
         $scope.answer ="";
         
@@ -57,6 +58,16 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
         $scope.delete = function($index){
             $scope.list4.splice($index, 1);
         }
+
+        $http.post('/app/category/get')
+        .success(function (data, status, headers, config) {
+            console.log(data);
+            if (data.error == undefined) {
+                $scope.categories = data.categories;
+            }
+        })
+        .error(function (data, status, headers, config) {
+        });
     }]);
 
 

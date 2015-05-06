@@ -66,11 +66,19 @@
     display: block;
   }
 </style>
-<div ng-controller="DragAndDrop">
+<div ng-controller="DragAndDrop" style="margin: 20px 50px">
+<div style="margin-bottom: 20px; width: 300px">
+    <h1>Créer un sondage </h1><br>
+    <input ng-model="survey.name" type="text" name="name" placeholder="Entez le nom du sondage" class="form-control"/><br>
+    <select class="form-control">
+     <option ng-repeat="category in categories" value="{{category.name}}" >{{category.name}}</option>
+    </select>
+</div>
+<div>
   <div id="products" class="col-md-5">
-    <h1 class="ui-widget-header">Outils</h1>
+    <h3 class="ui-widget-header">Outils</h3>
     <div id="catalog">
-    	<ul>
+    	<ul  style="padding: 0!important">
       	<li class="draggable_item dragitem" ng-repeat='item in list1' ng-show="item.title" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" ng-model="list1" jqyoui-draggable="{index: {{$index}}, animate: true, placeholder: 'keep', deepCopy: true}"><i class="fa fa-ellipsis-v" style="margin-right:10px;"></i>
           		{{item.title}}
           </li>
@@ -78,7 +86,7 @@
     </div>
   </div> 
   <div class="col-md-5">
-      <h1 class="ui-widget-header">Création du sondage</h1>
+      <h3 class="ui-widget-header">Création du sondage</h3>
       <div class="ui-widget-content">
           <ol class="dropzone" data-drop="true" ng-model='list4' jqyoui-droppable="{multiple:true}" id="list4">
               <li class="drop_item" ng-repeat="itemlol in list4" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" ng-model="list4" jqyoui-draggable="{index: {{$index}},animate:false}">
@@ -100,4 +108,5 @@
           </ol>
       </div>
   </div>
+</div>
 </div>

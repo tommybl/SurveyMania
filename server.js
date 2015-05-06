@@ -92,6 +92,7 @@ app
 })
 
 .get('/app/createSurvey', function (req, res) {
+    if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.redirect('/401-unauthorized');
     res.setHeader("Content-Type", "text/html");
     res.render('partials/createSurvey');
 })
@@ -942,6 +943,27 @@ app
 })
 
 .post('/app/category/get', function (req, res) {
+    if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
+    else {
+        var orgaid = req.user.organization;
+        pg.connect(conString, function(err, client, done) {
+            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+            else {
+                var query = 'SELECT name, color FROM surveymania.organization_categories WHERE organization_id = ' + orgaid;
+                client.query(query, function(err, result) {
+                    done();
+                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                    else {
+                        res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+                        res.json({code: 200, categories: result.rows});
+                    }
+                });
+            }
+        });
+    }
+})
+
+.get('/app/category/get', function (req, res) {
     if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
     else {
         var orgaid = req.user.organization;
