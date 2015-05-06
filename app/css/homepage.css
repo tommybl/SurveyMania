@@ -36,7 +36,7 @@
   font-size: 48px;
   height: 110px;
   width: 110px;
-  margin: 15px;
+  margin: 15px 0px;
   border-radius: 100%;
   line-height: 110px;
   text-align:center;
@@ -76,4 +76,40 @@
   font-size: 16px;
   line-height: 24px;
   font-weight: 400;
+}
+
+#family
+{
+  padding:0px;
+  height: 100%;
+  background: center no-repeat fixed url('../img/family.jpg');
+  background-size: cover;
+}
+
+#mini-game
+{
+  padding:50px 0px;
+  background-color: rgba(0,0,0,0.8);
+}
+
+.minigame-title
+{
+  font-family: 'coolvetica';
+  color: #FFFFFF;
+  font-size: 30px;
+  display: block;
+  text-align: center;
+}
+
+.minigame-text
+{
+  margin-top: 30px;
+}
+
+.minigame-text p
+{
+  font-family: 'quicksand';
+  color: #FFFFFF;
+  text-align: center; 
+  font-size: 16px;
 }
