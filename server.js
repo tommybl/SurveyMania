@@ -57,6 +57,20 @@ var JsonFormatter = {
     }
 };
 
+// We need our own "html_special_chars" function
+function escapeHtml(text) {
+    console.log("HEY !!");
+  var map = {
+    '&': '\&',
+    '<': '\<',
+    '>': '\>',
+    '"': '\"',
+    "'": "\'\'"
+  };
+
+  return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
+
 // creating a new app with express framework
 var app = express();
 
@@ -953,7 +967,7 @@ app
         pg.connect(conString, function(err, client, done) {
             if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
             else {
-                var query = 'SELECT name FROM surveymania.organization_categories WHERE organization_id = ' + orgaid + 'AND name = \'' + newCategory.name + '\'';
+                var query = 'SELECT name FROM surveymania.organization_categories WHERE organization_id = ' + orgaid + ' AND name = \'' + newCategory.name + '\'';
                 client.query(query, function(err, result) {
                     done();
                     if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
@@ -990,7 +1004,7 @@ app
         pg.connect(conString, function(err, client, done) {
             if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
             else {
-                var query = 'SELECT name FROM surveymania.organization_categories WHERE organization_id = ' + orgaid + 'AND name = \'' + category.name + '\'';
+                var query = 'SELECT name FROM surveymania.organization_categories WHERE organization_id = ' + orgaid + ' AND name = \'' + category.name + '\'';
                 client.query(query, function(err, result) {
                     done();
                     if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
