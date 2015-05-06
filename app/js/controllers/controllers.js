@@ -28,6 +28,38 @@ surveyManiaControllers.controller('GlobalController', ['$scope', '$window', '$lo
 }]);
 
 
+surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$timeout', '$sce',
+    function($scope, $routeParams, $timeout, $sce){
+        $scope.list1 = [{'id':'0','title': 'Titre', 'label': $sce.trustAsHtml('<h5>question</h5>'), 'code' : $sce.trustAsHtml('<h3 ng-bind="title">Titre</h3>'), 'show':true},
+                        {'id':'1','title': 'Réponse libre', 'label':$sce.trustAsHtml('<h5>question</h5>'), 'code' : $sce.trustAsHtml('<textarea></textarea>'), 'show':true},
+                        {'id':'2','title': 'Oui/Non', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<input type="radio" name="yesno" value="0"> Oui<br><input type="radio" name="yesno" value="1" checked> Non'), 'show':true},
+                        {'id':'3','title': 'Test', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<span ng-bind="firstName"></span>'), 'show':true}]; 
+
+        $scope.list4 = [];
+
+        $scope.answer ="";
+        
+        $scope.hideMe = function() {
+            return $scope.list4.length > 0;
+        }
+
+        $scope.hide = function($index){
+            console.log("index : "+$index)
+            $scope.list4[$index].show = false;
+        }
+
+        $scope.edit = function($index, $value){
+            console.log($value);
+            $scope.list4[$index].label = $sce.trustAsHtml('<h5 ng-bind="title">'+$value+'</h5>');
+            $scope.list4[$index].show = true;
+        }
+
+        $scope.delete = function($index){
+            $scope.list4.splice($index, 1);
+        }
+    }]);
+
+
 surveyManiaControllers.controller('LoginController', ['$rootScope', '$scope', '$http', '$window', '$location', '$route', function($rootScope, $scope, $http, $window, $location, $route) {
     $scope.user = {email: '', password: ''};
     $scope.loginErrMess = undefined;

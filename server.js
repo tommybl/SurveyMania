@@ -91,6 +91,11 @@ app
     res.render('partials/home');
 })
 
+.get('/app/createSurvey', function (req, res) {
+    res.setHeader("Content-Type", "text/html");
+    res.render('partials/createSurvey');
+})
+
 .post('/login', function (req, res) {
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
     res.setHeader('Accept', 'application/json');

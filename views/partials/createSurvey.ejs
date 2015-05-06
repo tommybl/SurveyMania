@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<style>
+  .dropzone{
+    background-color: #f2f2f2;
+    border:1px solid #cccccc;
+    height:500px;
+  }
+
+  .draggable_item:hover{
+    cursor: pointer;
+  }
+
+  .drop_item{
+    margin-top:10px;
+  }
+
+  .dropzone:hover .drop_item{
+    border: 1px dotted #333;
+    margin-top:9px;
+  }
+
+  .edit_btn, .validate_edit_btn, .delete_btn
+  {
+    background-image: url('img/glyphicons-halflings.png');
+    width: 15px;
+    position: absolute;
+    height: 15px;
+    top: 10px;
+  }
+
+  .edit_btn
+  {
+    background-position: 0px 88px;
+    right: 40px;
+  }
+
+  .validate_edit_btn
+  {
+    background-position:-288px 0px;
+    right: 40px;
+  }
+
+  .delete_btn
+  {
+    background-position:-310px 0px;
+    right: 20px;
+  }
+
+  .edit_btn:hover, .validate_edit_btn:hover, .delete_btn:hover
+  {
+    cursor: pointer;
+  }
+
+  .answer_field, .question_label{
+    display: inline-block;
+    margin:10px;
+  }
+
+  ol{
+    list-style-type: none;
+    padding:0px 10px 0px 10px;
+  }
+
+  .question_code{
+    margin-left:10px;
+    display: block;
+  }
+</style>
+<div ng-controller="DragAndDrop">
+  <div id="products" class="col-md-5">
+    <h1 class="ui-widget-header">Outils</h1>
+    <div id="catalog">
+    	<ul>
+      	<li class="draggable_item dragitem" ng-repeat='item in list1' ng-show="item.title" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" ng-model="list1" jqyoui-draggable="{index: {{$index}}, animate: true, placeholder: 'keep', deepCopy: true}"><i class="fa fa-ellipsis-v" style="margin-right:10px;"></i>
+          		{{item.title}}
+          </li>
+      </ul> 
+    </div>
+  </div> 
+  <div class="col-md-5">
+      <h1 class="ui-widget-header">Création du sondage</h1>
+      <div class="ui-widget-content">
+          <ol class="dropzone" data-drop="true" ng-model='list4' jqyoui-droppable="{multiple:true}" id="list4">
+              <li class="drop_item" ng-repeat="itemlol in list4" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" ng-model="list4" jqyoui-draggable="{index: {{$index}},animate:false}">
+                  <!-- Champ pour modifier la question -->
+                  <input ng-hide="itemlol.show" type="text" class="answer_field" ng-model="answer"/>
+                  <!-- Label de la question -->
+                  <span class="question_label" ng-show="itemlol.show" ng-bind-html="itemlol.label"></span>
+                  <!-- Code de la question (type de question) -->
+                  <span class="question_code" ng-bind-html="itemlol.code"></span>
+
+                  <!-- Bouton pour valider la modification -->
+                  <span ng-hide="itemlol.show" ng-click="edit($index, answer)" class="validate_edit_btn"></span>
+                  <!-- Bouton pour modifier la question-->
+                  <span ng-show="itemlol.show" ng-click="hide($index)" class="edit_btn"></span>
+                  <!-- Bouton pour supprimer la question -->
+                  <span class="delete_btn" ng-click="delete($index)"></span>
+              </li>
+              <li class="placeholder" ng-hide="hideMe()">Cliquez/déposez des éléments depuis le menu pour créer votre sondage</li>
+          </ol>
+      </div>
+  </div>
+</div>
