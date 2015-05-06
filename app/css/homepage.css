@@ -63,12 +63,14 @@
 
 #feature h2{
    font-size: 20px;
+   font-weight:600px;
+   color:#000;
 }
 
 #feature  h3{
   font-size: 16px;
-  color: #787878;
-  font-weight: 400;
+  color: #000;
+  font-weight: 600;
   line-height: 24px;
 }
 
