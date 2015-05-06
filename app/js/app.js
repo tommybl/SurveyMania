@@ -1,6 +1,6 @@
 'use strict';
 
-var surveyManiaApp = angular.module('surveyManiaApp', ['ngRoute', 'surveyManiaConfig', 'surveyManiaControllers', 'surveyManiaServices', 'surveyManiaFilters', 'ngSanitize', 'ngAnimate']);
+var surveyManiaApp = angular.module('surveyManiaApp', ['ngRoute', 'surveyManiaConfig', 'surveyManiaControllers', 'surveyManiaServices', 'surveyManiaFilters', 'ngSanitize', 'ngAnimate', 'ngDragDrop']);
 
 surveyManiaApp.config(['$routeProvider',
     function($routeProvider) {
@@ -28,6 +28,11 @@ surveyManiaApp.config(['$routeProvider',
             templateUrl: '/app/mysurveys',
             controller: '',
             navigationPart: 'mysurveys'
+        }).
+        when('/createSurvey', {
+            templateUrl: '/app/createSurvey',
+            controller: '',
+            navigationPart: 'createSurvey'
         }).
         when('/organizationPanel', {
             templateUrl: '/app/organizationPanel',
