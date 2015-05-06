@@ -67,15 +67,15 @@
   }
 </style>
 <div ng-controller="DragAndDrop" style="margin: 20px 50px">
-<div style="margin-bottom: 20px; width: 300px">
-    <h1>Créer un sondage </h1><br>
+<div class="col-md-3">
+    <h3>Créer un sondage </h3>
     <input ng-model="survey.name" type="text" name="name" placeholder="Entez le nom du sondage" class="form-control"/><br>
     <select class="form-control">
      <option ng-repeat="category in categories" value="{{category.name}}" >{{category.name}}</option>
     </select>
 </div>
 <div>
-  <div id="products" class="col-md-5">
+  <div id="products" class="col-md-2">
     <h3 class="ui-widget-header">Outils</h3>
     <div id="catalog">
     	<ul  style="padding: 0!important">
@@ -85,7 +85,7 @@
       </ul> 
     </div>
   </div> 
-  <div class="col-md-5">
+  <div class="col-md-7">
       <h3 class="ui-widget-header">Création du sondage</h3>
       <div class="ui-widget-content">
           <ol class="dropzone" data-drop="true" ng-model='list4' jqyoui-droppable="{multiple:true}" id="list4">
