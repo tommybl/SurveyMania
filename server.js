@@ -552,7 +552,6 @@ app
 })
 
 .get('/accounts/verifyEmail/:token', function (req, res) {
-    console.log("1");
     var code = 1;
     res.setHeader("Content-Type", "text/html");
     var token = req.params.token;
@@ -588,8 +587,22 @@ app
     else res.render('partials/verify-edit-mail', {token: token, code: code});
 })
 
+.get('/accounts/verify/:token', function (req, res) {
+    res.setHeader("Content-Type", "text/html");
+    var token = req.params.token;
+    if (token != "new") {
+        MailVerifToken.find({token: token}, function (err, tokens) {
+            if (err || !tokens.length) {
+                if (err) console.error(err);
+                token = undefined;
+            }
+            res.render('partials/mail-verify', {token: token});
+        });
+    }
+    else res.render('partials/mail-verify', {token: token});
+})
+
 .post('/accounts/verify/:token', function (req, res) {
-    console.log("2");
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
     res.setHeader('Accept', 'application/json');
     var token = req.params.token;
@@ -676,7 +689,6 @@ app
 })
 
 .post('/accounts/get/verify', function (req, res) {
-    console.log("3");
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
     res.setHeader('Accept', 'application/json');
     var email = req.body.email;
@@ -720,7 +732,6 @@ app
 })
 
 .get('/accounts/reset/:token', function (req, res) {
-    console.log("24");
     res.setHeader("Content-Type", "text/html");
     var token = req.params.token;
     if (token != "new") {
@@ -736,7 +747,6 @@ app
 })
 
 .post('/accounts/reset/:token', function (req, res) {
-    console.log("25");
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
     res.setHeader('Accept', 'application/json');
     var token = req.params.token;
@@ -777,7 +787,6 @@ app
 })
 
 .post('/accounts/get/reset', function (req, res) {
-    console.log("5");
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
     res.setHeader('Accept', 'application/json');
     var email = req.body.email;
