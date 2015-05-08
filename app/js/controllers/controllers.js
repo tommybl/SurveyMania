@@ -332,8 +332,7 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
         });
     };
 
-    if ($location.$$path != "/account")
-        googleInitialize();
+    googleInitialize();
 }]);
 
 surveyManiaControllers.controller('ValidateProAccount', ['$scope', '$http', '$window', function($scope, $http, $window) {
@@ -364,7 +363,6 @@ surveyManiaControllers.controller('ValidateProAccount', ['$scope', '$http', '$wi
 }]);
 
 surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
-
     var oldUser;
     var oldOrganization;
     $http.post('/app/getUser/')
@@ -487,11 +485,13 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
             {
                 $scope.editSuccMess = "Un mail vous a été envoyé pour confirmer votre nouvelle adresse e-mail";
                 $scope.user.owner_email = oldUser.owner_email;
+                $scope.showEditProfileField = false;
             }
 
             else if (data.error == undefined) {
                 $scope.showEditField = false;
                 $scope.editSuccMess = "Vos modifications ont bien été prises en compte";
+                $scope.showEditProfileField = false;
             }
             else
             {
@@ -532,7 +532,6 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
             $scope.editErrMess = data.error + '. ' + data.message;
         });
     }
-
 }]);
 
 surveyManiaControllers.controller('MailVerifyController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
