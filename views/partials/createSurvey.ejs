@@ -66,7 +66,7 @@ ol{
   display: block;
 }
 </style>
-<div ng-controller="DragAndDrop" style="margin: 20px 50px">
+<div ng-controller="DragAndDrop">
   <div class="col-md-2">
     <h3>Créer un sondage </h3>
     <input ng-model="survey.name" type="text" name="name" placeholder="Entez le nom du sondage" class="form-control"/><br>
@@ -76,7 +76,10 @@ ol{
    <button class="form-control" style="width: 100px">Valider</button>
  </div>
  <div>
-  <div id="products" class="col-md-4">
+  <div class="col-md-4">
+    <div class="col-sm-12 draganddroptuto">
+      <i class="fa fa-arrows faarrows"></i> Cliquez/déposez les items que vous souhaitez inclure dans le sondage
+    </div>
     <h3 class="ui-widget-header">Outils</h3>
     <div class="panel panel-default">
       <div class="panel-heading">
@@ -84,7 +87,7 @@ ol{
       </div>
       <div class="panel-body">
        <ul  style="padding: 0!important">
-         <li class="draggable_item dragitem col-md-5" ng-repeat='item in list1' ng-show="item.title" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" ng-model="list1" jqyoui-draggable="{index: {{$index}}, animate: true, placeholder: 'keep', deepCopy: true}">
+         <li class="draggable_item dragitem col-xs-5 col-sm-5 col-md-5" ng-repeat='item in list1' ng-show="item.title" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" ng-model="list1" jqyoui-draggable="{index: {{$index}}, animate: true, placeholder: 'keep', deepCopy: true}">
           <i class="fa fa-{{item.icon}}" style="margin-right:5px;"></i> {{item.title}} <i class="fa fa-ellipsis-v draggable-icon"></i>
         </li>
       </ul> 
@@ -99,7 +102,12 @@ ol{
       </div>
   </div>
 </div> 
-<div class="col-md-6">
+{{questionList | json}}
+<div class="col-md-6" id="renderPanel">
+  <div id="optionsbar" class="col-sm-12">
+    <button class="optionsbarButton"><i class="fa fa-save"> Enregistrer</i></button>
+    <button class="optionsbarButton"><i class="fa fa-search"> Prévisualiser</i></button>
+  </div>
   <h3 class="ui-widget-header">Création du sondage</h3>
   <div class="ui-widget-content">
     <ol class="dropzone" data-drop="true" ng-model='list4' jqyoui-droppable="{multiple:true}" id="list4">
@@ -129,8 +137,11 @@ $(document).on('click', '#closedQuestion', function() {
     var idItem = $(this).parent().children("input[name='itemIndex']").val();
     var newOpt1 = $(this).parent().children("input[name='opt1']").val();
     var newOpt2 = $(this).parent().children("input[name='opt2']").val();
+    var newTitle = $(this).parent().children("input[name='questionTitle']").val();
     $("#itemn"+idItem).children(".opt1").html(newOpt1);
     $("#itemn"+idItem).children(".opt2").html(newOpt2);
+    $("#itemn"+idItem).parent().find("h5").html(newTitle);
     $("#display-item-options").empty();
+    $('#renderPanel').scope().editYesNoQuestion(idItem, newTitle, newOpt1, newOpt2);
 });
 </script>
