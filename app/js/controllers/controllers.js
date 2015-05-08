@@ -417,6 +417,7 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
         $("#show_about").hide();
         $("#ss-container").hide();
         $("#"+$id+"").fadeIn();
+        scroll(0, 1);
     }
     
     // Edit profile
