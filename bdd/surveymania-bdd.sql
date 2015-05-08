@@ -267,10 +267,16 @@ CREATE TABLE  surveymania.option_choices (
   id SERIAL NOT NULL ,
   option_group_id INT NOT NULL,
   choice_name VARCHAR(45) NOT NULL,
+  linked_section_id INT NULL DEFAULT NULL,
   PRIMARY KEY (id),
   CONSTRAINT fk_option_group_id
     FOREIGN KEY (option_group_id)
     REFERENCES surveymania.option_groups (id)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT fk_linked_section_id
+    FOREIGN KEY (linked_section_id)
+    REFERENCES surveymania.survey_sections (id)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);
 
