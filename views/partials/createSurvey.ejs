@@ -95,7 +95,7 @@
                   <!-- Label de la question -->
                   <span class="question_label" ng-show="itemlol.show" ng-bind-html="itemlol.label"></span>
                   <!-- Code de la question (type de question) -->
-                  <span class="question_code" ng-bind-html="itemlol.code"></span>
+                  <span ng-hide="itemlol.title == 'Titre'" class="question_code" ng-bind-html="itemlol.code"></span>
 
                   <!-- Bouton pour valider la modification -->
                   <span ng-hide="itemlol.show" ng-click="edit($index, answer)" class="validate_edit_btn"></span>
