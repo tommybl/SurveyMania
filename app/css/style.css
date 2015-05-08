@@ -273,7 +273,7 @@ header
 /* *************** DRAGANDDROP *************** */
 /* ******************************************* */
 
-.dragitem
+.dragitem, .optionsbarButton
 {
     list-style: none;
     background: #f8f8f8;
@@ -283,9 +283,45 @@ header
     padding:10px;
 }
 
+.optionsbarButton
+{
+    margin-top:0px;
+}
+
 .draggable-icon
 {
     float:right;
     margin:4px 10px 0px 0px;
     color:#e0e0e0;
+}
+
+#renderPanel
+{
+    border-left:1px solid #e0e0e0;
+    padding:0px;
+}
+
+#optionsbar
+{
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #f8f8f8;
+    margin-bottom: 15px;
+    padding:10px;
+}
+
+.ui-widget-header, .ui-widget-content
+{
+    margin:15px;
+}
+
+.draganddroptuto
+{
+    margin:20px 0px 19px 0px;
+}
+
+.faarrows
+{
+    font-size: 25px;
+    float: left;
+    margin: 9px 10px 0px 0px;
 }
