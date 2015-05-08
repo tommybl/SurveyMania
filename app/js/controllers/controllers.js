@@ -346,21 +346,6 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
             $scope.verifErrMess = data.error + '. ' + data.message;
         });
 
-    $scope.submitProfileChange = function()
-    {
-         $http.post('/app/profileChange/', {newuser:$scope.user, olduser:oldUser})
-        .success(function (data, status, headers, config) {
-            console.log(data);
-            if (data.error == undefined) {
-                console.log("nickel");
-            }
-            else $scope.verifErrMess = data.error + '. ' + data.message;
-        })
-        .error(function (data, status, headers, config) {
-            $scope.verifErrMess = data.error + '. ' + data.message;
-        });
-    }
-
     $scope.reduce = false;
     $scope.tab_hide = function() {
         $("#show_about").hide();
@@ -444,7 +429,7 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
             phone: ($scope.user.owner_tel == '') ? null : $scope.user.owner_tel,
         }
 
-        $http.post('/editUserProfile', edituser)
+        $http.post('/app/editUserProfile', edituser)
         .success(function (data, status, headers, config) {
             if(data.verifMail)
             {
@@ -482,7 +467,7 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
             description: ($scope.organization.organization_description == '') ? null : $scope.organization.organization_description
         }
 
-        $http.post('/editFirmProfile', editfirm)
+        $http.post('/app/editFirmProfile', editfirm)
         .success(function (data, status, headers, config) {
             if (data.error == undefined) {
                 $scope.showEditFirmField = false;

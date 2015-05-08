@@ -59,7 +59,6 @@ var JsonFormatter = {
 
 // We need our own "html_special_chars" function
 function escapeHtml(text) {
-    console.log("HEY !!");
   var map = {
     '&': '\&',
     '<': '\<',
@@ -68,7 +67,7 @@ function escapeHtml(text) {
     "'": "\'\'"
   };
 
-  return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+  return (text != null) ? text.replace(/[&<>"']/g, function(m) { return map[m]; }) : null;
 }
 
 // creating a new app with express framework
@@ -107,7 +106,7 @@ app
         if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
         else {
             var query = 'SELECT usertypes.type_name AS anyuser_typename, anyuser.id AS anyuser_id, anyuser.name AS anyuser_firstname, anyuser.lastname AS anyuser_lastname, anyuser.email AS anyuser_email, anyuser.user_type AS anyuser_type, anyuser.user_organization AS anyuser_organization, anyuser.verified AS anyuser_verified, orga.verified AS orga_verified ' +
-                        ' FROM surveymania.users anyuser INNER JOIN surveymania.user_types usertypes ON anyuser.user_type = usertypes.id LEFT JOIN surveymania.organizations orga ON anyuser.user_organization = orga.id WHERE anyuser.email = \'' + email + '\' AND anyuser.password = \'' + password + '\'';
+                        ' FROM surveymania.users anyuser INNER JOIN surveymania.user_types usertypes ON anyuser.user_type = usertypes.id LEFT JOIN surveymania.organizations orga ON anyuser.user_organization = orga.id WHERE anyuser.email = \'' + escapeHtml(email) + '\' AND anyuser.password = \'' + escapeHtml(password) + '\'';
             client.query(query, function(err, result) {
                 done();
                 if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
@@ -122,7 +121,6 @@ app
                                  "Veuillez patienter, nous vous informerons lorsque votre demande de compte aura été traitée."
                     });
                 else if (result.rows.length && result.rows[0].anyuser_verified == true) {
-                    console.log(result.rows);
                     var profile = {
                         firstname: result.rows[0].anyuser_firstname,
                         lastname: result.rows[0].anyuser_lastname,
@@ -133,7 +131,6 @@ app
                         organization: result.rows[0].anyuser_organization,
                         tokenCreation: new Date().getTime()
                     };
-                    console.log(profile);
                     // We are sending the profile inside the token
                     var token = jwt.sign(profile, SurveyManiasecret, { expiresInMinutes: 30*24*60 });
                     res.json({token: token, usertype: profile.usertypenumber});
@@ -159,9 +156,9 @@ app
         pg.connect(conString, function(err, client, done) {
             if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
             else {
-                var query = 'SELECT getuser.email AS user_email, getuser.id AS user_id FROM surveymania.users getuser WHERE getuser.email = \'' + req.body.email + '\' ' +
+                var query = 'SELECT getuser.email AS user_email, getuser.id AS user_id FROM surveymania.users getuser WHERE getuser.email = \'' + escapeHtml(req.body.email) + '\' ' +
                             'UNION ' +
-                            'SELECT getuser.email AS user_email, getuser.id AS user_id FROM surveymania.users getuser WHERE getuser.email = \'' + req.body.inviter + '\'';
+                            'SELECT getuser.email AS user_email, getuser.id AS user_id FROM surveymania.users getuser WHERE getuser.email = \'' + escapeHtml(req.body.inviter) + '\'';
                 client.query(query, function(err, result) {
                     done();
                     if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query verifying email"});
@@ -169,17 +166,17 @@ app
                         res.status(200).json({code: 200, error: "Conflict", message: "Email already used for an existing account"});
                     else {
                         var inviter_id = (result.rows.length && result.rows[0].user_email != req.body.email) ? result.rows[0].user_id : null;
-                        var dateNow = '\'' + moment().format("YYYY-MM-DD HH:mm:ss") + '\'';
-                        var email = '\'' + req.body.email + '\'';
-                        var password = '\'' + req.body.password + '\'';
-                        var firstname = '\'' + req.body.firstname + '\'';
-                        var lastname = '\'' + req.body.lastname + '\'';
-                        var telephone = (req.body.phone == null) ? 'NULL' : '\'' + req.body.phone + '\'';
-                        var adress = (req.body.adress == null) ? 'NULL' : '\'' + req.body.adress + '\'';
-                        var postal = (req.body.postal == null) ? 'NULL' : '\'' + req.body.postal + '\'';
-                        var town = (req.body.town == null) ? 'NULL' : '\'' + req.body.town + '\'';
-                        var country = (req.body.country == null) ? 'NULL' : '\'' + req.body.country + '\'';
-                        var inviteDT = (inviter_id == null) ? 'NULL' : dateNow;
+                        var dateNow = '\'' + escapeHtml(moment().format("YYYY-MM-DD HH:mm:ss")) + '\'';
+                        var email = '\'' + escapeHtml(req.body.email) + '\'';
+                        var password = '\'' + escapeHtml(req.body.password) + '\'';
+                        var firstname = '\'' + escapeHtml(req.body.firstname) + '\'';
+                        var lastname = '\'' + escapeHtml(req.body.lastname) + '\'';
+                        var telephone = (req.body.phone == null) ? 'NULL' : '\'' + escapeHtml(req.body.phone) + '\'';
+                        var adress = (req.body.adress == null) ? 'NULL' : '\'' + escapeHtml(req.body.adress) + '\'';
+                        var postal = (req.body.postal == null) ? 'NULL' : '\'' + escapeHtml(req.body.postal) + '\'';
+                        var town = (req.body.town == null) ? 'NULL' : '\'' + escapeHtml(req.body.town) + '\'';
+                        var country = (req.body.country == null) ? 'NULL' : '\'' + escapeHtml(req.body.country) + '\'';
+                        var inviteDT = (inviter_id == null) ? 'NULL' : escapeHtml(dateNow);
                         var inviterID = (inviter_id == null) ? 'NULL' : inviter_id;
                         var query = 'INSERT INTO surveymania.users(email, password, user_type, name, lastname, telephone, adress, postal, town, country, creation_dt, last_dt, invite_dt, inviter_id, points, verified) ' +
                             'VALUES (' + email + ', ' + password + ', 1, ' + firstname + ', ' + lastname + ', ' + telephone + ', ' + adress + ', ' + postal + ', ' + town + ', ' + country + ', ' +  dateNow + ', ' + dateNow + ', ' + inviteDT + ', ' + inviterID + ', 200, false) ' +
@@ -222,25 +219,25 @@ app
         pg.connect(conString, function(err, client, done) {
             if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
             else {
-                var query = 'SELECT getuser.email AS user_email, getuser.id AS user_id FROM surveymania.users getuser WHERE getuser.email = \'' + req.body.email + '\' ';
+                var query = 'SELECT getuser.email AS user_email, getuser.id AS user_id FROM surveymania.users getuser WHERE getuser.email = \'' + escapeHtml(req.body.email) + '\' ';
                 client.query(query, function(err, result) {
                     done();
                     if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query verifying email"});
                     else if (result.rows.length && result.rows[0].user_email == req.body.email)
                         res.status(200).json({code: 200, error: "Conflict", message: "Email already used for an existing account"});
                     else {
-                        var dateNow = '\'' + moment().format("YYYY-MM-DD HH:mm:ss") + '\'';
-                        var email = '\'' + req.body.email + '\'';
-                        var password = '\'' + req.body.password + '\'';
-                        var firstname = '\'' + req.body.firstname + '\'';
-                        var lastname = '\'' + req.body.lastname + '\'';
-                        var telephone = (req.body.phone == null) ? 'NULL' : '\'' + req.body.phone + '\'';
-                        var adress = (req.body.adress == null) ? 'NULL' : '\'' + req.body.adress + '\'';
-                        var postal = (req.body.postal == null) ? 'NULL' : '\'' + req.body.postal + '\'';
-                        var town = (req.body.town == null) ? 'NULL' : '\'' + req.body.town + '\'';
-                        var country = (req.body.country == null) ? 'NULL' : '\'' + req.body.country + '\'';
-                        var firmname = (req.body.firmname == null) ? 'NULL' : '\'' + req.body.firmname + '\'';
-                        var firmdescription = (req.body.firmdescription == null) ? 'NULL' : '\'' + req.body.firmdescription + '\'';
+                        var dateNow = '\'' + escapeHtml(moment().format("YYYY-MM-DD HH:mm:ss")) + '\'';
+                        var email = '\'' + escapeHtml(req.body.email) + '\'';
+                        var password = '\'' + escapeHtml(req.body.password) + '\'';
+                        var firstname = '\'' + escapeHtml(req.body.firstname) + '\'';
+                        var lastname = '\'' + escapeHtml(req.body.lastname) + '\'';
+                        var telephone = (req.body.phone == null) ? 'NULL' : '\'' + escapeHtml(req.body.phone) + '\'';
+                        var adress = (req.body.adress == null) ? 'NULL' : '\'' + escapeHtml(req.body.adress) + '\'';
+                        var postal = (req.body.postal == null) ? 'NULL' : '\'' + escapeHtml(req.body.postal) + '\'';
+                        var town = (req.body.town == null) ? 'NULL' : '\'' + escapeHtml(req.body.town) + '\'';
+                        var country = (req.body.country == null) ? 'NULL' : '\'' + escapeHtml(req.body.country) + '\'';
+                        var firmname = (req.body.firmname == null) ? 'NULL' : '\'' + escapeHtml(req.body.firmname) + '\'';
+                        var firmdescription = (req.body.firmdescription == null) ? 'NULL' : '\'' + escapeHtml(req.body.firmdescription) + '\'';
                         var logo_img = req.body.logo_img;
                         var logo_type = req.body.logo_type;
                         var logo_skip = req.body.logo_skip;
@@ -260,7 +257,7 @@ app
                                             fs.writeFile("app/" + img_path, logo_img, 'base64', function(err) {
                                                 if (err) console.log(err);
                                                 else {
-                                                    var query = 'UPDATE surveymania.organizations SET logo_path = \'' + img_path + '\' WHERE surveymania.organizations.id = ' + orgaid;
+                                                    var query = 'UPDATE surveymania.organizations SET logo_path = \'' + escapeHtml(img_path) + '\' WHERE surveymania.organizations.id = ' + orgaid;
                                                     client.query(query, function(err, result) {
                                                         done();
                                                         if (err) console.log(err);
@@ -288,7 +285,7 @@ app
                                             to: req.body.email,
                                             subject: 'Signin professional account verification',
                                             html: 'Hello ' + req.body.firstname + ' ' + req.body.lastname + ', welcome to SurveyMania!<br><br>' +
-                                                  'You have submitted a new professional account for your organization <strong>' + firmname + '</strong><br>' +
+                                                  'You have submitted a new professional account for your organization <strong>' + req.body.firmname + '</strong><br>' +
                                                   'Please click on the link below to verify your account email for your <b>SurveyMania</b> inscription.<br>' +
                                                   '<a href="' + verifyURL + '">' + verifyURL + '</a><br><br>' +
                                                   'After that, we will study your request and will inform you when your professional account is validated, if it is accepted.<br><br>' +
@@ -355,7 +352,7 @@ app
                     var owner_email = result.rows[0].owner_email;
                     var owner_firstname = result.rows[0].owner_firstname;
                     var owner_lastname = result.rows[0].owner_lastname;
-                    var dateNow = '\'' + moment().format("YYYY-MM-DD HH:mm:ss") + '\'';
+                    var dateNow = '\'' + escapeHtml(moment().format("YYYY-MM-DD HH:mm:ss")) + '\'';
                     var query = 'UPDATE surveymania.organizations SET verified = TRUE, verified_dt =' + dateNow + ' WHERE surveymania.organizations.id = ' + id;
                     client.query(query, function(err, result) {
                         done();
@@ -385,7 +382,8 @@ app
 })
 
 .post('/app/getUser', function (req, res) {
-        pg.connect(conString, function(err, client, done) {
+    if(req.user.usertypenumber != 1 && req.user.usertypenumber != 2 && req.user.usertypenumber != 3 && req.user.usertypenumber != 4) {res.status(401).json({code: 401, error: "Unauthorized", message: "Unauthorized"}); return;}
+    pg.connect(conString, function(err, client, done) {
         if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
         var query = 'SELECT owner.id AS owner_id, owner.user_organization AS owner_organization, owner.email AS owner_email, owner.password AS owner_password, owner.name AS owner_firstname, owner.lastname AS owner_lastname, owner.adress AS owner_adress, owner.postal AS owner_postal, owner.town AS owner_town, owner.country AS owner_country, owner.telephone AS owner_tel, owner.user_type AS owner_type, owner.points AS owner_points ' +
                     'FROM surveymania.users owner WHERE owner.id = ' + req.user.id;
@@ -401,9 +399,10 @@ app
 })
 
 .post('/app/getUserOrganization', function (req, res) {
-        pg.connect(conString, function(err, client, done) {
+    if(req.user.usertypenumber != 2 && req.user.usertypenumber != 3 && req.user.usertypenumber != 4) {res.status(401).json({code: 401, error: "Unauthorized", message: "Unauthorized"}); return;}
+    pg.connect(conString, function(err, client, done) {
         if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
-        var query = 'SELECT orga.id AS organization_id, orga.description AS organization_description, orga.adress AS organization_adress, orga.postal AS organization_postal, '+
+        var query = 'SELECT orga.id AS organization_id, orga.description AS organization_description, orga.adress AS organization_adress, orga.postal AS organization_postal, ' +
                     'orga.town AS organization_town, orga.country AS organization_country, orga.telephone AS organization_tel, orga.name AS organization_name ' +
                     'FROM surveymania.organizations orga WHERE orga.id = ' + req.body.userOrganization;
         client.query(query, function(err, result) {
@@ -419,6 +418,7 @@ app
 
 
 .get('/app/account', function (req, res) {
+    if(req.user.usertypenumber != 1 && req.user.usertypenumber != 2 && req.user.usertypenumber != 3 && req.user.usertypenumber != 4) {res.redirect('/401-unauthorized'); return;}
     var achvmnts = '';
     var user = req.user;
     pg.connect(conString, function(err, client, done) {
@@ -443,7 +443,8 @@ app
     });
 })
 
-.post('/editUserProfile', function (req, res) {
+.post('/app/editUserProfile', function (req, res) {
+    if(req.user.usertypenumber != 1 && req.user.usertypenumber != 2 && req.user.usertypenumber != 3 && req.user.usertypenumber != 4) {res.status(401).json({code: 401, error: "Unauthorized", message: "Unauthorized"}); return;}
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
     res.setHeader('Accept', 'application/json');
     var error = false;
@@ -452,17 +453,15 @@ app
         if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
         else 
         {
-            var email = '\'' + req.body.email + '\'';
-            var password = '\'' + req.body.password + '\'';
-            var telephone = (req.body.phone == null) ? 'NULL' : '\'' + req.body.phone + '\'';
-            var adress = (req.body.adress == null) ? 'NULL' : '\'' + req.body.adress + '\'';
-            var postal = (req.body.postal == null) ? 'NULL' : '\'' + req.body.postal + '\'';
-            var town = (req.body.town == null) ? 'NULL' : '\'' + req.body.town + '\'';
-            var country = (req.body.country == null) ? 'NULL' : '\'' + req.body.country + '\'';
-            console.log("email:"+email+"    pawd:"+password+"     adress:"+adress+"    postal:"+postal
-                        +"     town:"+town+"    country:"+country+"      id:"+req.body.id);
+            var email = '\'' + escapeHtml(req.body.email) + '\'';
+            var password = '\'' + escapeHtml(req.body.password) + '\'';
+            var telephone = (req.body.phone == null) ? 'NULL' : '\'' + escapeHtml(req.body.phone) + '\'';
+            var adress = (req.body.adress == null) ? 'NULL' : '\'' + escapeHtml(req.body.adress) + '\'';
+            var postal = (req.body.postal == null) ? 'NULL' : '\'' + escapeHtml(req.body.postal) + '\'';
+            var town = (req.body.town == null) ? 'NULL' : '\'' + escapeHtml(req.body.town) + '\'';
+            var country = (req.body.country == null) ? 'NULL' : '\'' + escapeHtml(req.body.country) + '\'';
             //Verify email
-            var emailQuery = 'SELECT owner.id AS owner_id FROM surveymania.users owner WHERE owner.email = '+ email;
+            var emailQuery = 'SELECT owner.id AS owner_id FROM surveymania.users owner WHERE owner.email = ' + email;
             client.query(emailQuery, function(err, result) {
                 done();
                 if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query retrieving email"});
@@ -472,7 +471,7 @@ app
                     if(result.rows[0].owner_id == req.body.id)
                     {
                         var query = 'UPDATE surveymania.users SET email = ' + email + ', password = ' + password + ', telephone = ' + telephone + ', adress=' + adress + ', postal =' + postal + ', town = ' + town + ', country = ' + country +
-                        'WHERE id = '+req.body.id;
+                        'WHERE id = ' + req.body.id;
                         client.query(query, function(err, result) {
                             done();
                             if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query editing user"});
@@ -488,7 +487,7 @@ app
                 else
                 {
                     var query = 'UPDATE surveymania.users SET password = ' + password + ', telephone = ' + telephone + ', adress=' + adress + ', postal =' + postal + ', town = ' + town + ', country = ' + country +
-                    'WHERE id = '+req.body.id;
+                    'WHERE id = ' + req.body.id;
                     client.query(query, function(err, result) {
                         done();
                         if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query editing user"});
@@ -525,22 +524,23 @@ app
     });
 })
 
-.post('/editFirmProfile', function (req, res) {
+.post('/app/editFirmProfile', function (req, res) {
+    if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) {res.status(401).json({code: 401, error: "Unauthorized", message: "Unauthorized"}); return;}
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
     res.setHeader('Accept', 'application/json');
     pg.connect(conString, function(err, client, done) {
         if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
         else 
         {
-            var telephone = (req.body.phone == null) ? 'NULL' : '\'' + req.body.phone + '\'';
-            var adress = (req.body.adress == null) ? 'NULL' : '\'' + req.body.adress + '\'';
-            var postal = (req.body.postal == null) ? 'NULL' : '\'' + req.body.postal + '\'';
-            var town = (req.body.town == null) ? 'NULL' : '\'' + req.body.town + '\'';
-            var country = (req.body.country == null) ? 'NULL' : '\'' + req.body.country + '\'';
-            var firmdescription = (req.body.description == null) ? 'NULL' : '\'' + req.body.description + '\'';
+            var telephone = (req.body.phone == null) ? 'NULL' : '\'' + escapeHtml(req.body.phone) + '\'';
+            var adress = (req.body.adress == null) ? 'NULL' : '\'' + escapeHtml(req.body.adress) + '\'';
+            var postal = (req.body.postal == null) ? 'NULL' : '\'' + escapeHtml(req.body.postal) + '\'';
+            var town = (req.body.town == null) ? 'NULL' : '\'' + escapeHtml(req.body.town) + '\'';
+            var country = (req.body.country == null) ? 'NULL' : '\'' + escapeHtml(req.body.country) + '\'';
+            var firmdescription = (req.body.description == null) ? 'NULL' : '\'' + escapeHtml(req.body.description) + '\'';
               
-            var query = 'UPDATE surveymania.organizations SET description = '+firmdescription+', telephone = ' + telephone + ', adress=' + adress + ', postal =' + postal + ', town = ' + town + ', country = ' + country +
-                        ' WHERE id = '+req.body.id;
+            var query = 'UPDATE surveymania.organizations SET description = ' + firmdescription +', telephone = ' + telephone + ', adress=' + adress + ', postal =' + postal + ', town = ' + town + ', country = ' + country +
+                        ' WHERE id = ' + req.body.id;
             client.query(query, function(err, result) {
                 done();
                 if(err) {console.log(err);res.status(500).json({code: 500, error: "Internal server error", message: "Error running query inserting new organization"});}
@@ -564,11 +564,10 @@ app
             }
             else
             {
-                var email = '\'' + tokens[0].usermail + '\'';
+                var email = '\'' + escapeHtml(tokens[0].usermail) + '\'';
                 var userId = tokens[0].userid;
-                console.log("id "+userId+"         email:"+email);
                 pg.connect(conString, function(err, client, done) {
-                    var query = 'UPDATE surveymania.users SET email=' + email + ' WHERE id = '+userId;
+                    var query = 'UPDATE surveymania.users SET email=' + email + ' WHERE id = ' + userId;
                     client.query(query, function(err, result) {
                         done();
                         if(err) 
@@ -588,6 +587,21 @@ app
     else res.render('partials/verify-edit-mail', {token: token, code: code});
 })
 
+.get('/accounts/verify/:token', function (req, res) {
+    res.setHeader("Content-Type", "text/html");
+    var token = req.params.token;
+    if (token != "new") {
+        MailVerifToken.find({token: token}, function (err, tokens) {
+            if (err || !tokens.length) {
+                if (err) console.error(err);
+                token = undefined;
+            }
+            res.render('partials/mail-verify', {token: token});
+        });
+    }
+    else res.render('partials/mail-verify', {token: token});
+})
+
 .post('/accounts/verify/:token', function (req, res) {
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
     res.setHeader('Accept', 'application/json');
@@ -603,7 +617,7 @@ app
                 if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
                 else {
                     var query = 'SELECT invited.id AS invited_id, inviter.id AS inviter_id, invited.verified AS invited_verified, inviter.points AS inviter_points, invited.email AS invited_email, inviter.email AS inviter_email, invited.name AS invited_firstname, invited.lastname AS invited_lastname ' +
-                        'FROM surveymania.users invited LEFT JOIN surveymania.users inviter ON invited.inviter_id = inviter.id WHERE invited.id = ' + userid + ' AND invited.password = \'' + password + '\'';
+                        'FROM surveymania.users invited LEFT JOIN surveymania.users inviter ON invited.inviter_id = inviter.id WHERE invited.id = ' + userid + ' AND invited.password = \'' + escapeHtml(password) + '\'';
                     client.query(query, function(err, result) {
                         done();
                         if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
@@ -615,7 +629,7 @@ app
                             var invited_email = result.rows[0].invited_email;
                             var invited_firstname = result.rows[0].invited_firstname;
                             var invited_lastname = result.rows[0].invited_lastname;
-                            var dateNow = '\'' + moment().format("YYYY-MM-DD HH:mm:ss") + '\'';
+                            var dateNow = '\'' + escapeHtml(moment().format("YYYY-MM-DD HH:mm:ss")) + '\'';
                             var query = 'UPDATE surveymania.users SET verified=true, verified_dt=' + dateNow + ' WHERE id=' + userid;
                             client.query(query, function(err, result) {
                                 done();
@@ -641,7 +655,7 @@ app
                                                     if(error) console.log(error);
                                                     else console.log('Message sent: ' + info.response);
                                                 });
-                                                var dateNow = '\'' + moment().format("YYYY-MM-DD HH:mm:ss") + '\'';
+                                                var dateNow = '\'' + escapeHtml(moment().format("YYYY-MM-DD HH:mm:ss")) + '\'';
                                                 var query = 'INSERT INTO surveymania.user_achievements(user_id, achiev_id, recieved_dt) ' +
                                                             'VALUES (' + inviter_id + ', 2, ' + dateNow + ') ';
                                                 client.query(query, function(err, result) {
@@ -655,7 +669,7 @@ app
                                         if (err) console.log(err);
                                         res.json({code: 200, message: "Le compte a bien été vérifié"});
                                     });
-                                    var dateNow = '\'' + moment().format("YYYY-MM-DD HH:mm:ss") + '\'';
+                                    var dateNow = '\'' + escapeHtml(moment().format("YYYY-MM-DD HH:mm:ss")) + '\'';
                                     var query = 'INSERT INTO surveymania.user_achievements(user_id, achiev_id, recieved_dt) ' +
                                                 'VALUES (' + invited_id + ', 1, ' + dateNow + '), (' + invited_id + ', 3, ' + dateNow + '), (' + invited_id + ', 4, ' + dateNow + ')';
                                     client.query(query, function(err, result) {
@@ -682,7 +696,7 @@ app
     pg.connect(conString, function(err, client, done) {
         if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
         else {
-            var query = 'SELECT surveymania.users.id AS userid, * FROM surveymania.users WHERE surveymania.users.email = \'' + email + '\'';
+            var query = 'SELECT surveymania.users.id AS userid, * FROM surveymania.users WHERE surveymania.users.email = \'' + escapeHtml(email) + '\'';
             client.query(query, function(err, result) {
                 done();
                 if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
@@ -737,7 +751,7 @@ app
     res.setHeader('Accept', 'application/json');
     var token = req.params.token;
     var email = req.body.email;
-    var password = '\'' + req.body.password + '\'';
+    var password = '\'' + escapeHtml(req.body.password) + '\'';
     var userid = null;
     PwdResetToken.find({token: token}, function (err, tokens) {
         if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Une erreur est survenue lors de la recherche du token de vérification d'email"});
@@ -747,7 +761,7 @@ app
             pg.connect(conString, function(err, client, done) {
                 if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
                 else {
-                    var query = 'SELECT surveymania.users.id AS userid, * FROM surveymania.users WHERE surveymania.users.id = ' + userid + ' AND surveymania.users.email = \'' + email + '\'';
+                    var query = 'SELECT surveymania.users.id AS userid, * FROM surveymania.users WHERE surveymania.users.id = ' + userid + ' AND surveymania.users.email = \'' + escapeHtml(email) + '\'';
                     client.query(query, function(err, result) {
                         done();
                         if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
@@ -780,7 +794,7 @@ app
     pg.connect(conString, function(err, client, done) {
         if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
         else {
-            var query = 'SELECT surveymania.users.id AS userid, * FROM surveymania.users WHERE surveymania.users.email = \'' + email + '\'';
+            var query = 'SELECT surveymania.users.id AS userid, * FROM surveymania.users WHERE surveymania.users.email = \'' + escapeHtml(email) + '\'';
             client.query(query, function(err, result) {
                 done();
                 if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
@@ -872,7 +886,7 @@ app
                 pg.connect(conString, function(err, client, done) {
                     if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                     else {
-                        var query = 'SELECT us.id FROM surveymania.user_surveys us WHERE us.user_id = ' + user.id + ' AND us.survey_header_id = ' + decrypted;
+                        var query = 'SELECT us.id FROM surveymania.user_surveys us WHERE us.user_id = ' + user.id + ' AND us.survey_header_id = ' + escapeHtml(decrypted);
                         client.query(query, function(err, result) {
                             done();
                             if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
@@ -880,7 +894,7 @@ app
                                 if (result.rows.length != 0) res.status(200).json({code: 200, message: "Already scanned"});
                                 else {
                                     var query = 'SELECT o.name AS orgaName, sh.name AS surveyName, sh.points AS points, sh.info AS infos FROM surveymania.survey_headers sh '
-                                        + 'INNER JOIN surveymania.organizations o ON sh.organization_id = o.id WHERE sh.id = ' + decrypted;
+                                        + 'INNER JOIN surveymania.organizations o ON sh.organization_id = o.id WHERE sh.id = ' + escapeHtml(decrypted);
                                     client.query(query, function(err, result) {
                                         done();
                                         if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
@@ -912,13 +926,13 @@ app
         pg.connect(conString, function(err, client, done) {
             if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
             else {
-                var query = 'INSERT INTO surveymania.user_surveys (user_id, survey_header_id, completed) VALUES (' + user.id + ', ' + decrypted + ', NULL)';
+                var query = 'INSERT INTO surveymania.user_surveys (user_id, survey_header_id, completed) VALUES (' + user.id + ', ' + escapeHtml(decrypted) + ', NULL)';
                 client.query(query, function(err, result) {
                     done();
                     if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                     else {
                         var query = 'SELECT o.name AS orgaName, sh.name AS surveyName, sh.points AS points, sh.info AS infos, us.completed AS completed FROM surveymania.survey_headers sh INNER JOIN surveymania.user_surveys us ON sh.id = us.survey_header_id '
-                            + 'INNER JOIN surveymania.organizations o ON sh.organization_id = o.id INNER JOIN surveymania.users u ON us.user_id = u.id WHERE u.id = ' + user.id + ' AND sh.id = ' + decrypted;
+                            + 'INNER JOIN surveymania.organizations o ON sh.organization_id = o.id INNER JOIN surveymania.users u ON us.user_id = u.id WHERE u.id = ' + user.id + ' AND sh.id = ' + escapeHtml(decrypted);
                         client.query(query, function(err, result) {
                             done();
                             if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
@@ -994,14 +1008,14 @@ app
         pg.connect(conString, function(err, client, done) {
             if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
             else {
-                var query = 'SELECT name FROM surveymania.organization_categories WHERE organization_id = ' + orgaid + ' AND name = \'' + newCategory.name + '\'';
+                var query = 'SELECT name FROM surveymania.organization_categories WHERE organization_id = ' + orgaid + ' AND name = \'' + escapeHtml(newCategory.name) + '\'';
                 client.query(query, function(err, result) {
                     done();
                     if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                     else {
                         if (result.rows.length != 0) res.status(200).json({code: 200, message: "Duplicate category"});
                         else{
-                            var query = 'INSERT INTO surveymania.organization_categories (organization_id, name, color) VALUES (' + orgaid + ', \'' + newCategory.name + '\', \'' + newCategory.color + '\')';
+                            var query = 'INSERT INTO surveymania.organization_categories (organization_id, name, color) VALUES (' + orgaid + ', \'' + escapeHtml(newCategory.name) + '\', \'' + escapeHtml(newCategory.color) + '\')';
                             client.query(query, function(err, result) {
                                 done();
                                 if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
@@ -1031,14 +1045,14 @@ app
         pg.connect(conString, function(err, client, done) {
             if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
             else {
-                var query = 'SELECT name FROM surveymania.organization_categories WHERE organization_id = ' + orgaid + ' AND name = \'' + category.name + '\'';
+                var query = 'SELECT name FROM surveymania.organization_categories WHERE organization_id = ' + orgaid + ' AND name = \'' + escapeHtml(category.name) + '\'';
                 client.query(query, function(err, result) {
                     done();
                     if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                     else {
                         if (result.rows.length != 0 && updateName === true) res.status(200).json({code: 200, message: "Duplicate category"});
                         else{
-                            var query = 'UPDATE surveymania.organization_categories SET name=\'' + category.name + '\', color=\'' + category.color + '\' WHERE organization_id=' + orgaid + ' AND name=\'' + old_category + '\'';
+                            var query = 'UPDATE surveymania.organization_categories SET name=\'' + escapeHtml(category.name) + '\', color=\'' + escapeHtml(category.color) + '\' WHERE organization_id=' + orgaid + ' AND name=\'' + escapeHtml(old_category) + '\'';
                             client.query(query, function(err, result) {
                                 done();
                                 if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
@@ -1115,19 +1129,19 @@ app
         pg.connect(conString, function(err, client, done) {
             if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
             else {
-                var query = 'SELECT getuser.email AS user_email, getuser.id AS user_id FROM surveymania.users getuser WHERE getuser.email = \'' + req.body.email + '\' ';
+                var query = 'SELECT getuser.email AS user_email, getuser.id AS user_id FROM surveymania.users getuser WHERE getuser.email = \'' + escapeHtml(req.body.email) + '\' ';
                 client.query(query, function(err, result) {
                     done();
                     if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query verifying email"});
                     else if (result.rows.length && result.rows[0].user_email == req.body.email)
                         res.status(200).json({code: 200, error: "Conflict", message: "Email already used for an existing account"});
                     else {
-                        var dateNow = '\'' + moment().format("YYYY-MM-DD HH:mm:ss") + '\'';
-                        var email = '\'' + req.body.email + '\'';
+                        var dateNow = '\'' + escapeHtml(moment().format("YYYY-MM-DD HH:mm:ss")) + '\'';
+                        var email = '\'' + escapeHtml(req.body.email) + '\'';
                         var password = generatePassword(12, false, /[\d\W\w\p]/);
-                        var passwordCrypted = '\'' + CryptoJS.SHA256(password).toString() + '\'';
-                        var firstname = '\'' + req.body.firstname + '\'';
-                        var lastname = '\'' + req.body.lastname + '\'';
+                        var passwordCrypted = '\'' + escapeHtml(CryptoJS.SHA256(password).toString()) + '\'';
+                        var firstname = '\'' + escapeHtml(req.body.firstname) + '\'';
+                        var lastname = '\'' + escapeHtml(req.body.lastname) + '\'';
                         var query = 'INSERT INTO surveymania.users(user_organization, email, password, user_type, name, lastname, creation_dt, last_dt, points, verified) ' +
                             'VALUES (' + req.user.organization + ', ' + email + ', ' + passwordCrypted + ', 4, ' + firstname + ', ' + lastname + ', ' + dateNow + ', ' + dateNow + ', 200, true) ' +
                             'RETURNING id';
