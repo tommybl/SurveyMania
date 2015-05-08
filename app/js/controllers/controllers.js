@@ -30,10 +30,11 @@ surveyManiaControllers.controller('GlobalController', ['$scope', '$window', '$lo
 
 surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$timeout', '$sce', '$http', 
     function($scope, $routeParams, $timeout, $sce, $http){
-        $scope.list1 = [{'id':'0','title': 'Titre', 'label': $sce.trustAsHtml('<h5>Titre</h5>'), 'code' : $sce.trustAsHtml('<h3 ng-bind="title">Titre</h3>'), 'show':true},
-                        {'id':'1','title': 'Réponse libre', 'label':$sce.trustAsHtml('<h5>question</h5>'), 'code' : $sce.trustAsHtml('<textarea></textarea>'), 'show':true},
-                        {'id':'2','title': 'Oui/Non', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<input type="radio" name="yesno" value="0"> Oui<br><input type="radio" name="yesno" value="1" checked> Non'), 'show':true},
-                        {'id':'3','title': 'Slider', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<input type="range" min="0" max="50" value="25" step="5" />'), 'show':true}
+        $scope.list1 = [{'id':'0','title': 'Titre', 'label': $sce.trustAsHtml('<h5>Titre</h5>'), 'code' : $sce.trustAsHtml('<h3 ng-bind="title">Titre</h3>'), 'show':true, 'icon':'header'},
+                        {'id':'1','title': 'Réponse libre', 'label':$sce.trustAsHtml('<h5>question</h5>'), 'code' : $sce.trustAsHtml('<textarea></textarea>'), 'show':true, 'icon':'text-height'},
+                        {'id':'2','title': 'Question fermée', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<input type="radio" name="yesno" value="0"> <span class="opt1">Oui</span><br><input type="radio" name="yesno" value="1" checked><span class="opt2"> Non</span>'), 'show':true, 'icon':'toggle-on'},
+                        {'id':'3','title': 'Slider', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<input type="range" min="0" max="50" value="25" step="5" />'), 'show':true, 'icon':'sliders'},
+                        {'id':'4','title': 'Branchement', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml(''), 'show':true, 'icon':'code-fork'}
                         ]; 
 
         $scope.list4 = [];
@@ -45,12 +46,33 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
             return $scope.list4.length > 0;
         }
 
+        $scope.edit = function($index, $type){
+            $scope.displayOptions($index, $type);
+            $scope.hide($index);
+        }
+
+        $scope.displayOptions = function($index, $type)
+        {
+            if($type == 2)
+            {
+                $("#display-item-options").append('<h5>Question fermée</h5>');
+                $("#display-item-options").append('<input type="hidden" name="itemIndex" value="'+$index+'" />');
+                var option1 = $("#itemn"+$index).children(".opt1").html();
+                $("#display-item-options").append('Texte de la première réponse<input type="text" name="opt1" class="form-control" value="'+option1+'" />');
+                var option2 = $("#itemn"+$index).children(".opt2").html();
+                $("#display-item-options").append('Texte de la première réponse<input type="text" name="opt2" class="form-control" value="'+option2+'" />');
+                $("#display-item-options").append('<input type="submit" id="closedQuestion" value="Valider" class="btn btn-primary" />');
+            }
+            else
+                $("#display-item-options").html('error');
+        }
+
         $scope.hide = function($index){
             console.log("index : "+$index)
             $scope.list4[$index].show = false;
         }
 
-        $scope.edit = function($index, $value){
+        $scope.validate = function($index, $value){
             console.log($value);
             $scope.list4[$index].label = $sce.trustAsHtml('<h5 ng-bind="title">'+$value+'</h5>');
             $scope.list4[$index].show = true;
