@@ -67,7 +67,7 @@ function escapeHtml(text) {
     "'": "\'\'"
   };
 
-  return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+  return (text != null) ? text.replace(/[&<>"']/g, function(m) { return map[m]; }) : null;
 }
 
 // creating a new app with express framework
@@ -552,6 +552,7 @@ app
 })
 
 .get('/accounts/verifyEmail/:token', function (req, res) {
+    console.log("1");
     var code = 1;
     res.setHeader("Content-Type", "text/html");
     var token = req.params.token;
@@ -588,6 +589,7 @@ app
 })
 
 .post('/accounts/verify/:token', function (req, res) {
+    console.log("2");
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
     res.setHeader('Accept', 'application/json');
     var token = req.params.token;
@@ -674,6 +676,7 @@ app
 })
 
 .post('/accounts/get/verify', function (req, res) {
+    console.log("3");
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
     res.setHeader('Accept', 'application/json');
     var email = req.body.email;
@@ -717,6 +720,7 @@ app
 })
 
 .get('/accounts/reset/:token', function (req, res) {
+    console.log("24");
     res.setHeader("Content-Type", "text/html");
     var token = req.params.token;
     if (token != "new") {
@@ -732,6 +736,7 @@ app
 })
 
 .post('/accounts/reset/:token', function (req, res) {
+    console.log("25");
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
     res.setHeader('Accept', 'application/json');
     var token = req.params.token;
@@ -772,6 +777,7 @@ app
 })
 
 .post('/accounts/get/reset', function (req, res) {
+    console.log("5");
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
     res.setHeader('Accept', 'application/json');
     var email = req.body.email;
