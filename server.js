@@ -382,7 +382,8 @@ app
 })
 
 .post('/app/getUser', function (req, res) {
-        pg.connect(conString, function(err, client, done) {
+    if(req.user.usertypenumber != 1 && req.user.usertypenumber != 2 && req.user.usertypenumber != 3 && req.user.usertypenumber != 4) {res.status(401).json({code: 401, error: "Unauthorized", message: "Unauthorized"}); return;}
+    pg.connect(conString, function(err, client, done) {
         if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
         var query = 'SELECT owner.id AS owner_id, owner.user_organization AS owner_organization, owner.email AS owner_email, owner.password AS owner_password, owner.name AS owner_firstname, owner.lastname AS owner_lastname, owner.adress AS owner_adress, owner.postal AS owner_postal, owner.town AS owner_town, owner.country AS owner_country, owner.telephone AS owner_tel, owner.user_type AS owner_type, owner.points AS owner_points ' +
                     'FROM surveymania.users owner WHERE owner.id = ' + req.user.id;
@@ -398,7 +399,8 @@ app
 })
 
 .post('/app/getUserOrganization', function (req, res) {
-        pg.connect(conString, function(err, client, done) {
+    if(req.user.usertypenumber != 2 && req.user.usertypenumber != 3 && req.user.usertypenumber != 4) {res.status(401).json({code: 401, error: "Unauthorized", message: "Unauthorized"}); return;}
+    pg.connect(conString, function(err, client, done) {
         if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
         var query = 'SELECT orga.id AS organization_id, orga.description AS organization_description, orga.adress AS organization_adress, orga.postal AS organization_postal, ' +
                     'orga.town AS organization_town, orga.country AS organization_country, orga.telephone AS organization_tel, orga.name AS organization_name ' +
@@ -416,6 +418,7 @@ app
 
 
 .get('/app/account', function (req, res) {
+    if(req.user.usertypenumber != 1 && req.user.usertypenumber != 2 && req.user.usertypenumber != 3 && req.user.usertypenumber != 4) {res.redirect('/401-unauthorized'); return;}
     var achvmnts = '';
     var user = req.user;
     pg.connect(conString, function(err, client, done) {
@@ -440,7 +443,8 @@ app
     });
 })
 
-.post('/editUserProfile', function (req, res) {
+.post('/app/editUserProfile', function (req, res) {
+    if(req.user.usertypenumber != 1 && req.user.usertypenumber != 2 && req.user.usertypenumber != 3 && req.user.usertypenumber != 4) {res.status(401).json({code: 401, error: "Unauthorized", message: "Unauthorized"}); return;}
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
     res.setHeader('Accept', 'application/json');
     var error = false;
@@ -520,7 +524,8 @@ app
     });
 })
 
-.post('/editFirmProfile', function (req, res) {
+.post('/app/editFirmProfile', function (req, res) {
+    if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) {res.status(401).json({code: 401, error: "Unauthorized", message: "Unauthorized"}); return;}
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
     res.setHeader('Accept', 'application/json');
     pg.connect(conString, function(err, client, done) {
