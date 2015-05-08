@@ -223,14 +223,19 @@ var jqyoui = angular.module('ngDragDrop', []).service('ngDragDropService', ['$ti
             // }
           }
 
-          console.dir(dropModelValue);
-          console.log("before: "+dropModelValue.length+"       now: "+dropModelValueTmp.length);
-          console.log("bool: "+mybool);
+          //console.dir(dropModelValue);
+          //console.log("before: "+dropModelValue.length+"       now: "+dropModelValueTmp.length);
+          //console.log("bool: "+mybool);
           if (mybool)
+          {
             dropModelValue.push(dragItem);
+            $('#renderPanel').scope().addNewQuestion(dropModelValue.length-1, dragItem);
+          }
           else
+          {
             dropModelValue.splice(elemToInsert, 0, dragItem);
-
+            $('#renderPanel').scope().addNewQuestion(elemToInsert, dragItem);
+          } 
         }
         if (dragSettings && dragSettings.placeholder === true) {
           dropModelValue[dropModelValue.length - 1]['jqyoui_pos'] = jqyoui_pos;

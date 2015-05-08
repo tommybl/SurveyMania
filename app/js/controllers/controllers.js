@@ -38,17 +38,44 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                         ]; 
 
         $scope.list4 = [];
+        $scope.questionList = [];
         $scope.categories = [];
 
         $scope.answer ="";
+
+        $scope.addNewQuestion = function ($index, $item)
+        {
+            if($item.id == 2) // Question fermée
+            {
+                $scope.questionList.push({'index': $index, 'type':$item.id, 'title':$item.title, 'label1':'Oui', 'label2':'Non'});
+            }
+            else
+            {
+             console.log("caca");   
+            }
+        }
+
+        // Edit YesNo question in proper object list
+        $scope.editYesNoQuestion = function ($index, $title, $opt1, $opt2)
+        {
+            for (var i = 0; i < $scope.questionList.length; i++)
+            {
+                if($scope.questionList[i].index == $index)
+                {
+                    $scope.questionList[i] = {'index': $index, 'type':'2', 'title':$title, 'label1':$opt1, 'label2':$opt2};
+                    $scope.$apply();
+                }
+            }
+        }
         
         $scope.hideMe = function() {
             return $scope.list4.length > 0;
         }
 
         $scope.edit = function($index, $type){
+            $("#display-item-options").empty();
             $scope.displayOptions($index, $type);
-            $scope.hide($index);
+            //$scope.hide($index);
         }
 
         $scope.displayOptions = function($index, $type)
@@ -57,6 +84,8 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
             {
                 $("#display-item-options").append('<h5>Question fermée</h5>');
                 $("#display-item-options").append('<input type="hidden" name="itemIndex" value="'+$index+'" />');
+                var ttl = $("#itemn"+$index).parent().find("h5").html();
+                $("#display-item-options").append('Intitulé de la question <input type="text" name="questionTitle" class="form-control" value="'+ttl+'"/>');
                 var option1 = $("#itemn"+$index).children(".opt1").html();
                 $("#display-item-options").append('Texte de la première réponse<input type="text" name="opt1" class="form-control" value="'+option1+'" />');
                 var option2 = $("#itemn"+$index).children(".opt2").html();
