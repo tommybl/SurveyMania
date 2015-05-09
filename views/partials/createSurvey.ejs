@@ -1,71 +1,4 @@
 <!DOCTYPE html>
-<style>
-.dropzone{
-  background-color: #f2f2f2;
-  border:1px solid #cccccc;
-  min-height:500px;
-}
-
-.draggable_item:hover{
-  cursor: pointer;
-}
-
-.drop_item{
-  margin-top:10px;
-}
-
-.dropzone:hover .drop_item{
-  border: 1px dotted #333;
-  margin-top:9px;
-}
-
-.edit_btn, .validate_edit_btn, .delete_btn
-{
-  background-image: url('img/glyphicons-halflings.png');
-  width: 15px;
-  position: absolute;
-  height: 15px;
-  top: 10px;
-}
-
-.edit_btn
-{
-  background-position: 0px 88px;
-  right: 40px;
-}
-
-.validate_edit_btn
-{
-  background-position:-288px 0px;
-  right: 40px;
-}
-
-.delete_btn
-{
-  background-position:-310px 0px;
-  right: 20px;
-}
-
-.edit_btn:hover, .validate_edit_btn:hover, .delete_btn:hover
-{
-  cursor: pointer;
-}
-
-.answer_field, .question_label{
-  display: inline-block;
-  margin:10px;
-}
-
-ol{
-  list-style-type: none;
-  padding:0px 10px 0px 10px;
-}
-
-.question_code{
-  margin-left:10px;
-  display: block;
-}
-</style>
 <div ng-controller="DragAndDrop">
   <div class="col-md-2">
     <h3>Créer un sondage </h3>
@@ -102,7 +35,6 @@ ol{
       </div>
   </div>
 </div> 
-{{questionList | json}}
 <div class="col-md-6" id="renderPanel">
   <div id="optionsbar" class="col-sm-12">
     <button class="optionsbarButton"><i class="fa fa-save"> Enregistrer</i></button>
@@ -131,17 +63,45 @@ ol{
   </div>
 </div>
 </div>
-</div>
 <script>
 $(document).on('click', '#closedQuestion', function() {
+    var typeItem = $(this).parent().children("input[name='itemType']").val();
     var idItem = $(this).parent().children("input[name='itemIndex']").val();
-    var newOpt1 = $(this).parent().children("input[name='opt1']").val();
-    var newOpt2 = $(this).parent().children("input[name='opt2']").val();
+
+    $("#itemn"+idItem).hide();
+
     var newTitle = $(this).parent().children("input[name='questionTitle']").val();
-    $("#itemn"+idItem).children(".opt1").html(newOpt1);
-    $("#itemn"+idItem).children(".opt2").html(newOpt2);
     $("#itemn"+idItem).parent().find("h5").html(newTitle);
-    $("#display-item-options").empty();
-    $('#renderPanel').scope().editYesNoQuestion(idItem, newTitle, newOpt1, newOpt2);
+
+    if (typeItem == 1 || typeItem == 0)
+    {
+      $('#renderPanel').scope().editTitleQuestion(idItem, newTitle, typeItem);
+    }
+    if (typeItem == 2)
+    {
+      var newOpt1 = $(this).parent().children("input[name='opt1']").val();
+      var newOpt2 = $(this).parent().children("input[name='opt2']").val();
+      $("#itemn"+idItem).children(".opt1").html(newOpt1);
+      $("#itemn"+idItem).children(".opt2").html(newOpt2);
+
+      $('#renderPanel').scope().editYesNoQuestion(idItem, newTitle, newOpt1, newOpt2);
+    }
+    if (typeItem == 3)
+    {
+      var min = $(this).parent().children("input[name='min']").val();
+      var max = $(this).parent().children("input[name='max']").val();
+      var step = $(this).parent().children("input[name='step']").val();
+      $("#itemn"+idItem).children("input[type='range']").prop("min", min);
+      $("#itemn"+idItem).children("input[type='range']").prop("max", max);
+      $("#itemn"+idItem).children("input[type='range']").prop("step", step);
+
+      $('#renderPanel').scope().editSliderQuestion(idItem, newTitle, min, max, step);
+    }
+
+    $("#itemn"+idItem).fadeIn(1000);
+    // need faire une fonction qui modifie directement l'objet de la list4 et pas que le html là ????
+    //$('#renderPanel').scope().editYesNoList4(idItem, newTitle, $("#itemn"+idItem).html());
+    
 });
 </script>
+</div>

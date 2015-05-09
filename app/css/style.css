@@ -283,6 +283,10 @@ header
     padding:10px;
 }
 
+#display-item-options input{
+    margin-bottom: 10px;
+}
+
 .optionsbarButton
 {
     margin-top:0px;
@@ -324,4 +328,70 @@ header
     font-size: 25px;
     float: left;
     margin: 9px 10px 0px 0px;
+}
+
+.dropzone{
+  background-color: #f2f2f2;
+  border:1px solid #cccccc;
+  min-height:500px;
+}
+
+.draggable_item:hover{
+  cursor: pointer;
+}
+
+.drop_item{
+  margin-top:10px;
+}
+
+.dropzone:hover .drop_item{
+  border: 1px dotted #333;
+  margin-top:9px;
+}
+
+.edit_btn, .validate_edit_btn, .delete_btn
+{
+  background-image: url('../img/glyphicons-halflings.png');
+  width: 15px;
+  position: absolute;
+  height: 15px;
+  top: 10px;
+}
+
+.edit_btn
+{
+  background-position: 0px 88px;
+  right: 40px;
+}
+
+.validate_edit_btn
+{
+  background-position:-288px 0px;
+  right: 40px;
+}
+
+.delete_btn
+{
+  background-position:-310px 0px;
+  right: 20px;
+}
+
+.edit_btn:hover, .validate_edit_btn:hover, .delete_btn:hover
+{
+  cursor: pointer;
+}
+
+.answer_field, .question_label{
+  display: inline-block;
+  margin:10px;
+}
+
+ol{
+  list-style-type: none;
+  padding:0px 10px 0px 10px;
+}
+
+.question_code{
+  margin-left:10px;
+  display: block;
 }

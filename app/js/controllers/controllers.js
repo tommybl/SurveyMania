@@ -30,11 +30,11 @@ surveyManiaControllers.controller('GlobalController', ['$scope', '$window', '$lo
 
 surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$timeout', '$sce', '$http', 
     function($scope, $routeParams, $timeout, $sce, $http){
-        $scope.list1 = [{'id':'0','title': 'Titre', 'label': $sce.trustAsHtml('<h5>Titre</h5>'), 'code' : $sce.trustAsHtml('<h3 ng-bind="title">Titre</h3>'), 'show':true, 'icon':'header'},
-                        {'id':'1','title': 'Réponse libre', 'label':$sce.trustAsHtml('<h5>question</h5>'), 'code' : $sce.trustAsHtml('<textarea></textarea>'), 'show':true, 'icon':'text-height'},
-                        {'id':'2','title': 'Question fermée', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<input type="radio" name="yesno" value="0"> <span class="opt1">Oui</span><br><input type="radio" name="yesno" value="1" checked><span class="opt2"> Non</span>'), 'show':true, 'icon':'toggle-on'},
-                        {'id':'3','title': 'Slider', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<input type="range" min="0" max="50" value="25" step="5" />'), 'show':true, 'icon':'sliders'},
-                        {'id':'4','title': 'Branchement', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml(''), 'show':true, 'icon':'code-fork'}
+        $scope.list1 = [{'index':'','id':'0','title': 'Titre', 'label': $sce.trustAsHtml('<h5>Titre</h5>'), 'code' : $sce.trustAsHtml('<h3 ng-bind="title">Titre</h3>'), 'show':true, 'icon':'header'},
+                        {'index':'','id':'1','title': 'Réponse libre', 'label':$sce.trustAsHtml('<h5>question</h5>'), 'code' : $sce.trustAsHtml('<textarea></textarea>'), 'show':true, 'icon':'text-height'},
+                        {'index':'','id':'2','title': 'Question fermée', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<input type="radio" name="yesno" value="0"> <span class="opt1">Oui</span><br><input type="radio" name="yesno" value="1" checked> <span class="opt2">Non</span>'), 'show':true, 'icon':'toggle-on'},
+                        {'index':'','id':'3','title': 'Slider', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<input type="range" min="0" max="50" value="25" step="5" />'), 'show':true, 'icon':'sliders'},
+                        {'index':'','id':'4','title': 'Branchement', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml(''), 'show':true, 'icon':'code-fork'}
                         ]; 
 
         $scope.list4 = [];
@@ -45,13 +45,21 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
 
         $scope.addNewQuestion = function ($index, $item)
         {
-            if($item.id == 2) // Question fermée
+            if($item.id == 0 || $item.id == 1) // Titre
+            {
+                $scope.questionList.push({'index': $index, 'type':$item.id, 'title':$item.title});
+            }
+            else if($item.id == 2) // Question fermée
             {
                 $scope.questionList.push({'index': $index, 'type':$item.id, 'title':$item.title, 'label1':'Oui', 'label2':'Non'});
             }
+            else if($item.id == 3) // Slider
+            {
+                $scope.questionList.push({'index': $index, 'type':$item.id, 'title':$item.title, 'min':'', 'max':'', 'range':''});
+            }
             else
             {
-             console.log("caca");   
+                console.log("caca : "+$item.id);   
             }
         }
 
@@ -67,7 +75,49 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                 }
             }
         }
+
+
+        // Edit Slider question in proper object list
+        $scope.editSliderQuestion = function ($index, $title, $min, $max, $step)
+        {
+            for (var i = 0; i < $scope.questionList.length; i++)
+            {
+                if($scope.questionList[i].index == $index)
+                {
+                    $scope.questionList[i] = {'index': $index, 'type':'3', 'title':$title, 'min':$min, 'max':$max, 'step':$step};
+                    $scope.$apply();
+                }
+            }
+        }
         
+        // Edit title question in proper object list
+        $scope.editTitleQuestion = function ($index, $title, $type)
+        {
+            for (var i = 0; i < $scope.questionList.length; i++)
+            {
+                if($scope.questionList[i].index == $index)
+                {
+                    $scope.questionList[i] = {'index': $index, 'type':$type, 'title':$title};
+                    $scope.$apply();
+                }
+            }
+        }
+
+        // Edit YesNo question in proper object list
+        /*$scope.editYesNoList4 = function ($index, $title, $html)
+        {
+            for (var i = 0; i < $scope.questionList.length; i++)
+            {
+                if($scope.list4[i].index == $index)
+                {
+                    console.log("okokoko");
+                    $scope.list4[i].code = $sce.trustAsHtml($html);
+                    $scope.list4[i].label =  $sce.trustAsHtml("<h5>"+$title+"</h5>");
+                    $scope.$apply();
+                }
+            }
+        }*/
+
         $scope.hideMe = function() {
             return $scope.list4.length > 0;
         }
@@ -80,20 +130,49 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
 
         $scope.displayOptions = function($index, $type)
         {
-            if($type == 2)
+            $("#display-item-options").hide();
+            $("#display-item-options").append('<input type="hidden" name="itemType" value="'+$type+'" />');
+            $("#display-item-options").append('<input type="hidden" name="itemIndex" value="'+$index+'" />');
+
+            if($type == 0)
+            {
+                $("#display-item-options").append('<h5>Titre</h5>');
+                var ttl = $("#itemn"+$index).parent().find("h5").html();
+                $("#display-item-options").append('Indiquez un nouveau titre <input type="text" name="questionTitle" class="form-control" value="'+ttl+'"/>');
+            }
+            else if($type == 1)
+            {
+                $("#display-item-options").append('<h5>Question ouverte</h5>');
+                var ttl = $("#itemn"+$index).parent().find("h5").html();
+                $("#display-item-options").append('Intitulé de la question <input type="text" name="questionTitle" class="form-control" value="'+ttl+'"/>');
+            }
+            else if($type == 2)
             {
                 $("#display-item-options").append('<h5>Question fermée</h5>');
-                $("#display-item-options").append('<input type="hidden" name="itemIndex" value="'+$index+'" />');
                 var ttl = $("#itemn"+$index).parent().find("h5").html();
                 $("#display-item-options").append('Intitulé de la question <input type="text" name="questionTitle" class="form-control" value="'+ttl+'"/>');
                 var option1 = $("#itemn"+$index).children(".opt1").html();
                 $("#display-item-options").append('Texte de la première réponse<input type="text" name="opt1" class="form-control" value="'+option1+'" />');
                 var option2 = $("#itemn"+$index).children(".opt2").html();
                 $("#display-item-options").append('Texte de la première réponse<input type="text" name="opt2" class="form-control" value="'+option2+'" />');
-                $("#display-item-options").append('<input type="submit" id="closedQuestion" value="Valider" class="btn btn-primary" />');
+            }
+            else if($type == 3)
+            {
+                $("#display-item-options").append('<h5>Question fermée</h5>');
+                var ttl = $("#itemn"+$index).parent().find("h5").html();
+                $("#display-item-options").append('Intitulé de la question <input type="text" name="questionTitle" class="form-control" value="'+ttl+'"/>');
+                var min = $("#itemn"+$index).children("input[type='range']").prop("min");
+                var max = $("#itemn"+$index).children("input[type='range']").prop("max");
+                var step = $("#itemn"+$index).children("input[type='range']").prop("step");
+                $("#display-item-options").append('Minimum <input type="text" name="min" class="form-control" value="'+min+'"/>');
+                $("#display-item-options").append('Maximum <input type="text" name="max" class="form-control" value="'+max+'"/>');
+                $("#display-item-options").append('Pas <input type="text" name="step" class="form-control" value="'+step+'"/>');
             }
             else
                 $("#display-item-options").html('error');
+
+            $("#display-item-options").append('<input type="submit" id="closedQuestion" value="Valider" class="btn btn-primary" />');
+            $("#display-item-options").fadeIn(1000);
         }
 
         $scope.hide = function($index){
