@@ -134,7 +134,7 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
 
             var str = [];
 
-            str.push('<form>');
+            str.push('<form id="optionsForm">');
             str.push('<span id="errMessage"></span>');
             $('#errMessage').hide();
 

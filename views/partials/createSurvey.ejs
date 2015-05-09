@@ -64,7 +64,9 @@
 </div>
 </div>
 <script>
+
 $(document).on('click', '#closedQuestion', function() {
+    event.preventDefault(); 
     var empty = false;
     $(this).parent().find('input').each(function(index, element){
       if(element.value == '')
