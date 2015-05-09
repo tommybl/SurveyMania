@@ -102,17 +102,6 @@ CREATE TABLE  surveymania.input_types (
 
 
 -- -----------------------------------------------------
--- Table surveymania.option_groups
--- -----------------------------------------------------
-DROP TABLE IF EXISTS surveymania.option_groups CASCADE;
-
-CREATE TABLE  surveymania.option_groups (
-  id SERIAL NOT NULL ,
-  group_name VARCHAR(45) NOT NULL,
-  PRIMARY KEY (id));
-
-
--- -----------------------------------------------------
 -- Table surveymania.units_measure
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS surveymania.units_measure CASCADE;
@@ -132,11 +121,9 @@ CREATE TABLE  surveymania.questions (
   id SERIAL NOT NULL ,
   survey_section_id INT NOT NULL,
   input_type_id INT NOT NULL,
-  option_group_id INT NULL DEFAULT NULL,
-  unit_measure_id INT NOT NULL,
-  name VARCHAR(255) NOT NULL,
-  description VARCHAR(500) NULL DEFAULT NULL,
-  required BOOLEAN NOT NULL,
+  unit_measure_id INT NULL DEFAULT NULL,
+  description VARCHAR(500) NOT NULL,
+  order int NOT NULL,
   multiple_answers BOOLEAN NOT NULL,
   PRIMARY KEY (id),
   CONSTRAINT fk_survey_section_id
@@ -147,11 +134,6 @@ CREATE TABLE  surveymania.questions (
   CONSTRAINT fk_input_type_id
     FOREIGN KEY (input_type_id)
     REFERENCES surveymania.input_types (id)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT fk_option_group_id
-    FOREIGN KEY (option_group_id)
-    REFERENCES surveymania.option_groups (id)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT fk_unit_measure_id
@@ -265,13 +247,14 @@ DROP TABLE IF EXISTS surveymania.option_choices CASCADE;
 
 CREATE TABLE  surveymania.option_choices (
   id SERIAL NOT NULL ,
-  option_group_id INT NOT NULL,
+  question_id INT NOT NULL,
   choice_name VARCHAR(45) NOT NULL,
+  order int NOT NULL,
   linked_section_id INT NULL DEFAULT NULL,
   PRIMARY KEY (id),
-  CONSTRAINT fk_option_group_id
-    FOREIGN KEY (option_group_id)
-    REFERENCES surveymania.option_groups (id)
+  CONSTRAINT fk_question_id
+    FOREIGN KEY (question_id)
+    REFERENCES surveymania.questions (id)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT fk_linked_section_id
@@ -289,7 +272,7 @@ DROP TABLE IF EXISTS surveymania.question_options CASCADE;
 CREATE TABLE  surveymania.question_options (
   id SERIAL NOT NULL ,
   question_id INT NOT NULL,
-  option_choice_id INT NOT NULL,
+  option_choice_id INT NULL DEFAULT NULL,
   PRIMARY KEY (id),
   CONSTRAINT fk_question_id
     FOREIGN KEY (question_id)
@@ -362,6 +345,7 @@ CREATE TABLE  surveymania.question_medias (
   media_path VARCHAR(255) NOT NULL,
   media_order INT NOT NULL,
   media_type VARCHAR(5) NOT NULL,
+  description VARCHAR(256) NULL DEFAULT NULL,
   PRIMARY KEY (id),
   CONSTRAINT fk_question_id
     FOREIGN KEY (question_id)
