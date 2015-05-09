@@ -12,12 +12,7 @@
 	<div class="col2 col-lg-6">
 		<a class="trophy_title" ng-click="tab_show('ss-container')">Mes trophés</a>
 	</div>
-	<!--<div class="col3 col-lg-3">
-		<span class="coupon_title">Mes bons de réduction</span>
-	</div>
-	<div class="col4 col-lg-3">
-		Hello
-	</div>-->
+
 	<div class="row-centered" id="account-main">
 		<div class="col-md-6 col-centered">
 			<p class="recent_survey">Sondages récemment rempli</p>
@@ -50,7 +45,7 @@
 						</div>
 						<div class="panel-body">
 							<div id="accountEditProfile">
-								<div ng-if="user.owner_type == 3 || user.owner_type == 1">
+								<div ng-show="user.owner_type == 3 || user.owner_type == 1">
 									<div class="col-sm-12">
 										<label>Indiquez votre adresse ici</label>
 										<input type="text" id="googleAddressAccount-autocomplete" placeholder="" class="form-control" />
