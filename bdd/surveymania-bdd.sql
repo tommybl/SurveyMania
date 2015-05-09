@@ -123,7 +123,7 @@ CREATE TABLE  surveymania.questions (
   input_type_id INT NOT NULL,
   unit_measure_id INT NULL DEFAULT NULL,
   description VARCHAR(500) NOT NULL,
-  order int NOT NULL,
+  question_order INT NOT NULL,
   multiple_answers BOOLEAN NOT NULL,
   PRIMARY KEY (id),
   CONSTRAINT fk_survey_section_id
@@ -139,6 +139,25 @@ CREATE TABLE  surveymania.questions (
   CONSTRAINT fk_unit_measure_id
     FOREIGN KEY (unit_measure_id)
     REFERENCES surveymania.units_measure (id)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+
+
+-- -----------------------------------------------------
+-- Table surveymania.question_params
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS surveymania.question_params CASCADE;
+
+CREATE TABLE  surveymania.question_params (
+  id SERIAL NOT NULL ,
+  question_id INT NOT NULL,
+  name VARCHAR(16) NOT NULL,
+  value_num INT NULL DEFAULT NULL,
+  value_text VARCHAR(64) NULL DEFAULT NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT fk_question_id
+    FOREIGN KEY (question_id)
+    REFERENCES surveymania.questions (id)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);
 
@@ -249,7 +268,7 @@ CREATE TABLE  surveymania.option_choices (
   id SERIAL NOT NULL ,
   question_id INT NOT NULL,
   choice_name VARCHAR(45) NOT NULL,
-  order int NOT NULL,
+  option_order int NOT NULL,
   linked_section_id INT NULL DEFAULT NULL,
   PRIMARY KEY (id),
   CONSTRAINT fk_question_id
