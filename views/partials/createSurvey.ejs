@@ -30,7 +30,7 @@
       <div class="panel-heading">
         Options <i class="fa fa-gears"></i>
       </div>
-      <div id="display-item-options" class="panel-body">
+      <div id="display-item-options" class="panel-body" style="display:none;">
 
       </div>
   </div>
@@ -65,40 +65,52 @@
 </div>
 <script>
 $(document).on('click', '#closedQuestion', function() {
-    var typeItem = $(this).parent().children("input[name='itemType']").val();
-    var idItem = $(this).parent().children("input[name='itemIndex']").val();
+    var empty = false;
+    $(this).parent().find('input').each(function(index, element){
+      if(element.value == '')
+      {
+        empty = true;
+        $(this).parent().find('#errMessage').html("Le champ '"+$(this).parent().children("input[name='"+element.name+"']").prev().html()+"' doit être rempli").fadeIn(1000);
+      }
+    });
 
-    $("#itemn"+idItem).hide();
-
-    var newTitle = $(this).parent().children("input[name='questionTitle']").val();
-    $("#itemn"+idItem).parent().find("h5").html(newTitle);
-
-    if (typeItem == 1 || typeItem == 0)
+    if (!empty)
     {
-      $('#renderPanel').scope().editTitleQuestion(idItem, newTitle, typeItem);
-    }
-    if (typeItem == 2)
-    {
-      var newOpt1 = $(this).parent().children("input[name='opt1']").val();
-      var newOpt2 = $(this).parent().children("input[name='opt2']").val();
-      $("#itemn"+idItem).children(".opt1").html(newOpt1);
-      $("#itemn"+idItem).children(".opt2").html(newOpt2);
+      var typeItem = $(this).parent().children("input[name='itemType']").val();
+      var idItem = $(this).parent().children("input[name='itemIndex']").val();
 
-      $('#renderPanel').scope().editYesNoQuestion(idItem, newTitle, newOpt1, newOpt2);
-    }
-    if (typeItem == 3)
-    {
-      var min = $(this).parent().children("input[name='min']").val();
-      var max = $(this).parent().children("input[name='max']").val();
-      var step = $(this).parent().children("input[name='step']").val();
-      $("#itemn"+idItem).children("input[type='range']").prop("min", min);
-      $("#itemn"+idItem).children("input[type='range']").prop("max", max);
-      $("#itemn"+idItem).children("input[type='range']").prop("step", step);
+      $("#itemn"+idItem).hide();
 
-      $('#renderPanel').scope().editSliderQuestion(idItem, newTitle, min, max, step);
-    }
+      var newTitle = $(this).parent().children("input[name='questionTitle']").val();
+      $("#itemn"+idItem).parent().find("h5").html(newTitle);
 
-    $("#itemn"+idItem).fadeIn(1000);
+      if (typeItem == 1 || typeItem == 0)
+      {
+        $('#renderPanel').scope().editTitleQuestion(idItem, newTitle, typeItem);
+      }
+      if (typeItem == 2)
+      {
+        var newOpt1 = $(this).parent().children("input[name='opt1']").val();
+        var newOpt2 = $(this).parent().children("input[name='opt2']").val();
+        $("#itemn"+idItem).children(".opt1").html(newOpt1);
+        $("#itemn"+idItem).children(".opt2").html(newOpt2);
+
+        $('#renderPanel').scope().editYesNoQuestion(idItem, newTitle, newOpt1, newOpt2);
+      }
+      if (typeItem == 3)
+      {
+        var min = $(this).parent().children("input[name='min']").val();
+        var max = $(this).parent().children("input[name='max']").val();
+        var step = $(this).parent().children("input[name='step']").val();
+        $("#itemn"+idItem).children("input[type='range']").prop("min", min);
+        $("#itemn"+idItem).children("input[type='range']").prop("max", max);
+        $("#itemn"+idItem).children("input[type='range']").prop("step", step);
+
+        $('#renderPanel').scope().editSliderQuestion(idItem, newTitle, min, max, step);
+      }
+
+      $("#itemn"+idItem).fadeIn(1000);
+    }
     // need faire une fonction qui modifie directement l'objet de la list4 et pas que le html là ????
     //$('#renderPanel').scope().editYesNoList4(idItem, newTitle, $("#itemn"+idItem).html());
     

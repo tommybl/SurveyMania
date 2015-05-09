@@ -131,47 +131,56 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
         $scope.displayOptions = function($index, $type)
         {
             $("#display-item-options").hide();
-            $("#display-item-options").append('<input type="hidden" name="itemType" value="'+$type+'" />');
-            $("#display-item-options").append('<input type="hidden" name="itemIndex" value="'+$index+'" />');
+
+            var str = [];
+
+            str.push('<form>');
+            str.push('<span id="errMessage"></span>');
+            $('#errMessage').hide();
+
+            str.push('<input type="hidden" name="itemType" value="'+$type+'" />');
+            str.push('<input type="hidden" name="itemIndex" value="'+$index+'" />');
 
             if($type == 0)
             {
-                $("#display-item-options").append('<h5>Titre</h5>');
+                str.push('<h5>Titre</h5>');
                 var ttl = $("#itemn"+$index).parent().find("h5").html();
-                $("#display-item-options").append('Indiquez un nouveau titre <input type="text" name="questionTitle" class="form-control" value="'+ttl+'"/>');
+                str.push('<span>Indiquez un nouveau titre</span> <input type="text" name="questionTitle" class="form-control" value="'+ttl+'" required />');
             }
             else if($type == 1)
             {
-                $("#display-item-options").append('<h5>Question ouverte</h5>');
+                str.push('<h5>Question ouverte</h5>');
                 var ttl = $("#itemn"+$index).parent().find("h5").html();
-                $("#display-item-options").append('Intitulé de la question <input type="text" name="questionTitle" class="form-control" value="'+ttl+'"/>');
+                str.push('<span>Intitulé de la question</span> <input type="text" name="questionTitle" class="form-control" value="'+ttl+'" required="required" />');
             }
             else if($type == 2)
             {
-                $("#display-item-options").append('<h5>Question fermée</h5>');
+                str.push('<h5>Question fermée</h5>');
                 var ttl = $("#itemn"+$index).parent().find("h5").html();
-                $("#display-item-options").append('Intitulé de la question <input type="text" name="questionTitle" class="form-control" value="'+ttl+'"/>');
+                str.push('<span>Intitulé de la question</span> <input type="text" name="questionTitle" class="form-control" value="'+ttl+'" required="required" />');
                 var option1 = $("#itemn"+$index).children(".opt1").html();
-                $("#display-item-options").append('Texte de la première réponse<input type="text" name="opt1" class="form-control" value="'+option1+'" />');
+                str.push('<span>Texte de la première réponse</span> <input type="text" name="opt1" class="form-control" value="'+option1+'" required="required" />');
                 var option2 = $("#itemn"+$index).children(".opt2").html();
-                $("#display-item-options").append('Texte de la première réponse<input type="text" name="opt2" class="form-control" value="'+option2+'" />');
+                str.push('<span>Texte de la première réponse</span> <input type="text" name="opt2" class="form-control" value="'+option2+'" required="required" />');
             }
             else if($type == 3)
             {
-                $("#display-item-options").append('<h5>Question fermée</h5>');
+                str.push('<h5>Question fermée</h5>');
                 var ttl = $("#itemn"+$index).parent().find("h5").html();
-                $("#display-item-options").append('Intitulé de la question <input type="text" name="questionTitle" class="form-control" value="'+ttl+'"/>');
+                str.push('<span>Intitulé de la question</span> <input type="text" name="questionTitle" class="form-control" value="'+ttl+'" required="required" />');
                 var min = $("#itemn"+$index).children("input[type='range']").prop("min");
                 var max = $("#itemn"+$index).children("input[type='range']").prop("max");
                 var step = $("#itemn"+$index).children("input[type='range']").prop("step");
-                $("#display-item-options").append('Minimum <input type="text" name="min" class="form-control" value="'+min+'"/>');
-                $("#display-item-options").append('Maximum <input type="text" name="max" class="form-control" value="'+max+'"/>');
-                $("#display-item-options").append('Pas <input type="text" name="step" class="form-control" value="'+step+'"/>');
+                str.push('<span>Minimum</span> <input type="number" name="min" class="form-control" value="'+min+'" required="required" />');
+                str.push('<span>Maximum</span> <input type="number" name="max" class="form-control" value="'+max+'" required="required" />');
+                str.push('<span>Pas</span> <input type="number" name="step" class="form-control" value="'+step+'" required="required" />');
             }
             else
                 $("#display-item-options").html('error');
 
-            $("#display-item-options").append('<input type="submit" id="closedQuestion" value="Valider" class="btn btn-primary" />');
+            str.push('<input type="submit" id="closedQuestion" value="Valider" class="btn btn-primary" />');
+            str.push('</form>');
+            $("#display-item-options").append(str.join(""));
             $("#display-item-options").fadeIn(1000);
         }
 
@@ -187,6 +196,9 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
         }
 
         $scope.delete = function($index){
+            $("#display-item-options").fadeOut("slow", function() {
+                 $("#display-item-options").empty();
+            });
             $scope.list4.splice($index, 1);
         }
 

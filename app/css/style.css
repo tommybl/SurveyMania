@@ -395,3 +395,10 @@ ol{
   margin-left:10px;
   display: block;
 }
+
+#errMessage
+{
+    color: #f62222;
+    font-size: 12px;
+    font-style: italic;
+}
