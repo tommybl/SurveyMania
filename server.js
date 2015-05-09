@@ -381,6 +381,32 @@ app
     });
 })
 
+.post('/app/account/admin/deny/pro', function (req, res) {
+    if(req.user.usertypenumber != 2) {res.status(401).json({code: 401, error: "Unauthorized", message: "Unauthorized, you have to be an admin"}); return;}
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    res.setHeader('Accept', 'application/json');
+
+    var id = req.body.id;
+    pg.connect(conString, function(err, client, done) {
+        if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
+        else {
+            var query = 'SELECT id FROM surveymania.users WHERE user_organization = ' + id;
+            client.query(query, function(err, result) {
+                done();
+                if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                else if (result.rows.length) {
+                    var query = 'DELETE FROM surveymania.user_achievements WHERE user_id = ' + result.rows[0].id + '; DELETE FROM surveymania.users WHERE user_organization = ' + id + ' ; DELETE FROM surveymania.organizations WHERE id = ' + id;
+                    client.query(query, function(err, result) {
+                        done();
+                        if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                        else res.status(200).json({code: 200});
+                    });
+                } else res.status(500).json({code: 500, error: "Internal server error", message: "The user / organization doesn't exist anymore"});
+            });
+        }
+    });
+})
+
 .post('/app/getUser', function (req, res) {
     if(req.user.usertypenumber != 1 && req.user.usertypenumber != 2 && req.user.usertypenumber != 3 && req.user.usertypenumber != 4) {res.status(401).json({code: 401, error: "Unauthorized", message: "Unauthorized"}); return;}
     pg.connect(conString, function(err, client, done) {

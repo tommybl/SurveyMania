@@ -28,7 +28,10 @@
             <div class="col-md-12"><%= accounts[i].owner_email %></div>
             <div class="col-md-12"><%= accounts[i].owner_adress %> <%= accounts[i].owner_postal %> <%= accounts[i].owner_town %> <%= accounts[i].owner_country %></div>
             <div class="col-md-12"><%= accounts[i].owner_tel %></div>
-            <div class="col-md-12"><button type="button" class="btn btn-default button-validate" ng-click="validate_pro_account(<%= accounts[i].orga_id %>)"><i class="fa fa-check"></i></button></div>
+            <div class="col-md-12">
+                <button type="button" class="btn btn-default button-validate" ng-click="validate_pro_account(<%= accounts[i].orga_id %>)"><i class="fa fa-check"></i></button>
+                <button type="button" class="btn btn-default button-validate" ng-click="deny_pro_account(<%= accounts[i].orga_id %>)"><i class="fa fa-times"></i></button>
+            </div>
             <hr class="col-md-12">
         </div>
 		<% } %>

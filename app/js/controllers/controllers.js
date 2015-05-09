@@ -438,7 +438,6 @@ surveyManiaControllers.controller('ValidateProAccount', ['$scope', '$http', '$wi
                 $scope.verifSuccMess = "Le compte a bien été validé.";
                 $("#account-pro-" + $id).toggle(700, function () {
                     $("#account-pro-" + $id).removeClass("account-pro");
-                    console.log($(".account-pro"));
                     if ($(".account-pro").length == 0)
                         $("#account-pro-none").show();
                 });
@@ -451,6 +450,25 @@ surveyManiaControllers.controller('ValidateProAccount', ['$scope', '$http', '$wi
         });
     }
 
+    $scope.deny_pro_account = function($id)
+    {
+        $http.post('/app/account/admin/deny/pro', {id: $id})
+        .success(function (data, status, headers, config) {
+            if (data.error == undefined) {
+                $scope.verifSuccMess = "Le compte a bien été refusé.";
+                $("#account-pro-" + $id).toggle(700, function () {
+                    $("#account-pro-" + $id).removeClass("account-pro");
+                    if ($(".account-pro").length == 0)
+                        $("#account-pro-none").show();
+                });
+            }
+            else $scope.verifErrMess = data.error + '. ' + data.message;
+        })
+        .error(function (data, status, headers, config) {
+            console.log(data);
+            $scope.verifErrMess = data.error + '. ' + data.message;
+        });
+    }
 }]);
 
 surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
