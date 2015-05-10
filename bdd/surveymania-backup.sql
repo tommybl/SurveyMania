@@ -59,18 +59,18 @@ INSERT INTO organization_categories (organization_id, name, color) VALUES
 (3, 'Conserves', '#96CA2D');
 
 INSERT INTO input_types (type_name) VALUES
-('Ouverte'), ('Numérique'), ('QCM'), ('Slider');
+('Ouverte'), ('Numérique'), ('QCM'), ('Slider'), ('anti-robot');
 
 
 /* ------------------------- */
 /* Insert one testing survey */
 /* ------------------------- */
-INSERT INTO survey_sections (header_id, title, subtitle, required) VALUES
-(4, 'Votre situation', 'Remplis, VITE !', true),
-(4, 'Votre consommation', 'Les steaks c''est la vie. Mais a quel point les aimez vous ?', false),
-(4, 'Autres remarques', NULL, true),
-(4, 'Les steaks de marque Bigard', 'Bigard, Bigard, ça c''est Bigard !', false),
-(4, 'Les steaks de marque Pouce', NULL, false);
+INSERT INTO survey_sections (header_id, title, subtitle, required, section_order) VALUES
+(4, 'Votre situation', 'Remplis, VITE !', true, 1),
+(4, 'Votre consommation', 'Les steaks c''est la vie. Mais a quel point les aimez vous ?', false, 2),
+(4, 'Autres remarques', NULL, true, 5),
+(4, 'Les steaks de marque Bigard', 'Bigard, Bigard, ça c''est Bigard !', false, 3),
+(4, 'Les steaks de marque Pouce', NULL, false, 4);
 
 INSERT INTO questions (survey_section_id, input_type_id, unit_measure_id, description, question_order, multiple_answers) VALUES
 (1, 3, NULL, 'Quelle est votre situation familiale ?', 1, false),

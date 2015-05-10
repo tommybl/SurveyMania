@@ -82,12 +82,14 @@ CREATE TABLE  surveymania.survey_sections (
   title VARCHAR(80) NOT NULL,
   subtitle VARCHAR(80) NULL DEFAULT NULL,
   required BOOLEAN NOT NULL,
+  section_order INT NOT NULL,
   PRIMARY KEY (id),
   CONSTRAINT fk_header_id
     FOREIGN KEY (header_id)
     REFERENCES surveymania.survey_headers (id)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
+    ON UPDATE NO ACTION,
+  UNIQUE (header_id, section_order));
 
 
 -- -----------------------------------------------------
@@ -140,7 +142,8 @@ CREATE TABLE  surveymania.questions (
     FOREIGN KEY (unit_measure_id)
     REFERENCES surveymania.units_measure (id)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
+    ON UPDATE NO ACTION,
+  UNIQUE (survey_section_id, question_order));
 
 
 -- -----------------------------------------------------
@@ -221,6 +224,7 @@ CREATE TABLE  surveymania.survey_comments (
   header_id INT NOT NULL,
   user_id INT NOT NULL,
   comment VARCHAR(4096) NOT NULL,
+  posted TIMESTAMP NOT NULL,
   PRIMARY KEY (id),
   CONSTRAINT fk_header_id
     FOREIGN KEY (header_id)
@@ -256,7 +260,8 @@ CREATE TABLE  surveymania.user_survey_sections (
     FOREIGN KEY (section_id)
     REFERENCES surveymania.survey_sections (id)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
+    ON UPDATE NO ACTION,
+  UNIQUE (user_id, section_id));
 
 
 -- -----------------------------------------------------
@@ -280,7 +285,8 @@ CREATE TABLE  surveymania.option_choices (
     FOREIGN KEY (linked_section_id)
     REFERENCES surveymania.survey_sections (id)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
+    ON UPDATE NO ACTION,
+  UNIQUE (question_id, option_order));
 
 
 -- -----------------------------------------------------
@@ -370,7 +376,8 @@ CREATE TABLE  surveymania.question_medias (
     FOREIGN KEY (question_id)
     REFERENCES surveymania.questions (id)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
+    ON UPDATE NO ACTION,
+  UNIQUE (question_id, media_order));
 
 
 -- -----------------------------------------------------
