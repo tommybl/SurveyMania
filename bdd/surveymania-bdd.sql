@@ -248,7 +248,6 @@ CREATE TABLE  surveymania.user_survey_sections (
   user_id INT NOT NULL,
   section_id INT NOT NULL,
   completed TIMESTAMP NULL DEFAULT NULL,
-  last_modification TIMESTAMP NOT NULL,
   duration INT NOT NULL DEFAULT 0,
   PRIMARY KEY (id),
   CONSTRAINT fk_user_id

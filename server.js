@@ -871,7 +871,7 @@ app
         pg.connect(conString, function(err, client, done) {
             if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
             else {
-                var query = 'SELECT o.name AS orgaName, sh.name AS surveyName, sh.points AS points, sh.info AS infos, us.completed AS completed FROM surveymania.survey_headers sh INNER JOIN surveymania.user_surveys us ON sh.id = us.survey_header_id '
+                var query = 'SELECT sh.id AS id, o.name AS orgaName, sh.name AS surveyName, sh.points AS points, sh.info AS infos, us.completed AS completed FROM surveymania.survey_headers sh INNER JOIN surveymania.user_surveys us ON sh.id = us.survey_header_id '
                     + 'INNER JOIN surveymania.organizations o ON sh.organization_id = o.id INNER JOIN surveymania.users u ON us.user_id = u.id WHERE u.id = ' + user.id;
                 client.query(query, function(err, result) {
                     done();
@@ -957,7 +957,7 @@ app
                     done();
                     if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                     else {
-                        var query = 'SELECT o.name AS orgaName, sh.name AS surveyName, sh.points AS points, sh.info AS infos, us.completed AS completed FROM surveymania.survey_headers sh INNER JOIN surveymania.user_surveys us ON sh.id = us.survey_header_id '
+                        var query = 'SELECT sh.id AS id, o.name AS orgaName, sh.name AS surveyName, sh.points AS points, sh.info AS infos, us.completed AS completed FROM surveymania.survey_headers sh INNER JOIN surveymania.user_surveys us ON sh.id = us.survey_header_id '
                             + 'INNER JOIN surveymania.organizations o ON sh.organization_id = o.id INNER JOIN surveymania.users u ON us.user_id = u.id WHERE u.id = ' + user.id + ' AND sh.id = ' + escapeHtml(decrypted);
                         client.query(query, function(err, result) {
                             done();
@@ -972,6 +972,50 @@ app
             }
         });
     }
+})
+
+.post('/app/survey/initiateUserSurveySection', function (req, res) {
+    if(req.user.usertypenumber != 1) res.status(500).json({code: 500});
+    else {
+        var userid = req.user.id;
+        var surveyid = req.body.survey;
+        pg.connect(conString, function(err, client, done) {
+            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+            else {
+                var query = 'SELECT id FROM surveymania.survey_sections WHERE required = true AND header_id = ' + surveyid;
+                client.query(query, function(err, result) {
+                    done();
+                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                    else {
+                        if (result.rows.length) {
+                            var query = 'INSERT INTO surveymania.user_survey_sections (user_id, section_id) VALUES';
+                            result.rows.forEach(function (element, index) {
+                                if (index == 0) query = query + ' (' + userid + ', ' + element.id + ')';
+                                else query = query + ', (' + userid + ', ' + element.id + ')';
+                            });
+                            client.query(query, function(err, result) {
+                                done();
+                                if (err) {
+                                    if (err.detail.indexOf("already exists") > -1) res.status(201).json({code: 201, error: "Duplicate key", message: "Le sondage à déjà été initialisé"});
+                                    else res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});  
+                                } else res.status(200).json({code: 200, message: "done"});
+                            });
+                        } else {
+                            res.status(202).json({code: 202, error: "No result", message: "This survey doens't have any base section"})
+                        }
+                    }
+                })
+            }
+        })
+    }
+})
+
+.post('/app/survey/getNextSurveyUserSection', function (req, res) {
+
+})
+
+.post('/app/survey/submitSurveyUserSection', function (req, res) {
+
 })
 
 .get('/app/organizationPanel', function (req, res) {
