@@ -363,7 +363,7 @@ CREATE TABLE  surveymania.question_medias (
   question_id INT NOT NULL,
   media_path VARCHAR(255) NOT NULL,
   media_order INT NOT NULL,
-  media_type VARCHAR(5) NOT NULL,
+  media_type VARCHAR(64) NOT NULL,
   description VARCHAR(256) NULL DEFAULT NULL,
   PRIMARY KEY (id),
   CONSTRAINT fk_question_id

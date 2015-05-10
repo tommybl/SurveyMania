@@ -51,10 +51,105 @@ INSERT INTO survey_headers (organization_id, theme_id, name, instructions, info,
 (3, 1, 'Crunch', 'Remplir les questions', 'Chocolat ... :D', 350);
 
 INSERT INTO user_surveys (user_id, survey_header_id, completed) VALUES
-(7, 4, NULL),
 (7, 5, NULL);
 
 INSERT INTO organization_categories (organization_id, name, color) VALUES
 (3, 'Technologie', '#B9121B'),
 (3, 'Boulangerie', '#BD8D46'),
 (3, 'Conserves', '#96CA2D');
+
+INSERT INTO input_types (type_name) VALUES
+('Ouverte'), ('Numérique'), ('QCM'), ('Slider');
+
+
+/* ------------------------- */
+/* Insert one testing survey */
+/* ------------------------- */
+INSERT INTO survey_sections (header_id, title, subtitle, required) VALUES
+(4, 'Votre situation', 'Remplis, VITE !', true),
+(4, 'Votre consommation', 'Les steaks c''est la vie. Mais a quel point les aimez vous ?', false),
+(4, 'Autres remarques', NULL, true),
+(4, 'Les steaks de marque Bigard', 'Bigard, Bigard, ça c''est Bigard !', false),
+(4, 'Les steaks de marque Pouce', NULL, false);
+
+INSERT INTO questions (survey_section_id, input_type_id, unit_measure_id, description, question_order, multiple_answers) VALUES
+(1, 3, NULL, 'Quelle est votre situation familiale ?', 1, false),
+(1, 3, NULL, 'Quels sont les revenus mensuels de votre foyer ?', 2, false),
+(1, 3, NULL, 'Mangez vous des steaks régulièrement ?', 3, false),
+(2, 3, NULL, 'Combien de steaks mangez-vous par semaine ?', 1, false),
+(2, 3, NULL, 'Quelle(s) marque(s) de steak achetez-vous ?', 2, true),
+(3, 1, NULL, 'Avez vous une remarque à ajouter ?', 3, false),
+(3, 2, NULL, 'Sur 100, comment noteriez vous la qualité de ce sondage ?', 1, false),
+(3, 4, NULL, 'Même question avec un slider, parce que c''est cool', 2, false),
+(4, 3, NULL, 'Que pensez-vous de l''emballage des steaks Bigards ?', 1, false),
+(4, 3, NULL, 'Que pensez-vous du goût de ces mêmes steaks ?', 2, false),
+(4, 3, NULL, 'Que pensez-vous de la texture de ces steaks ?', 3, false),
+(4, 2, NULL, 'Combien payerez-vous pour acheter cette boîte de 10 steaks Bigard congelés ?', 4, false),
+(4, 1, NULL, 'Autres commentaires ?', 5, false),
+(5, 3, NULL, 'Que pensez-vous de l''emballage de ces soi-disants "steaks" ?', 1, false),
+(5, 3, NULL, 'Que pensez-vous du goût de ces mêmes steaks ?', 2, false),
+(5, 3, NULL, 'Que pensez-vous de la texture de ces steaks ?', 3, false),
+(5, 2, NULL, 'Combien payerez-vous pour acheter cette boîte de 10 steaks marque Pouce congelés ?', 4, false),
+(5, 1, NULL, 'Autres commentaires ?', 5, false);
+
+INSERT INTO question_params(question_id, name, value_num, value_text) VALUES
+(7, 'min', 0, NULL),
+(7, 'max', 100, NULL),
+(7, 'def', 50, NULL),
+(8, 'min', 0, NULL),
+(8, 'max', 100, NULL),
+(8, 'def', 50, NULL),
+(8, 'pas', 2, NULL),
+(12, 'min', 0, NULL),
+(17, 'min', 0, NULL);
+
+INSERT INTO option_choices (question_id, choice_name, option_order, linked_section_id) VALUES
+(1, 'Célibataire', 1, NULL),
+(1, 'En couple', 2, NULL),
+(1, 'Marié / Pacsé', 3, NULL),
+(1, 'Veuf', 4, NULL),
+(2, 'Entre 0 et 800 €', 1, NULL),
+(2, 'Entre 801 et 1500 €', 2, NULL),
+(2, 'Entre 1600 et 2500 €', 3, NULL),
+(2, 'Entre 2500 et 4000 €', 4, NULL),
+(2, '4000 et plus', 5, NULL),
+(3, 'Oui', 1, 2),
+(3, 'Non', 2, NULL),
+(4, 'Entre 0 et 2', 1, NULL),
+(4, 'Entre 2 et 5', 2, NULL),
+(4, '5 et plus', 3, NULL),
+(5, 'Charal', 1, NULL),
+(5, 'Marque Pouce', 2, 5),
+(5, 'Marque Carrefour', 3, NULL),
+(5, 'Bigard', 4, 4),
+(5, 'Marque Auchan', 5, NULL),
+(5, 'Autre', 6, NULL),
+(9, 'Nul', 1, NULL),
+(9, 'Mouais', 2, NULL),
+(9, 'Pas mal', 3, NULL),
+(9, 'Très bien', 4, NULL),
+(10, 'Nul', 1, NULL),
+(10, 'Mouais', 2, NULL),
+(10, 'Pas mal', 3, NULL),
+(10, 'Très bien', 4, NULL),
+(11, 'Nul', 1, NULL),
+(11, 'Mouais', 2, NULL),
+(11, 'Pas mal', 3, NULL),
+(11, 'Très bien', 4, NULL),
+(14, 'Nul', 1, NULL),
+(14, 'Mouais', 2, NULL),
+(14, 'Pas mal', 3, NULL),
+(14, 'Très bien', 4, NULL),
+(15, 'Nul', 1, NULL),
+(15, 'Mouais', 2, NULL),
+(15, 'Pas mal', 3, NULL),
+(15, 'Très bien', 4, NULL),
+(16, 'Nul', 1, NULL),
+(16, 'Mouais', 2, NULL),
+(16, 'Pas mal', 3, NULL),
+(16, 'Très bien', 4, NULL);
+
+INSERT INTO question_medias (question_id, media_path, media_order, media_type, description) VALUES
+(9, 'http://www.lsa-conso.fr/mediatheque/2/4/6/000017642_74.jpg', 1, 'image_url', 'Boîte de steak Bigard'),
+(9, 'https://www.youtube.com/watch?v=Wg3l9tvDU5Y', 2, 'youtube', 'Pub Bigard'),
+(14, 'http://www.prixing.fr/images/product_images/876/8760f0edba11786d5401a047588f194c.jpg', 1, 'image_url', 'Boîte de steak Marque Pouce');
