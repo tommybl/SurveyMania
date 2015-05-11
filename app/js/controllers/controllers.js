@@ -801,21 +801,31 @@ surveyManiaControllers.controller('MySurveysController', ['$scope', '$http', '$w
         $http.post('/app/validateAddUserSurvey/', {qrcode: $scope.QRcode})
             .success(function (data, status, header, config) {
                 $scope.userSurveys.unshift({id: data.userSurveys.id, organame: data.userSurveys.organame, surveyname: data.userSurveys.surveyname, points: data.userSurveys.points, infos: data.userSurveys.infos, completed: data.userSurveys.completed});
+                $http.post('/app/survey/initiateUserSurveySection', {survey: data.userSurveys.id});
             });
         $("#confirmScanModal").modal('hide');
     };
 
-    $scope.initializeUserSurveySection = function (surveyid) {
-        $http.post('/app/survey/initiateUserSurveySection', {survey: surveyid})
-            .success(function (data, status, header, config) {
-
-            });
-    }
-
-    $scope.$on("$destroy", function(){
+    $scope.$on("$destroy", function (){
         qrcodeStop();
     });
 }]);
+
+surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
+    $scope.url = $window.location.hash.split('/');
+    $scope.surveyid = $scope.url[$scope.url.length - 1];
+
+    $http.post('/app/survey/getSurvey', {survey: $scope.surveyid})
+        .success(function (data, status, header, config) {
+            
+        });
+
+    $http.post('/app/survey/getNextSurveyUserSection', {survey: $scope.surveyid})
+        .success(function (data, status, header, config) {
+            console.log(data);
+        });
+}]);
+
 
 surveyManiaControllers.controller('OrganizationPanel', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
     $scope.categories = [];

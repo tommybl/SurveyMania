@@ -857,7 +857,7 @@ app
 })
 
 .get('/app/mysurveys', function (req, res) {
-    if(req.user.usertypenumber != 1) res.redirect('/401-unauthorized');
+    if (req.user.usertypenumber != 1) res.redirect('/401-unauthorized');
     else {
         res.setHeader("Content-Type", "text/html");
         res.render('partials/mysurveys');
@@ -865,7 +865,7 @@ app
 })
 
 .post('/app/getUserSurveys', function (req, res) {
-    if(req.user.usertypenumber != 1) res.status(500).json({code: 500});
+    if (req.user.usertypenumber != 1) res.status(500).json({code: 500});
     else {
         var user = req.user;
         pg.connect(conString, function(err, client, done) {
@@ -887,8 +887,9 @@ app
 })
 
 .post('/app/addUserSurvey/', function (req, res) {
-    if(req.user.usertypenumber != 1) res.status(500).json({code: 500});
+    if (req.user.usertypenumber != 1) res.status(500).json({code: 500});
     else {
+        res.setHeader('Content-Type', 'application/json; charset=UTF-8');
         var user = req.user;
 
         /*console.log(req.body.qrcode);
@@ -928,7 +929,6 @@ app
                                             if (result.rows.length == 0){
                                                 res.status(200).json({code: 200, message: "Unknown survey"});
                                             } else {
-                                                res.setHeader('Content-Type', 'application/json; charset=UTF-8');
                                                 res.status(200).json({code: 200, message: "Valid", surveyHeader: result.rows[0], encrypted: myBase});
                                             }
                                         }
@@ -944,7 +944,7 @@ app
 })
 
 .post('/app/validateAddUserSurvey/', function (req, res) {
-    if(req.user.usertypenumber != 1) res.status(500).json({code: 500});
+    if (req.user.usertypenumber != 1) res.status(500).json({code: 500});
     else {
         var user = req.user;
         var encrypted = req.body.qrcode.replace(/\./g, "+");
@@ -975,7 +975,8 @@ app
 })
 
 .post('/app/survey/initiateUserSurveySection', function (req, res) {
-    if(req.user.usertypenumber != 1) res.status(500).json({code: 500});
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    if (req.user.usertypenumber != 1) res.status(500).json({code: 500});
     else {
         var userid = req.user.id;
         var surveyid = req.body.survey;
@@ -996,22 +997,111 @@ app
                             client.query(query, function(err, result) {
                                 done();
                                 if (err) {
-                                    if (err.detail.indexOf("already exists") > -1) res.status(201).json({code: 201, error: "Duplicate key", message: "Le sondage à déjà été initialisé"});
+                                    if (err.detail.indexOf("already exists") > -1) res.status(200).json({code: 200, error: "Duplicate key", message: "Le sondage à déjà été initialisé"});
                                     else res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});  
-                                } else res.status(200).json({code: 200, message: "done"});
+                                } else res.status(200).json({code: 200, message: "Ok"});
                             });
                         } else {
-                            res.status(202).json({code: 202, error: "No result", message: "This survey doens't have any base section"})
+                            res.status(200).json({code: 200, error: "No result", message: "Ce sondage n'a aucune section de base"})
                         }
                     }
-                })
+                });
             }
-        })
+        });
+    }
+})
+
+.get('/app/surveyAnswer/:surveyid', function (req, res) {
+    if (req.user.usertypenumber != 1) res.redirect('/401-unauthorized');
+    else {
+        var surveyid = escapeHtml(req.params.surveyid);
+        pg.connect(conString, function(err, client, done) {
+            if (err) res.redirect('/404-notfound');
+            else {
+                var query = 'SELECT id FROM surveymania.user_surveys WHERE user_id = ' + req.user.id + ' AND survey_header_id = ' + surveyid + ' AND completed IS NULL';
+                client.query(query, function(err, result) {
+                    done();
+                    if (err) res.redirect('/404-notfound');
+                    else {
+                        if (!result.rows.length) res.redirect('/401-unauthorized');
+                        else {
+                            res.setHeader("Content-Type", "text/html");
+                            res.render('partials/SurveyAnswer');
+                        }
+                    }
+                });
+            }
+        });
+    }
+})
+
+.post('/app/survey/getSurvey', function (req, res) {
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    if (req.user.usertypenumber != 1) res.status(500).json({code: 500});
+    else {
+        var surveyid = req.body.survey;
+        pg.connect(conString, function(err, client, done) {
+            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+            else {
+                var query = 'SELECT sh.name, sh.instructions, sh.info, sh.points, st.theme_name, o.name, o.logo_path, o.description'
+                    + ' FROM surveymania.survey_headers sh INNER JOIN surveymania.survey_themes st ON sh.theme_id = st.id INNER JOIN surveymania.organizations o ON sh.organization_id = o.id'
+                    + ' WHERE sh.id = ' + surveyid;
+                client.query(query, function(err, result) {
+                    done();
+                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                    else {
+                        if (result.rows.length) {
+                            res.status(200).json({code: 200, survey: result.rows[0]});
+                        } else {
+                            res.status(500).json({code: 500, error: "Internal server error", message: "Le sondage n'existe pas"});
+                        }
+                    }
+                });
+            }
+        });
     }
 })
 
 .post('/app/survey/getNextSurveyUserSection', function (req, res) {
-
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    if (req.user.usertypenumber != 1) res.status(500).json({code: 500});
+    else {
+        var userid = req.user.id;
+        var surveyid = req.body.survey;
+        pg.connect(conString, function(err, client, done) {
+            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+            else {
+                var query = 'SELECT ss.id, ss.title, ss.subtitle, ss.section_order, uss.completed'
+                    + ' FROM surveymania.user_survey_sections uss INNER JOIN surveymania.survey_sections ss ON uss.section_id = ss.id'
+                    + ' WHERE uss.user_id = ' + userid + ' AND ss.header_id = ' + surveyid
+                    + ' ORDER BY ss.section_order ASC';
+                client.query(query, function(err, result) {
+                    done();
+                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                    else {
+                        if (result.rows.length) {
+                            if (result.rows[result.rows.length - 1].completed != null) {
+                                res.status(200).json({code: 200, message: "Sondage terminé"});
+                            } else {
+                                var selected = null;
+                                for (var i = 0; i < result.rows.length; i++) {
+                                    if (result.rows[i].completed == null) {
+                                        selected = result.rows[i];
+                                        break;
+                                    }
+                                }
+                                if (selected == null) res.status(200).json({code: 200, error: "Error", message: "Il y a une erreur dans les sections"});
+                                // Il faut retourner les questions qui vont avec
+                                else res.status(200).json({code: 200, section: result.rows[i]});
+                            }
+                        } else {
+                            res.status(200).json({code: 200, message: "Aucune section à remplir"});
+                        }
+                    }
+                });
+            }
+        });
+    }
 })
 
 .post('/app/survey/submitSurveyUserSection', function (req, res) {
@@ -1071,6 +1161,7 @@ app
 .post('/app/category/add', function (req, res) {
     if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
     else {
+        res.setHeader('Content-Type', 'application/json; charset=UTF-8');
         var orgaid = req.user.organization;
         var newCategory = req.body.newCategory;
         if(!(/^.{2,25}$/.test(newCategory.name))) {res.status(200).json({code: 200, message: "Invalid name"}); return;}
@@ -1090,7 +1181,6 @@ app
                                 done();
                                 if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                                 else {
-                                    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
                                     res.status(200).json({code: 200, message: 'done'});
                                 }
                             });
@@ -1105,6 +1195,7 @@ app
 .post('/app/category/update', function (req, res) {
     if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
     else {
+        res.setHeader('Content-Type', 'application/json; charset=UTF-8');
         var orgaid = req.user.organization;
         var category = req.body.category;
         var old_category = req.body.old_category;
@@ -1127,7 +1218,6 @@ app
                                 done();
                                 if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                                 else {
-                                    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
                                     res.status(200).json({code: 200, message: 'done'});
                                 }
                             });

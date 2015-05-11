@@ -34,6 +34,11 @@ surveyManiaApp.config(['$routeProvider',
             controller: '',
             navigationPart: 'createSurvey'
         }).
+        when('/surveyAnswer/:surveyid', {
+            templateUrl: function(params){ return '/app/surveyAnswer/' + params.surveyid; },
+            controller: '',
+            navigationPart: 'surveyAnswer'
+        }).
         when('/organizationPanel', {
             templateUrl: '/app/organizationPanel',
             controller: '',

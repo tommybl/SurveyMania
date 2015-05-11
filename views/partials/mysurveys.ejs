@@ -51,23 +51,23 @@
         <table class="table">
             <thead>
                 <tr>
+                    <th></th>
                     <th>Entreprise</th>
                     <th>Nom du sondage</th>
                     <th>Points</th>
                     <th>Informations</th>
                     <th>Complété</th>
-                    <th>Initialiser</th>
                 </tr>
             </thead>
 
             <tbody>
                 <tr ng-repeat="userSurvey in userSurveys">
+                    <td><a class="btn btn-primary" href="/#/surveyAnswer/{{userSurvey.id}}">Remplir</a></td>
                     <td>{{userSurvey.organame}}</td>
                     <td>{{userSurvey.surveyname}}</td>
                     <td>{{userSurvey.points}}</td>
                     <td>{{userSurvey.infos}}</td>
                     <td>{{userSurvey.completed}}</td>
-                    <td><button ng-click="initializeUserSurveySection(userSurvey.id)">Initialisation</button></td>
                 </tr>
             </tbody>
         </table>
