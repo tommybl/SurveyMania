@@ -2,11 +2,12 @@
 <div ng-controller="DragAndDrop">
   <div class="col-md-2">
     <h3>Créer un sondage </h3>
-    <input ng-model="survey.name" type="text" name="name" placeholder="Entez le nom du sondage" class="form-control"/><br>
+    <input ng-model="survey.name" type="text" name="name" placeholder="Entrez le nom du sondage" class="form-control" required="required"/><br>
+    <input type="number" name="surveypoints" placeholder="Entrez le nombre de points" class="form-control" required="required"/><br>
     <select class="form-control">
      <option ng-repeat="category in categories" value="{{category.name}}" >{{category.name}}</option>
    </select><br>
-   <button class="form-control" style="width: 100px">Valider</button>
+   <button class="btn btn-primary" style="width: 100px">Valider</button>
  </div>
  <div>
   <div class="col-md-4">
@@ -65,7 +66,7 @@
 </div>
 <script>
 
-$(document).on('click', '#closedQuestion', function() {
+$(document).on('click', '#closedQuestion', function(event) {
     event.preventDefault(); 
     var empty = false;
     $(this).parent().find('input').each(function(index, element){
