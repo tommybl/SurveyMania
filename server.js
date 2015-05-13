@@ -146,6 +146,30 @@ app
     res.render('partials/login');
 })
 
+.get('/ranking', function (req, res) {
+    res.setHeader("Content-Type", "text/html");
+    res.render('partials/ranking');
+})
+
+.get('/ranking/get/users', function (req, res) {
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    res.setHeader('Accept', 'application/json');
+    pg.connect(conString, function(err, client, done) {
+        if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
+        else {
+            var query = 'SELECT users.name, users.lastname, users.points FROM surveymania.users users';
+            client.query(query, function(err, result) {
+                done();
+                if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                else if (result.rows.length) {
+                    res.json({code: 200, users: result.rows});
+                }
+                else res.json({code: 200, error: "No sponsors found", message: "No users found"});
+            });
+        }
+    });
+})
+
 .post('/signup', function (req, res) {
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
     res.setHeader('Accept', 'application/json');

@@ -415,3 +415,48 @@ ol{
     font-size: 12px;
     font-style: italic;
 }
+
+.pagination>.active>a, .pagination>.active>a:focus, .pagination>.active>a:hover, .pagination>.active>span, .pagination>.active>span:focus, .pagination>.active>span:hover {
+    background-color: #f5c950;
+    border-color: #f5c950;
+}
+
+.pagination>li>a, .pagination>li>span {
+  color: #f5c950;
+}
+
+.ranking-top-1,
+.ranking-top-2,
+.ranking-top-3 {
+  position: relative;
+}
+
+.ranking-top-1:before {
+    position:absolute;
+    bottom: 3px;
+    font-family: FontAwesome;
+    left:30px;
+    color: gold;
+    font-size: 20px;
+    content: "\f091";
+}
+
+.ranking-top-2:before {
+    position:absolute;
+    bottom: 3px;
+    font-family: FontAwesome;
+    left:30px;
+    color: silver;
+    font-size: 20px;
+    content: "\f091";
+}
+
+.ranking-top-3:before {
+    position:absolute;
+    bottom: 3px;
+    font-family: FontAwesome;
+    left:30px;
+    color: Peru;
+    font-size: 20px;
+    content: "\f091";
+}

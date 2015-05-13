@@ -64,6 +64,11 @@ surveyManiaApp.config(['$routeProvider',
             controller: '',
             navigationPart: 'accounts/reset'
         }).
+        when('/ranking', {
+            templateUrl: '/ranking',
+            controller: '',
+            navigationPart: 'ranking'
+        }).
         when('/401-unauthorized', {
             templateUrl: '/401-unauthorized',
             controller: '',

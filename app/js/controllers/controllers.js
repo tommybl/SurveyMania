@@ -900,6 +900,41 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
         });
 }]);
 
+surveyManiaControllers.controller('Ranking', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
+    $http.get('/ranking/get/users')
+        .success(function (data, status, headers, config) {
+            console.log(data);
+            if (data.error == undefined) {
+                $scope.ranking_users = data.users;
+
+                for (var i = 0; i < $scope.ranking_users.length; i++) {
+                    var tmp_rank = i + 1;
+                    /*if (tmp_rank == 1) tmp_rank = tmp_rank + ' &nbsp; <i class="fa fa-trophy fa-lg" style="color: gold"></i>';
+                    else if (tmp_rank == 2) tmp_rank = tmp_rank + ' &nbsp; <i class="fa fa-trophy fa-lg" style="color: silver"></i>';
+                    else if (tmp_rank == 3) tmp_rank = tmp_rank + ' &nbsp; <i class="fa fa-trophy fa-lg" style="color: Peru"></i>';*/
+                    if (tmp_rank == 1) {
+                        var rank_row = '<tr class="odd gradeX"><td class="center ranking-top-1">' + tmp_rank + '</td><td class="center">' + $scope.ranking_users[i]['name'] + ' ' + $scope.ranking_users[i]['lastname'] + '</td><td class="center">' + $scope.ranking_users[i]['points'] + '</td></tr>';
+                    }
+                    else if (tmp_rank == 2) {
+                        var rank_row = '<tr class="odd gradeX"><td class="center ranking-top-2">' + tmp_rank + '</td><td class="center">' + $scope.ranking_users[i]['name'] + ' ' + $scope.ranking_users[i]['lastname'] + '</td><td class="center">' + $scope.ranking_users[i]['points'] + '</td></tr>';
+                    }
+                    else if (tmp_rank == 3) {
+                        var rank_row = '<tr class="odd gradeX"><td class="center ranking-top-3">' + tmp_rank + '</td><td class="center">' + $scope.ranking_users[i]['name'] + ' ' + $scope.ranking_users[i]['lastname'] + '</td><td class="center">' + $scope.ranking_users[i]['points'] + '</td></tr>';
+                    }
+                    else {
+                        var rank_row = '<tr class="odd gradeX"><td class="center">' + tmp_rank + '</td><td class="center">' + $scope.ranking_users[i]['name'] + ' ' + $scope.ranking_users[i]['lastname'] + '</td><td class="center">' + $scope.ranking_users[i]['points'] + '</td></tr>';
+                    }
+                    $("#ranking-table").append(rank_row);
+                }
+
+                $('#dataTables-example').DataTable({
+                        responsive: true
+                });
+            }
+        })
+        .error(function (data, status, headers, config) {});
+}]);
+
 
 surveyManiaControllers.controller('OrganizationPanel', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
     $scope.categories = [];
