@@ -517,8 +517,10 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
                 for (var i = 0; i < sponsors.length; i++) {
                     if (tmp_user_id == sponsors[i]['user_id']) {
                         nodes.push({id: sponsors[i]['user_id'], label: sponsors[i]['user_name'] + ' ' + sponsors[i]['user_lastname'] + '\n' + sponsors[i]['user_points'] + ' pts', shape: 'circularImage', image: 'img/sponsors/user.png'});
-                        nodes.push({id: sponsors[i]['sponsor_id'], label: sponsors[i]['sponsor_name'] + ' ' + sponsors[i]['sponsor_lastname'] + '\n' + sponsors[i]['sponsor_points'] + ' pts', shape: 'circularImage', image: 'img/sponsors/sponsor.png'});
-                        edges.push({from: sponsors[i]['user_inviter_id'], to: sponsors[i]['user_id']});
+                        if (sponsors[i]['user_inviter_id'] != null) {
+                            nodes.push({id: sponsors[i]['sponsor_id'], label: sponsors[i]['sponsor_name'] + ' ' + sponsors[i]['sponsor_lastname'] + '\n' + sponsors[i]['sponsor_points'] + ' pts', shape: 'circularImage', image: 'img/sponsors/sponsor.png'});
+                            edges.push({from: sponsors[i]['user_inviter_id'], to: sponsors[i]['user_id']});
+                        }
                     }
                     else {
                         nodes.push({id: sponsors[i]['user_id'], label: sponsors[i]['user_name'] + ' ' + sponsors[i]['user_lastname'] + '\n' + sponsors[i]['user_points'] + ' pts', shape: 'circularImage', image: 'img/sponsors/sponsored.png'});

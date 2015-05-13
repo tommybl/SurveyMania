@@ -1,7 +1,7 @@
 var surveyMania = {};
 
 $.fn.textWidth = function(text, font, size) {
-    if (!$.fn.textWidth.fakeEl) $.fn.textWidth.fakeEl = $('<span>').appendTo(document.body);
+    $.fn.textWidth.fakeEl = $('<span>').appendTo(document.body);
     var htmlText = text || this.val() || this.text();
     htmlText = $.fn.textWidth.fakeEl.text(htmlText).html(); //encode to Html
     htmlText = htmlText.replace(/\s/g, "&nbsp;"); //replace trailing and leading spaces
