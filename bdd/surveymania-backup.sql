@@ -42,13 +42,13 @@ INSERT INTO user_achievements (user_id, achiev_id, recieved_dt) VALUES
 INSERT INTO survey_themes (theme_name) VALUES
 ('Theme 1');
 
-INSERT INTO survey_headers (organization_id, theme_id, name, instructions, info, points) VALUES
-(3, 1, 'Haricots verts', 'Remplir les questions', 'Vous aimez les haricots verts ?', 100),
-(3, 1, 'Haricots rouges', 'Remplir les questions', 'Vous aimez les haricots rouges ?', 50),
-(3, 1, 'Cassoulet', 'Remplir les questions', 'De castelnaudary', 200),
-(3, 1, 'Steak', 'Remplir les questions', 'Bien saignant', 150),
-(3, 1, 'Pack de 6 bières', 'Remplir les questions', 'Avec modération', 100),
-(3, 1, 'Crunch', 'Remplir les questions', 'Chocolat ... :D', 350);
+INSERT INTO survey_headers (organization_id, theme_id, name, instructions, info, points, publied, publication_date) VALUES
+(3, 1, 'Haricots verts', 'Remplir les questions', 'Vous aimez les haricots verts ?', 100, false, NULL),
+(3, 1, 'Haricots rouges', 'Remplir les questions', 'Vous aimez les haricots rouges ?', 50, false, NULL),
+(3, 1, 'Cassoulet', 'Remplir les questions', 'De castelnaudary', 200, true, '2015-03-25 03:11:43'),
+(3, 1, 'Steak', 'Remplir les questions', 'Bien saignant', 150, true, '2015-03-25 03:11:43'),
+(3, 1, 'Pack de 6 bières', 'Remplir les questions', 'Avec modération', 100, true, '2015-03-25 03:11:43'),
+(3, 1, 'Crunch', 'Remplir les questions', 'Chocolat ... :D', 350, false, NULL);
 
 INSERT INTO user_surveys (user_id, survey_header_id, completed) VALUES
 (7, 5, NULL);
@@ -58,8 +58,8 @@ INSERT INTO organization_categories (organization_id, name, color) VALUES
 (3, 'Boulangerie', '#BD8D46'),
 (3, 'Conserves', '#96CA2D');
 
-INSERT INTO input_types (type_name) VALUES
-('Ouverte'), ('Numérique'), ('QCM'), ('Slider'), ('anti-robot');
+INSERT INTO input_types (id, type_name) VALUES
+(1, 'Ouverte'), (2, 'Numérique'), (3, 'QCM'), (4, 'Slider'), (5, 'Titre'), (6, 'Texte'), (7, 'Anti-robot');
 
 
 /* ------------------------- */

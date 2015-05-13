@@ -58,6 +58,8 @@ CREATE TABLE  surveymania.survey_headers (
   instructions VARCHAR(4096) NULL DEFAULT NULL,
   info VARCHAR(255) NULL DEFAULT NULL,
   points INT NOT NULL,
+  publied BOOLEAN NOT NULL,
+  publication_date TIMESTAMP NULL DEFAULT NULL,
   PRIMARY KEY (id),
   CONSTRAINT fk_organization_id
     FOREIGN KEY (organization_id)
