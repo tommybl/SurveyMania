@@ -158,12 +158,31 @@ app
     pg.connect(conString, function(err, client, done) {
         if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
         else {
-            var query = 'SELECT users.name, users.lastname, users.points FROM surveymania.users users ORDER BY users.points DESC, users.name, users.lastname';
+            var query = 'SELECT users.id AS user_id, users.name, users.lastname, users.points FROM surveymania.users users ORDER BY users.points DESC, users.name, users.lastname';
             client.query(query, function(err, result) {
                 done();
                 if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                 else if (result.rows.length) {
                     res.json({code: 200, users: result.rows});
+                }
+                else res.json({code: 200, error: "No sponsors found", message: "No users found"});
+            });
+        }
+    });
+})
+
+.get('/app/ranking/get/users', function (req, res) {
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    res.setHeader('Accept', 'application/json');
+    pg.connect(conString, function(err, client, done) {
+        if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
+        else {
+            var query = 'SELECT users.id AS user_id, users.name, users.lastname, users.points FROM surveymania.users users ORDER BY users.points DESC, users.name, users.lastname';
+            client.query(query, function(err, result) {
+                done();
+                if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                else if (result.rows.length) {
+                    res.json({code: 200, users: result.rows, user: req.user.id});
                 }
                 else res.json({code: 200, error: "No sponsors found", message: "No users found"});
             });

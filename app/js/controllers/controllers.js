@@ -901,11 +901,14 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
 }]);
 
 surveyManiaControllers.controller('Ranking', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
-    $http.get('/ranking/get/users')
+    if ($scope.isLogged) $scope.api_rank_route = '/app/ranking/get/users';
+    else $scope.api_rank_route = '/ranking/get/users';
+    $http.get($scope.api_rank_route)
         .success(function (data, status, headers, config) {
             console.log(data);
             if (data.error == undefined) {
                 $scope.ranking_users = data.users;
+                if (data.user != undefined) $scope.rank_user_id = data.user;
 
                 for (var i = 0; i < $scope.ranking_users.length; i++) {
                     var tmp_rank = i + 1;
@@ -925,6 +928,11 @@ surveyManiaControllers.controller('Ranking', ['$scope', '$http', '$window', '$lo
                         var rank_row = '<tr class="odd gradeX"><td class="center">' + tmp_rank + '</td><td class="center">' + $scope.ranking_users[i]['name'] + ' ' + $scope.ranking_users[i]['lastname'] + '</td><td class="center">' + $scope.ranking_users[i]['points'] + '</td></tr>';
                     }
                     $("#ranking-table").append(rank_row);
+                    if ($scope.rank_user_id != undefined && $scope.rank_user_id == $scope.ranking_users[i]['user_id']) {
+                        var user_rank_row = '<tr class="odd gradeX" style="font-weight: bold; color: #f5c950"><td class="center">' + $scope.ranking_users[i]['name'] + ' ' + $scope.ranking_users[i]['lastname'] + '</td><td class="center">' + tmp_rank + ' <SUP>e</SUP></td><td class="center">' + $scope.ranking_users[i]['points'] + ' points</td></tr>';
+                        $("#user-rank-table").append(user_rank_row);
+                        $("#user-rank-div").show();
+                    }
                 }
 
                 $('#dataTables-example').DataTable({
