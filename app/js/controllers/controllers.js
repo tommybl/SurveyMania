@@ -472,8 +472,17 @@ surveyManiaControllers.controller('ValidateProAccount', ['$scope', '$http', '$wi
 }]);
 
 surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
-    // ****** Parrainage *******
+    // ****** Points count up ****** //
+    var options = {
+      useEasing : true, 
+      useGrouping : true, 
+      separator : '', 
+      decimal : '.', 
+      prefix : '', 
+      suffix : '' 
+    };
 
+    // ****** Parrainage *******
     var sponsorContainer = document.getElementById('sponsorVisualization');
     var nodes = [];
     var edges = [];
@@ -537,6 +546,10 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
             if (data.error == undefined) {
                 oldUser = angular.copy(data.user);
                 $scope.user = data.user;
+                var count_width = $.fn.textWidth($scope.user.owner_points + '', 'quicksand', 40);
+                $("#user_points_count").width(count_width);
+                var demo = new CountUp("user_points_count", 0, $scope.user.owner_points, 0, 2.5, options);
+                demo.start();
 
                 if ($scope.user.owner_type == 3 || $scope.user.owner_type == 4)
                 {
