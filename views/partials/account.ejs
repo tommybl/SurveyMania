@@ -3,6 +3,7 @@
 	<div id="profil_bg" class="col-md-12">
 		<div id="default_profil" ng-click="tab_hide()">
 			<img id="profil_img" src="img/default_profil.png" alt="image de profil"/>
+			<div id="user_points_count">{{user.owner_points}} <span style="font-weight: normal!important">POINTS</span></div>
 			<p id="profil_name"><%= user.owner_firstname %> <%= user.owner_lastname %></p>
 		</div>
 	</div>
@@ -205,8 +206,10 @@
 						</div>
 					</div>
 				</div>
+				<h1 >Parrainage</h1>
 			</div>
 		</div>
+		<div class="col-lg-8 col-md-10 col-sm-11 col-xs-12"  id="sponsorVisualization" style="height: 500px; margin-bottom: 30px; margin: auto; float: none!important"></div>
 	</div>
 	<div id="ss-container" class="ss-container">
 		<% for(var i=0; i < achievements.length; i++) { %>

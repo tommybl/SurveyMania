@@ -315,6 +315,25 @@ app
     res.render('partials/signup');
 })
 
+.get('/app/account/get/sponsors', function (req, res) {
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    res.setHeader('Accept', 'application/json');
+    pg.connect(conString, function(err, client, done) {
+        if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
+        else {
+            var query = 'SELECT users.id AS user_id, users.email AS user_email, users.name AS user_name, users.lastname AS user_lastname, users.points AS user_points, users.inviter_id AS user_inviter_id, sponsors.sponsor_id AS sponsor_id, sponsors.email AS sponsor_email, sponsors.name AS sponsor_name, sponsors.lastname AS sponsor_lastname, sponsors.points AS sponsor_points, sponsors.inviter_id AS sponsor_inviter_id FROM surveymania.users users LEFT JOIN (SELECT sponsors.id AS sponsor_id, sponsors.email, sponsors.name, sponsors.lastname, sponsors.points, sponsors.inviter_id FROM surveymania.users sponsors) sponsors ON sponsors.sponsor_id = users.inviter_id WHERE users.id = ' + req.user.id + ' OR users.inviter_id = ' + req.user.id + ' ORDER BY users.invite_dt';
+            client.query(query, function(err, result) {
+                done();
+                if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                else if (result.rows.length) {
+                    res.json({code: 200, sponsors: result.rows, user_id: req.user.id});
+                }
+                else res.json({code: 200, error: "No sponsors found", message: "No sponsors found"});
+            });
+        }
+    });
+})
+
 .get('/app/account/admin/validate/pro', function (req, res) {
     if(req.user.usertypenumber != 2) res.redirect('/401-unauthorized');
     else

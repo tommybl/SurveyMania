@@ -472,6 +472,63 @@ surveyManiaControllers.controller('ValidateProAccount', ['$scope', '$http', '$wi
 }]);
 
 surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
+    // ****** Parrainage *******
+
+    var sponsorContainer = document.getElementById('sponsorVisualization');
+    var nodes = [];
+    var edges = [];
+    var sponsorNetwork = null;
+    var sponsorData = null;
+    var sponsorOptions = {
+        hierarchicalLayout: {
+            layout: 'direction'
+        },
+        nodes: {
+          borderWidth:2,
+          color: {
+            border: '#333333',
+            background: '#333333'
+          },
+          fontColor:'#333333',
+        },
+        edges: {
+          color: '#666666',
+          style:"arrow"
+        }
+    };
+    var sponsors = [];
+
+    $http.get('/app/account/get/sponsors')
+        .success(function (data, status, headers, config) {
+            console.log(data);
+            if (data.error == undefined) {
+                sponsors = data.sponsors;
+                var tmp_user_id = data.user_id;
+
+                for (var i = 0; i < sponsors.length; i++) {
+                    if (tmp_user_id == sponsors[i]['user_id']) {
+                        nodes.push({id: sponsors[i]['user_id'], label: sponsors[i]['user_name'] + ' ' + sponsors[i]['user_lastname'] + '\n' + sponsors[i]['user_points'] + ' pts', shape: 'circularImage', image: 'img/sponsors/user.png'});
+                        nodes.push({id: sponsors[i]['sponsor_id'], label: sponsors[i]['sponsor_name'] + ' ' + sponsors[i]['sponsor_lastname'] + '\n' + sponsors[i]['sponsor_points'] + ' pts', shape: 'circularImage', image: 'img/sponsors/sponsor.png'});
+                        edges.push({from: sponsors[i]['user_inviter_id'], to: sponsors[i]['user_id']});
+                    }
+                    else {
+                        nodes.push({id: sponsors[i]['user_id'], label: sponsors[i]['user_name'] + ' ' + sponsors[i]['user_lastname'] + '\n' + sponsors[i]['user_points'] + ' pts', shape: 'circularImage', image: 'img/sponsors/sponsored.png'});
+                        edges.push({from: sponsors[i]['user_inviter_id'], to: sponsors[i]['user_id']});
+                    }
+                }
+
+                sponsorData = {
+                    nodes: nodes,
+                    edges: edges
+                    };
+
+                network = new vis.Network(sponsorContainer, sponsorData, sponsorOptions);
+            }
+        })
+        .error(function (data, status, headers, config) {});
+  
+    // ****************************
+
     var oldUser;
     var oldOrganization;
     $http.post('/app/getUser/')
@@ -525,6 +582,7 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$win
         $("#ss-container").hide();
         $("#"+$id+"").fadeIn();
         scroll(0, 1);
+        sponsorNetwork = new vis.Network(sponsorContainer, sponsorData, sponsorOptions);
     }
     
     // Edit profile

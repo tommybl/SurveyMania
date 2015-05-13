@@ -124,6 +124,19 @@ header
     font-size: 23px;
 }
 
+#user_points_count {
+    font-family: 'quicksand';
+    color: #FFFFFF;
+    font-weight: bold;
+    font-size: 40px;
+    position: absolute;
+    height: 60px;
+    left: 15%;
+    margin: auto;
+    bottom: 0;
+    top: 0;
+}
+
 .col1, .col2, .col3, .col4{
     height: 50px;
     padding: 12px;
