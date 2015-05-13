@@ -158,7 +158,7 @@ app
     pg.connect(conString, function(err, client, done) {
         if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});
         else {
-            var query = 'SELECT users.name, users.lastname, users.points FROM surveymania.users users';
+            var query = 'SELECT users.name, users.lastname, users.points FROM surveymania.users users ORDER BY users.points DESC, users.name, users.lastname';
             client.query(query, function(err, result) {
                 done();
                 if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
