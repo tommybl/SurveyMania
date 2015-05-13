@@ -1079,23 +1079,88 @@ app
                     done();
                     if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                     else {
-                        if (result.rows.length) {
-                            if (result.rows[result.rows.length - 1].completed != null) {
-                                res.status(200).json({code: 200, message: "Sondage terminé"});
-                            } else {
-                                var selected = null;
-                                for (var i = 0; i < result.rows.length; i++) {
-                                    if (result.rows[i].completed == null) {
-                                        selected = result.rows[i];
-                                        break;
-                                    }
+                        if (!result.rows.length) res.status(200).json({code: 200, message: "Aucune section à remplir"});
+                        else {
+                            var selected = null;
+                            for (var i = 0; i < result.rows.length; i++) {
+                                if (result.rows[i].completed == null) {
+                                    selected = result.rows[i];
+                                    break;
                                 }
-                                if (selected == null) res.status(200).json({code: 200, error: "Error", message: "Il y a une erreur dans les sections"});
-                                // Il faut retourner les questions qui vont avec
-                                else res.status(200).json({code: 200, section: result.rows[i]});
                             }
-                        } else {
-                            res.status(200).json({code: 200, message: "Aucune section à remplir"});
+
+                            if (selected == null) res.status(200).json({code: 200, message: "Sondage terminé"});
+                            else{
+                                /* Get les questions de la section et leur type */
+                                var query = 'SELECT it.type_name, q.id, q.description, q.question_order, q.multiple_answers'
+                                    + ' FROM surveymania.questions q INNER JOIN surveymania.input_types it ON q.input_type_id = it.id'
+                                    + ' WHERE q.survey_section_id = 4'
+                                    + ' ORDER BY q.question_order ASC';
+                                
+                                client.query(query, function(err, result) {
+                                    done();
+                                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                    else {
+                                        if (!result.rows.length) res.status(200).json({code: 200, message: "Aucune question dans la section"});
+                                        else {
+                                            var question_array = [];
+
+                                            /* On parcours la liste des questions */
+                                            for (var i = 0; i < result.rows.length; ++i) {
+                                                var question = {};
+                                                question.question = result.rows[i];
+
+                                                /* Get les paramètres de la question */
+                                                var query = 'SELECT qp.name, qp.value_num, qp.value_text'
+                                                    + ' FROM surveymania.question_params qp'
+                                                    + ' WHERE qp.question_id = ' + question.question.id;
+
+                                                client.query(query, function(err, result) {
+                                                    done();
+                                                    if (err) { res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"}); return;}
+                                                    else {
+                                                        question.parameters = result.rows;
+                                                    }
+                                                });
+
+                                                /* Get les options de la question (si QCM) */
+                                                var query = 'SELECT oc.choice_name, oc.option_order, oc.linked_section_id'
+                                                    + ' FROM surveymania.option_choices oc'
+                                                    + ' WHERE oc.question_id = ' + question.question.id
+                                                    + ' ORDER BY oc.option_order ASC';
+
+                                                client.query(query, function(err, result) {
+                                                    done();
+                                                    if (err) { res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"}); return;}
+                                                    else {
+                                                        question.options = result.rows;
+                                                    }
+                                                });
+
+                                                /* Get les médias de la question */
+                                                var query = 'SELECT qm.media_path, qm.media_order, qm.media_type, qm.description'
+                                                    + ' FROM surveymania.question_medias qm'
+                                                    + ' WHERE qm.question_id = ' + question.question.id
+                                                    + ' ORDER BY qm.media_order ASC';
+
+                                                client.query(query, function(err, result) {
+                                                    done();
+                                                    if (err) { res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"}); return;}
+                                                    else {
+                                                        question.medias = result.rows;
+                                                    }
+                                                });
+
+                                                /* On ajoute la question à la liste des questions */
+                                                question_array.push(question);
+                                            }
+
+                                            /* On renvoit toute la liste de questions avec leurs paramètres / options / médias respectifs */
+                                            res.status(200).json({code: 200, section: selected, question_array: question_array});
+                                        }
+                                    }
+                                });
+                            }
                         }
                     }
                 });

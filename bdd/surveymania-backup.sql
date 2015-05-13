@@ -72,25 +72,25 @@ INSERT INTO survey_sections (header_id, title, subtitle, required, section_order
 (4, 'Les steaks de marque Bigard', 'Bigard, Bigard, ça c''est Bigard !', false, 3),
 (4, 'Les steaks de marque Pouce', NULL, false, 4);
 
-INSERT INTO questions (survey_section_id, input_type_id, unit_measure_id, description, question_order, multiple_answers) VALUES
-(1, 3, NULL, 'Quelle est votre situation familiale ?', 1, false),
-(1, 3, NULL, 'Quels sont les revenus mensuels de votre foyer ?', 2, false),
-(1, 3, NULL, 'Mangez vous des steaks régulièrement ?', 3, false),
-(2, 3, NULL, 'Combien de steaks mangez-vous par semaine ?', 1, false),
-(2, 3, NULL, 'Quelle(s) marque(s) de steak achetez-vous ?', 2, true),
-(3, 1, NULL, 'Avez vous une remarque à ajouter ?', 3, false),
-(3, 2, NULL, 'Sur 100, comment noteriez vous la qualité de ce sondage ?', 1, false),
-(3, 4, NULL, 'Même question avec un slider, parce que c''est cool', 2, false),
-(4, 3, NULL, 'Que pensez-vous de l''emballage des steaks Bigards ?', 1, false),
-(4, 3, NULL, 'Que pensez-vous du goût de ces mêmes steaks ?', 2, false),
-(4, 3, NULL, 'Que pensez-vous de la texture de ces steaks ?', 3, false),
-(4, 2, NULL, 'Combien payerez-vous pour acheter cette boîte de 10 steaks Bigard congelés ?', 4, false),
-(4, 1, NULL, 'Autres commentaires ?', 5, false),
-(5, 3, NULL, 'Que pensez-vous de l''emballage de ces soi-disants "steaks" ?', 1, false),
-(5, 3, NULL, 'Que pensez-vous du goût de ces mêmes steaks ?', 2, false),
-(5, 3, NULL, 'Que pensez-vous de la texture de ces steaks ?', 3, false),
-(5, 2, NULL, 'Combien payerez-vous pour acheter cette boîte de 10 steaks marque Pouce congelés ?', 4, false),
-(5, 1, NULL, 'Autres commentaires ?', 5, false);
+INSERT INTO questions (survey_section_id, input_type_id, description, question_order, multiple_answers) VALUES
+(1, 3, 'Quelle est votre situation familiale ?', 1, false),
+(1, 3, 'Quels sont les revenus mensuels de votre foyer ?', 2, false),
+(1, 3, 'Mangez vous des steaks régulièrement ?', 3, false),
+(2, 3, 'Combien de steaks mangez-vous par semaine ?', 1, false),
+(2, 3, 'Quelle(s) marque(s) de steak achetez-vous ?', 2, true),
+(3, 1, 'Avez vous une remarque à ajouter ?', 3, false),
+(3, 2, 'Sur 100, comment noteriez vous la qualité de ce sondage ?', 1, false),
+(3, 4, 'Même question avec un slider, parce que c''est cool', 2, false),
+(4, 3, 'Que pensez-vous de l''emballage des steaks Bigards ?', 1, false),
+(4, 3, 'Que pensez-vous du goût de ces mêmes steaks ?', 2, false),
+(4, 3, 'Que pensez-vous de la texture de ces steaks ?', 3, false),
+(4, 2, 'Combien payerez-vous pour acheter cette boîte de 10 steaks Bigard congelés ?', 4, false),
+(4, 1, 'Autres commentaires ?', 5, false),
+(5, 3, 'Que pensez-vous de l''emballage de ces soi-disants "steaks" ?', 1, false),
+(5, 3, 'Que pensez-vous du goût de ces mêmes steaks ?', 2, false),
+(5, 3, 'Que pensez-vous de la texture de ces steaks ?', 3, false),
+(5, 2, 'Combien payerez-vous pour acheter cette boîte de 10 steaks marque Pouce congelés ?', 4, false),
+(5, 1, 'Autres commentaires ?', 5, false);
 
 INSERT INTO question_params(question_id, name, value_num, value_text) VALUES
 (7, 'min', 0, NULL),

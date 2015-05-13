@@ -106,17 +106,6 @@ CREATE TABLE  surveymania.input_types (
 
 
 -- -----------------------------------------------------
--- Table surveymania.units_measure
--- -----------------------------------------------------
-DROP TABLE IF EXISTS surveymania.units_measure CASCADE;
-
-CREATE TABLE  surveymania.units_measure (
-  id SERIAL NOT NULL ,
-  measure_name VARCHAR(45) NOT NULL,
-  PRIMARY KEY (id));
-
-
--- -----------------------------------------------------
 -- Table surveymania.questions
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS surveymania.questions CASCADE;
@@ -125,7 +114,6 @@ CREATE TABLE  surveymania.questions (
   id SERIAL NOT NULL ,
   survey_section_id INT NOT NULL,
   input_type_id INT NOT NULL,
-  unit_measure_id INT NULL DEFAULT NULL,
   description VARCHAR(500) NOT NULL,
   question_order INT NOT NULL,
   multiple_answers BOOLEAN NOT NULL,
@@ -138,11 +126,6 @@ CREATE TABLE  surveymania.questions (
   CONSTRAINT fk_input_type_id
     FOREIGN KEY (input_type_id)
     REFERENCES surveymania.input_types (id)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT fk_unit_measure_id
-    FOREIGN KEY (unit_measure_id)
-    REFERENCES surveymania.units_measure (id)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   UNIQUE (survey_section_id, question_order));
