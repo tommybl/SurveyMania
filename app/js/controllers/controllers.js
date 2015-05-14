@@ -922,6 +922,7 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
     $http.post('/app/survey/getSurvey', {survey: $scope.surveyid})
         .success(function (data, status, header, config) {
             // Si il existe pas (ou il est pas publié aussi), tu tej
+            console.log(data);
         });
 
     $http.post('/app/survey/getNextSurveyUserSection', {survey: $scope.surveyid})
