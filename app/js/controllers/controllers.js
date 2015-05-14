@@ -26,16 +26,6 @@ surveyManiaControllers.controller('GlobalController', ['$scope', '$window', '$lo
         $location.path("/home");
     };
 
-    var bounceShow = new Bounce();
-    bounceShow.scale({
-        from: { x: 0, y: 0 },
-        to: { x: 1, y: 1 },
-        duration: 1000,
-        easing: 'bounce',
-        bounces: 6,
-        stiffness: 1
-    });
-
     var bounceHide = new Bounce();
     bounceHide.scale({
         from: { x: 1, y: 1 },
@@ -46,47 +36,12 @@ surveyManiaControllers.controller('GlobalController', ['$scope', '$window', '$lo
         stiffness: 1
     });
 
-    var bounceReact = new Bounce();
-    bounceReact.scale({
-        from: { x: 0.9, y: 0.9, },
-        to: { x: 1, y: 1 },
-        duration: 700,
-        easing: 'bounce',
-        bounces: 5,
-        stiffness: 1
-    });
-
-    var bounceReactDown = new Bounce();
-    bounceReactDown.scale({
-        from: { x: 1, y: 1 },
-        to: { x: 0.9, y: 0.9 },
-        duration: 700,
-        easing: 'bounce',
-        bounces: 5,
-        stiffness: 1
-    });
-
-    setTimeout(function() {
-        $("#bubble-infos").show();
-        bounceShow.applyTo($("#bubble-infos"));
-    }, 2000);
-
-    $('.oval-quotes').mouseup(function (e) {
-        bounceReact.applyTo($("#bubble-infos"));
-    });
-
-    $('.oval-quotes').mousedown(function (e) {
-        bounceReactDown.applyTo($("#bubble-infos"));
-    });
-
     $scope.hideInfosBulle = function () {
         $("#bubble-infos").show();
         bounceHide.applyTo($("#bubble-infos")).then(function() { 
           $("#bubble-infos").hide();
         });
     };
-
-    $("#bubble-infos").draggable({scroll: false});
 }]);
 
 
@@ -533,7 +488,57 @@ surveyManiaControllers.controller('ValidateProAccount', ['$scope', '$http', '$wi
     }
 }]);
 
-surveyManiaControllers.controller('AccountController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
+surveyManiaControllers.controller('AccountController', ['$scope', '$rootScope', '$http', '$window', '$location', function($scope, $rootScope, $http, $window, $location) {
+    if ($rootScope.showInfosBubble) {
+        $rootScope.showInfosBubble = false;
+
+        var bounceShow = new Bounce();
+        bounceShow.scale({
+            from: { x: 0, y: 0 },
+            to: { x: 1, y: 1 },
+            duration: 1000,
+            easing: 'bounce',
+            bounces: 6,
+            stiffness: 1
+        });
+
+        var bounceReact = new Bounce();
+        bounceReact.scale({
+            from: { x: 0.9, y: 0.9, },
+            to: { x: 1, y: 1 },
+            duration: 700,
+            easing: 'bounce',
+            bounces: 5,
+            stiffness: 1
+        });
+
+        var bounceReactDown = new Bounce();
+        bounceReactDown.scale({
+            from: { x: 1, y: 1 },
+            to: { x: 0.9, y: 0.9 },
+            duration: 700,
+            easing: 'bounce',
+            bounces: 5,
+            stiffness: 1
+        });
+
+        setTimeout(function() {
+            $("#bubble-infos").show();
+            bounceShow.applyTo($("#bubble-infos"));
+        }, 3500);
+
+        $('.oval-quotes').mouseup(function (e) {
+            bounceReact.applyTo($("#bubble-infos"));
+        });
+
+        $('.oval-quotes').mousedown(function (e) {
+            bounceReactDown.applyTo($("#bubble-infos"));
+        });
+
+        $("#bubble-infos").draggable({scroll: false});
+    }
+
+
     // ****** Points count up ****** //
     var options = {
       useEasing : true, 
