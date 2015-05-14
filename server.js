@@ -1062,7 +1062,7 @@ app
                                 if (err) {
                                     if (err.detail.indexOf("already exists") > -1) res.status(200).json({code: 200, error: "Duplicate key", message: "Le sondage à déjà été initialisé"});
                                     else res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});  
-                                } else res.status(200).json({code: 200, message: "Ok"});
+                                } else res.status(200).json({code: 200, message: "OK"});
                             });
                         } else {
                             res.status(200).json({code: 200, error: "No result", message: "Ce sondage n'a aucune section de base"})
@@ -1114,7 +1114,17 @@ app
                     if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                     else {
                         if (result.rows.length) {
-                            res.status(200).json({code: 200, survey: result.rows[0]});
+                            var survey = result.rows[0];
+
+                            var query = 'SELECT count(q.id) * 0.33 + count(qm.id) * 1.2 AS time'
+                                + ' FROM surveymania.questions q INNER JOIN surveymania.survey_sections ss ON q.survey_section_id = ss.id'
+                                + ' LEFT OUTER JOIN surveymania.question_medias qm ON qm.question_id = q.id'
+                                + ' WHERE ss.header_id = ' + surveyid;
+                            client.query(query, function(err, result) {
+                                done();
+                                if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                else res.status(200).json({code: 200, survey: survey, time: result.rows[0]});
+                            });
                         } else {
                             res.status(500).json({code: 500, error: "Internal server error", message: "Le sondage n'existe pas"});
                         }
@@ -1222,7 +1232,7 @@ app
                                                         res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                                                     } else {
                                                         /* On renvoit toute la liste de questions avec leurs paramètres / options / médias respectifs */
-                                                        res.status(200).json({code: 200, section: selected, question_array: question_array});
+                                                        res.status(200).json({code: 200, message: "OK", section: selected, question_array: question_array});
                                                     }
                                                 }
                                             );
