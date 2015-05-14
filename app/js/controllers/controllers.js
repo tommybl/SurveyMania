@@ -25,6 +25,37 @@ surveyManiaControllers.controller('GlobalController', ['$scope', '$window', '$lo
         console.log("logout"+$scope.isLogged); 
         $location.path("/home");
     };
+
+    var bounce = new Bounce();
+    bounce.scale({
+        from: { x: 0, y: 0 },
+        to: { x: 1, y: 1 },
+        duration: 1000,
+        easing: 'bounce',
+        bounces: 6,
+        stiffness: 1
+    });
+    
+    setTimeout(function() {
+        $("#bubble-infos").show();
+        bounce.applyTo($("#bubble-infos"));
+    }, 2000);
+
+    $scope.hideInfosBulle = function () {
+        var bounceHide = new Bounce();
+        bounceHide.scale({
+            from: { x: 1, y: 1 },
+            to: { x: 0.01, y: 0.01 },
+            duration: 1000,
+            easing: 'bounce',
+            bounces: 4,
+            stiffness: 1
+        });
+        $("#bubble-infos").show();
+        bounceHide.applyTo($("#bubble-infos")).then(function() { 
+          $("#bubble-infos").hide();
+        });
+    }
 }]);
 
 
