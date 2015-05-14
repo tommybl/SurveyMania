@@ -918,18 +918,39 @@ surveyManiaControllers.controller('MySurveysController', ['$scope', '$http', '$w
 surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
     $scope.url = $window.location.hash.split('/');
     $scope.surveyid = $scope.url[$scope.url.length - 1];
+    $scope.error = "";
 
     $http.post('/app/survey/getSurvey', {survey: $scope.surveyid})
         .success(function (data, status, header, config) {
-            // Si il existe pas (ou il est pas publié aussi), tu tej
-            console.log(data);
+            // Page de démarrage
+        })
+        .error(function (data, status, header, config) {
+            $location.path("/mysurveys");
         });
 
-    $http.post('/app/survey/getNextSurveyUserSection', {survey: $scope.surveyid})
-        .success(function (data, status, header, config) {
-            // Si ya pas de section mais que survey exist, tenter l'initialisation. Si ça marche toujours pas, tu tej
-            console.log(data);
-        });
+
+    $scope.getNextSection = function () {
+        $http.post('/app/survey/getNextSurveyUserSection', {survey: $scope.surveyid})
+            .success(function (data, status, header, config) {
+                switch (data.message) {
+                    case "Aucune section à remplir":
+                        $scope.error = "Un erreure est survenue. Tentez de supprimer le sondage et de le rescanner";
+                        break;
+                    case "Sondage terminé":
+                        $scope.error = data.message;
+                        break;
+                    case "Aucune question dans la section":
+                        $scope.error = data.message;
+                        break;
+                    case "OK":
+                        // Afficher les questions
+                        break;
+                }
+            })
+            .error(function (data, status, header, config) {
+                $location.path("/mysurveys");
+            });
+    }
 }]);
 
 surveyManiaControllers.controller('Ranking', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
