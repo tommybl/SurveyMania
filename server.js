@@ -1106,7 +1106,7 @@ app
         pg.connect(conString, function(err, client, done) {
             if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
             else {
-                var query = 'SELECT sh.name, sh.instructions, sh.info, sh.points, st.theme_name, o.name, o.logo_path, o.description'
+                var query = 'SELECT sh.name AS header_name, sh.instructions, sh.info, sh.points, st.theme_name, o.name'
                     + ' FROM surveymania.survey_headers sh INNER JOIN surveymania.survey_themes st ON sh.theme_id = st.id INNER JOIN surveymania.organizations o ON sh.organization_id = o.id'
                     + ' WHERE publied = true AND sh.id = ' + surveyid;
                 client.query(query, function(err, result) {
@@ -1123,7 +1123,7 @@ app
                             client.query(query, function(err, result) {
                                 done();
                                 if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
-                                else res.status(200).json({code: 200, survey: survey, time: result.rows[0]});
+                                else res.status(200).json({code: 200, survey: survey, time: result.rows[0].time});
                             });
                         } else {
                             res.status(500).json({code: 500, error: "Internal server error", message: "Le sondage n'existe pas"});

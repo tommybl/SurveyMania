@@ -578,3 +578,18 @@ blockquote {
 .bubble-infos-remove:hover {
     color: #555;
 }
+
+#surveyAnswer .master {
+    padding-top: 50px;
+}
+
+#surveyAnswer .container {
+  margin: auto;
+  padding: 20px 20px 20px 30px;
+  background-color: rgb(242, 242, 242);
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 8px;
+  border-color: rgb(204, 204, 204);
+  display: none;
+}

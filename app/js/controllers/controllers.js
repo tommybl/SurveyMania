@@ -918,18 +918,40 @@ surveyManiaControllers.controller('MySurveysController', ['$scope', '$http', '$w
 surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
     $scope.url = $window.location.hash.split('/');
     $scope.surveyid = $scope.url[$scope.url.length - 1];
-    $scope.error = "";
+    $scope.survey = null;
+    $scope.surveyEstimatedTime;
+    $scope.surveySection = null;
+    $scope.error;
+
+    $scope.startPageDisplayed = true;
 
     $http.post('/app/survey/getSurvey', {survey: $scope.surveyid})
         .success(function (data, status, header, config) {
-            // Page de démarrage
+            $scope.survey = data.survey;
+            $scope.surveyEstimatedTime = data.time;
         })
         .error(function (data, status, header, config) {
             $location.path("/mysurveys");
         });
 
+    $('#startPage').fadeIn(800);
 
     $scope.getNextSection = function () {
+        if ($scope.startPageDisplayed) {
+            $('#startPage').fadeOut(800, function () {
+                $scope.startPageDisplayed = false;
+                $scope.getNextSectionContent();
+                $('#answer').fadeIn(800);
+            });
+        } else {
+            $('#answer').fadeOut(800, function () {
+                $scope.getNextSectionContent();
+                $('#answer').fadeIn(800);
+            });
+        }
+    }
+
+    $scope.getNextSectionContent = function () {
         $http.post('/app/survey/getNextSurveyUserSection', {survey: $scope.surveyid})
             .success(function (data, status, header, config) {
                 switch (data.message) {
@@ -943,7 +965,8 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
                         $scope.error = data.message;
                         break;
                     case "OK":
-                        // Afficher les questions
+                        $scope.error = undefined;
+                        console.log(data);
                         break;
                 }
             })

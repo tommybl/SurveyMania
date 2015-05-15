@@ -1,7 +1,26 @@
 <!DOCTYPE html>
 
-<div id="mySurveysMain" ng-controller="SurveyAnswerController" class="col-md-12 row-centered">
-    {{error}}
+<div id="surveyAnswer" ng-controller="SurveyAnswerController" class="col-md-12 row-centered">
+	<div class="master">
+		<div id="startPage" class="col-md-8 col-centered container">
+    		<div>Sondage : {{survey.header_name}}</div>
+    		<div>Informations relatives au sondage : {{survey.info}}</div>
+    		<div>Instruction supplémentaire : {{survey.instructions}}</div>
+    		<div>Par : {{survey.name}}</div>
+    		<div>Temps estimé : {{surveyEstimatedTime}}</div>
+            <div>Points : {{survey.points}}</div>
+    		<button class="btn btn-primary" ng-click="getNextSection()">Start</button>
+  		</div>
+
+        <div id="answer" class="col-md-8 col-centered container">
+            <div class="alert alert-danger alert-dismissible fade in" role="alert" ng-show="error!=undefined">
+                <button type="button" class="close" ng-click="error=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <span ng-bind-html="error"></span>
+            </div>
+            blabla de questions
+            <button class="btn btn-primary" ng-click="getNextSection()">Start</button>
+        </div>
+	</div>
 </div>
 
 <script src="js/scroll.js"></script>
