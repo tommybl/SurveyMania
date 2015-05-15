@@ -592,12 +592,11 @@ blockquote {
 #surveyAnswer .answerContainer {
     display: none;
     border-radius: 5px;
-    box-shadow: 2px 2px 5px #AAA;
+    box-shadow: 2px 2px 10px #AAA;
 }
 
-#surveyAnswer .panelHeader {
-    padding-top: 1px;
-    padding-bottom: 1px;
+#surveyAnswer h4 small {
+    font-weight: 900;
 }
 
 #surveyAnswer .answerOpen {
@@ -608,4 +607,10 @@ blockquote {
 
 #surveyAnswer .optionOffset {
     margin-left: 30px;
+}
+
+#surveyAnswer .answerTitle {
+    padding-bottom: 8px;
+    border-bottom: solid #AAA;
+    border-width: 2px;
 }

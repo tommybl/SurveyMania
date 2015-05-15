@@ -1079,7 +1079,6 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
                                     eval('$scope.sectionQuestionArray[i].param' + $scope.sectionQuestionArray[i].parameters[j].name  + ' = ' + $scope.sectionQuestionArray[i].parameters[j].value_text);
 
                         $('#answer').fadeIn(800);
-                        console.log($scope.sectionQuestionArray);
                         break;
                 }
             })

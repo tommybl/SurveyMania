@@ -31,13 +31,13 @@
 
         <!-- Answer div -->
         <div id="answer" class="panel panel-default answerContainer">
-            <div class="panel-heading panelHeader">
-                <h4>{{surveySection.title}}</h4> <h5>{{surveySection.subtitle}}</h5>
+            <div class="panel-heading">
+                <h4>{{surveySection.title}} <small ng-if="surveySection.subtitle != null">&mdash; {{surveySection.subtitle}}</small></h4>
             </div>
             
             <div class="panel-body">
                 <div ng-repeat="question in sectionQuestionArray" class="form-group">
-                    <label>{{question.question.description}}</label>
+                    <label ng-if="question.question.type_name != 'Titre' && question.question.type_name != 'Texte'">{{question.question.description}}</label>
 
                     <!-- Free texting question (maxlength) -->
                     <textarea ng-if="question.question.type_name == 'Ouverte'" class="form-control answerOpen" name="optionsRadios{{question.question.question_order}}" rows="3" maxlength="{{question.parammax}}"></textarea>
@@ -63,7 +63,14 @@
 
                     <!-- Slider question (min, max, pas, def) -->
                     <input ng-if="question.question.type_name == 'Slider'" class="answerOpen" name="optionsRadios{{question.question.question_order}}" type="range" min="{{question.parammin}}" max="{{question.parammax}}" step="{{question.parampas}}" value="{{question.paramdef}}" />
-                    <br/>
+
+                    <!-- Titre -->
+                    <h4 ng-if="question.question.type_name == 'Titre'" class="answerTitle">{{question.question.description}}</h4>
+
+                    <!-- Texte simple -->
+                    <p ng-if="question.question.type_name == 'Texte'">{{question.question.description}}</p>
+
+                    <br ng-if="question.question.type_name != 'Titre'"/>
                 </div>
 
                 <button class="btn btn-primary" ng-click="getNextSection()">Suite</button>
