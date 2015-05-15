@@ -48,7 +48,7 @@ surveyManiaControllers.controller('GlobalController', ['$scope', '$window', '$lo
 surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$timeout', '$sce', '$http', 
     function($scope, $routeParams, $timeout, $sce, $http){
         $scope.list1 = [{'index':'','id':'0','title': 'Titre', 'label': $sce.trustAsHtml('<h5>Titre</h5>'), 'code' : $sce.trustAsHtml('<h3 ng-bind="title">Titre</h3>'), 'show':true, 'icon':'header'},
-                        {'index':'','id':'1','title': 'Réponse libre', 'label':$sce.trustAsHtml('<h5>question</h5>'), 'code' : $sce.trustAsHtml('<textarea></textarea>'), 'show':true, 'icon':'text-height'},
+                        {'index':'','id':'1','title': 'Réponse libre', 'label':$sce.trustAsHtml('<h5>question</h5>'), 'code' : $sce.trustAsHtml('<textarea maxlength="255"></textarea>'), 'show':true, 'icon':'text-height'},
                         {'index':'','id':'2','title': 'Question fermée', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<input type="radio" name="yesno" value="0"> <span class="opt1">Oui</span><br><input type="radio" name="yesno" value="1" checked> <span class="opt2">Non</span>'), 'show':true, 'icon':'toggle-on'},
                         {'index':'','id':'3','title': 'Slider', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<input type="range" min="0" max="50" value="25" step="5" />'), 'show':true, 'icon':'sliders'},
                         {'index':'','id':'4','title': 'Branchement', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml(''), 'show':true, 'icon':'code-fork'}
@@ -62,9 +62,13 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
 
         $scope.addNewQuestion = function ($index, $item)
         {
-            if($item.id == 0 || $item.id == 1) // Titre
+            if($item.id == 0) // Titre
             {
                 $scope.questionList.push({'index': $index, 'type':$item.id, 'title':$item.title});
+            }
+            else if ($item.id == 1) // Question ouverte
+            {
+                $scope.questionList.push({'index': $index, 'type':$item.id, 'title':$item.title, 'maxlength':'255'});
             }
             else if($item.id == 2) // Question fermée
             {
@@ -120,6 +124,19 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
             }
         }
 
+        // Edit title question in proper object list
+        $scope.editOpenQuestion = function ($index, $title, $type, $maxlength)
+        {
+            for (var i = 0; i < $scope.questionList.length; i++)
+            {
+                if($scope.questionList[i].index == $index)
+                {
+                    $scope.questionList[i] = {'index': $index, 'type':$type, 'title':$title, 'maxlength':$maxlength};
+                    $scope.$apply();
+                }
+            }
+        }
+
         // Edit YesNo question in proper object list
         /*$scope.editYesNoList4 = function ($index, $title, $html)
         {
@@ -169,6 +186,8 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                 str.push('<h5>Question ouverte</h5>');
                 var ttl = $("#itemn"+$index).parent().find("h5").html();
                 str.push('<span>Intitulé de la question</span> <input type="text" name="questionTitle" class="form-control" value="'+ttl+'" required="required" />');
+                var len = $("#itemn"+$index).children("textarea").prop("maxlength");
+                str.push('<input type="number" name="maxlength" class="form-control" value="'+len+'" required="required" />');
             }
             else if($type == 2)
             {
@@ -182,7 +201,7 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
             }
             else if($type == 3)
             {
-                str.push('<h5>Question fermée</h5>');
+                str.push('<h5>Slider</h5>');
                 var ttl = $("#itemn"+$index).parent().find("h5").html();
                 str.push('<span>Intitulé de la question</span> <input type="text" name="questionTitle" class="form-control" value="'+ttl+'" required="required" />');
                 var min = $("#itemn"+$index).children("input[type='range']").prop("min");

@@ -87,9 +87,15 @@ $(document).on('click', '#closedQuestion', function(event) {
       var newTitle = $(this).parent().children("input[name='questionTitle']").val();
       $("#itemn"+idItem).parent().find("h5").html(newTitle);
 
-      if (typeItem == 1 || typeItem == 0)
+      if (typeItem == 0)
       {
         $('#renderPanel').scope().editTitleQuestion(idItem, newTitle, typeItem);
+      }
+      if (typeItem == 1)
+      {
+        var maxlength = $(this).parent().children("input[name='maxlength']").val();
+        $("#itemn"+idItem).children("textarea").prop('maxlength', maxlength);
+        $('#renderPanel').scope().editOpenQuestion(idItem, newTitle, typeItem, maxlength);
       }
       if (typeItem == 2)
       {
