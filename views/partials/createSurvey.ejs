@@ -10,6 +10,7 @@
    <button class="btn btn-primary" style="width: 100px">Valider</button>
  </div>
  <div>
+  {{questionList | json}}
   <div class="col-md-4">
     <div class="col-sm-12 draganddroptuto">
       <i class="fa fa-arrows faarrows"></i> Cliquez/déposez les items que vous souhaitez inclure dans le sondage
@@ -66,6 +67,18 @@
 </div>
 <script>
 
+$(document).on('click', '.removeItem', function(event)
+{
+  event.preventDefault();
+  $(this).parent().find('input').prop('disabled', true);
+});
+
+$(document).on('click', '#addNewOptions', function(event)
+{
+  event.preventDefault();
+  $('#newOptions').append('<input class="form-control" type="text" value="" />');
+});
+
 $(document).on('click', '#closedQuestion', function(event) {
     event.preventDefault(); 
     var empty = false;
@@ -117,12 +130,49 @@ $(document).on('click', '#closedQuestion', function(event) {
 
         $('#renderPanel').scope().editSliderQuestion(idItem, newTitle, min, max, step);
       }
+      if (typeItem == 6)
+      {
+        var multiple = false;
+        if($('#multipleAnswers').is(':checked'))
+        {
+          console.log("ok"); 
+          multiple = true;
+          $("#itemn"+idItem).find("select").prop("multiple", true);
+        }
+        else
+          $("#itemn"+idItem).find("select").prop("multiple", false);
+          
+        var options = [];
+        var newOptionIndex = 0;
 
+        // Questions déjà présentes dans le formulaire
+        var newOptionsEdit = $(this).parent().children("#allOptionsEdit").find('input');
+        newOptionsEdit.each(function($index)
+        {
+          if ($(this).prop("disabled") == "disabled")
+            newOptionIndex--;
+          else
+          {
+            newOptionIndex++;
+            $txt = $(this).val();
+            options.push($txt);
+            $("#itemn"+idItem).find("option").prop("pos", newOptionIndex).text($txt);
+         }
+        });
+
+        // Questions venant d'être add
+        var newOptions = $(this).parent().children("#newOptions").children();
+        newOptions.each(function($index)
+        {
+          $txt = $(this).val();
+          options.push($txt);
+          $("#itemn"+idItem).find("select").append('<option pos="'+($index+newOptionIndex)+'" value="'+($index+newOptionIndex+2)+'">'+$txt+'</option>');
+        });
+
+        $('#renderPanel').scope().editMultipleQuestion(idItem, newTitle, options, multiple);
+      }
       $("#itemn"+idItem).fadeIn(1000);
     }
-    // need faire une fonction qui modifie directement l'objet de la list4 et pas que le html là ????
-    //$('#renderPanel').scope().editYesNoList4(idItem, newTitle, $("#itemn"+idItem).html());
-    
 });
 </script>
 </div>
