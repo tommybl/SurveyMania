@@ -52,7 +52,8 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                         {'index':'','id':'2','title': 'Question fermée', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<input type="radio" name="yesno" value="0"> <span class="opt1">Oui</span><br><input type="radio" name="yesno" value="1" checked> <span class="opt2">Non</span>'), 'show':true, 'icon':'toggle-on'},
                         {'index':'','id':'3','title': 'Slider', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<input type="range" min="0" max="50" value="25" step="5" />'), 'show':true, 'icon':'sliders'},
                         {'index':'','id':'4','title': 'Branchement', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml(''), 'show':true, 'icon':'code-fork'},
-                        {'index':'','id':'5','title': 'Numérique', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<input type="number" name="number" />'), 'show':true, 'icon':'list-ol'}
+                        {'index':'','id':'5','title': 'Numérique', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<input type="number" name="number" />'), 'show':true, 'icon':'list-ol'},
+                        {'index':'','id':'6','title': 'Choix multiple', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<select name="selectform"><option pos="0" value="1">Option 1</option></select>'), 'show':true, 'icon':'list'}
                         ]; 
 
         $scope.list4 = [];
@@ -78,6 +79,10 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
             else if($item.id == 3) // Slider
             {
                 $scope.questionList.push({'index': $index, 'type':$item.id, 'title':$item.title, 'min':'', 'max':'', 'range':''});
+            }
+            else if($item.id == 6) // Choix multiple
+            {
+                $scope.questionList.push({'index': $index, 'type':$item.id, 'title':$item.title, 'option':[], 'multiple':false});
             }
             else
             {
@@ -120,6 +125,19 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                 if($scope.questionList[i].index == $index)
                 {
                     $scope.questionList[i] = {'index': $index, 'type':$type, 'title':$title};
+                    $scope.$apply();
+                }
+            }
+        }
+
+        // Edit open question in proper object list
+        $scope.editMultipleQuestion = function ($index, $title, $options, $multiple)
+        {
+            for (var i = 0; i < $scope.questionList.length; i++)
+            {
+                if($scope.questionList[i].index == $index)
+                {
+                    $scope.questionList[i] = {'index': $index, 'title':$title, 'option':$options, 'multiple':$multiple};
                     $scope.$apply();
                 }
             }
@@ -217,6 +235,23 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                 str.push('<h5>Question numérique</h5>');
                 var ttl = $("#itemn"+$index).parent().find("h5").html();
                 str.push('<span>Indiquez un nouveau titre</span> <input type="text" name="questionTitle" class="form-control" value="'+ttl+'" required />');
+            }
+            else if($type == 6)
+            {
+                str.push('<h5>Question à choix multiple</h5>');
+                var ttl = $("#itemn"+$index).parent().find("h5").html();
+                str.push('<span>Indiquez un nouveau titre</span> <input type="text" name="questionTitle" class="form-control" value="'+ttl+'" required />');
+                str.push('<input type="checkbox" value="1" id="multipleAnswers"> Autoriser la selection multiple ?');
+                var allOptions = $("#itemn"+$index).children("select").children();
+                str.push('<div id="allOptionsEdit">');
+                allOptions.each(function($index)
+                {
+                    str.push('<div><input pos="'+$index+'" class="form-control" style="display:inline-block; width:95%;" type="text" value="'+$(this).text()+'" /><span class="removeItem">X</span></div>');
+                });
+                str.push('</div>');
+                str.push('<button id="addNewOptions" class="btn btn-default">Ajouter une option</button>');
+                str.push('<div id="newOptions"></div>');
+
             }
             else
                 $("#display-item-options").html('error');
