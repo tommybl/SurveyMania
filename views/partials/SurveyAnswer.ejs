@@ -1,25 +1,87 @@
 <!DOCTYPE html>
 
-<div id="surveyAnswer" ng-controller="SurveyAnswerController" class="col-md-12 row-centered">
-	<div class="master">
-		<div id="startPage" class="col-md-8 col-centered container">
-    		<div>Sondage : {{survey.header_name}}</div>
-    		<div>Informations relatives au sondage : {{survey.info}}</div>
-    		<div>Instruction supplémentaire : {{survey.instructions}}</div>
-    		<div>Par : {{survey.name}}</div>
-    		<div>Temps estimé : {{surveyEstimatedTime}}</div>
-            <div>Points : {{survey.points}}</div>
-    		<button class="btn btn-primary" ng-click="getNextSection()">Start</button>
-  		</div>
-
-        <div id="answer" class="col-md-8 col-centered container">
-            <div class="alert alert-danger alert-dismissible fade in" role="alert" ng-show="error!=undefined">
-                <button type="button" class="close" ng-click="error=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <span ng-bind-html="error"></span>
-            </div>
-            blabla de questions
-            <button class="btn btn-primary" ng-click="getNextSection()">Start</button>
+<div id="surveyAnswer" ng-controller="SurveyAnswerController" class="col-md-12">
+	<div class="col-md-8 col-md-offset-2 master">
+		
+        <!-- Error div -->
+        <div class="alert alert-danger alert-dismissible fade in" role="alert" ng-show="error!=undefined">
+            <button type="button" class="close" ng-click="error=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <span ng-bind-html="error"></span>
         </div>
+        <!-- Error div end -->
+
+        <!-- Start div -->
+        <div id="startPage" class="panel panel-default answerContainer">
+            <div class="panel-heading">
+                <h4>Répondre au sondage "{{survey.header_name}}"</h4>
+            </div>
+    		
+            <div class="panel-body">
+                <div>Informations relatives au sondage : {{survey.info}}</div>
+        		<div>Instruction supplémentaire : {{survey.instructions}}</div>
+        		<div>Par : {{survey.name}}</div>
+        		<div>Temps estimé : {{surveyEstimatedTime}} minutes</div>
+                <div>Points : {{survey.points}}</div>
+                
+                <br/>
+        		<button class="btn btn-primary" ng-click="getNextSection()">Commencer</button>
+            </div>
+  		</div>
+        <!-- Start div end -->
+
+        <!-- Answer div -->
+        <div id="answer" class="panel panel-default answerContainer">
+            <div class="panel-heading panelHeader">
+                <h4>{{surveySection.title}}</h4> <h5>{{surveySection.subtitle}}</h5>
+            </div>
+            
+            <div class="panel-body">
+                <div ng-repeat="question in sectionQuestionArray" class="form-group">
+                    <label>{{question.question.description}}</label>
+
+                    <!-- Free texting question -->
+                    <textarea ng-if="question.question.type_name == 'Ouverte'" class="form-control answerOpen" name="optionsRadios{{question.question.question_order}}" rows="3"></textarea>
+
+                    <!-- Numerical question -->
+                    <input ng-if="question.question.type_name == 'Numérique'" class="form-control answerOpen" name="optionsRadios{{question.question.question_order}}" type="number" />
+
+                    <!-- QCM with unique answer -->
+                    <div ng-if="question.question.type_name == 'QCM' && !question.question.multiple_answers" ng-repeat="option in question.options" class="radio optionOffset">
+                        <label>
+                            <input type="radio" name="optionsRadios{{question.question.question_order}}" value="{{option.option_order}}">
+                            {{option.choice_name}}
+                        </label>
+                    </div>
+
+                    <!-- QCM with multiple answer -->
+                    <div ng-if="question.question.type_name == 'QCM' && question.question.multiple_answers" ng-repeat="option in question.options" class="checkbox optionOffset">
+                        <label>
+                            <input type="checkbox" name="optionsRadios{{question.question.question_order}}" value="{{option.option_order}}">
+                            {{option.choice_name}}
+                        </label>
+                    </div>
+
+                    <!-- Slider question -->
+                    <input ng-if="question.question.type_name == 'Slider'" class="answerOpen" name="optionsRadios{{question.question.question_order}}" type="range" min="0" max="20" step="1" />
+                    <br/>
+                </div>
+
+                <button class="btn btn-primary" ng-click="getNextSection()">Suite</button>
+            </div>                
+        </div>
+        <!-- Answer div end -->
+
+        <!-- End div -->
+        <div id="endPage" class="panel panel-default answerContainer">
+            <div class="panel-heading">
+                <h4>Sondage terminé</h4>
+            </div>
+            
+            <div class="panel-body">
+
+            </div>
+        </div>
+        <!-- End div end -->
 	</div>
 </div>
 

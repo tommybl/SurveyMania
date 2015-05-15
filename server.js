@@ -1123,7 +1123,7 @@ app
                             client.query(query, function(err, result) {
                                 done();
                                 if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
-                                else res.status(200).json({code: 200, survey: survey, time: result.rows[0].time});
+                                else res.status(200).json({code: 200, survey: survey, time: Math.round(result.rows[0].time)});
                             });
                         } else {
                             res.status(500).json({code: 500, error: "Internal server error", message: "Le sondage n'existe pas"});
@@ -1163,7 +1163,7 @@ app
                             }
 
                             if (selected == null) res.status(200).json({code: 200, message: "Sondage terminé"});
-                            else{
+                            else {
                                 /* Get les questions de la section et leur type */
                                 var query = 'SELECT it.type_name, q.id, q.description, q.question_order, q.multiple_answers'
                                     + ' FROM surveymania.questions q INNER JOIN surveymania.input_types it ON q.input_type_id = it.id'

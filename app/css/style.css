@@ -586,16 +586,26 @@ blockquote {
 }
 
 #surveyAnswer .master {
-    padding-top: 50px;
+    padding-top: 100px;
 }
 
-#surveyAnswer .container {
-  margin: auto;
-  padding: 20px 20px 20px 30px;
-  background-color: rgb(242, 242, 242);
-  border-style: solid;
-  border-width: 1px;
-  border-radius: 8px;
-  border-color: rgb(204, 204, 204);
-  display: none;
+#surveyAnswer .answerContainer {
+    display: none;
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px #AAA;
+}
+
+#surveyAnswer .panelHeader {
+    padding-top: 1px;
+    padding-bottom: 1px;
+}
+
+#surveyAnswer .answerOpen {
+    margin-top: 7px;
+    width: 500px;
+    resize: none;
+}
+
+#surveyAnswer .optionOffset {
+    margin-left: 30px;
 }

@@ -980,9 +980,10 @@ surveyManiaControllers.controller('MySurveysController', ['$scope', '$http', '$w
 surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
     $scope.url = $window.location.hash.split('/');
     $scope.surveyid = $scope.url[$scope.url.length - 1];
-    $scope.survey = null;
+    $scope.survey;
     $scope.surveyEstimatedTime;
-    $scope.surveySection = null;
+    $scope.surveySection;
+    $scope.sectionQuestionArray;
     $scope.error;
 
     $scope.startPageDisplayed = true;
@@ -1003,32 +1004,41 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
             $('#startPage').fadeOut(800, function () {
                 $scope.startPageDisplayed = false;
                 $scope.getNextSectionContent();
-                $('#answer').fadeIn(800);
             });
         } else {
             $('#answer').fadeOut(800, function () {
                 $scope.getNextSectionContent();
-                $('#answer').fadeIn(800);
             });
         }
     }
 
     $scope.getNextSectionContent = function () {
+        $scope.error = undefined;
+        $scope.surveySection = undefined;
+        $scope.sectionQuestionArray = undefined;
+
         $http.post('/app/survey/getNextSurveyUserSection', {survey: $scope.surveyid})
             .success(function (data, status, header, config) {
                 switch (data.message) {
                     case "Aucune section à remplir":
-                        $scope.error = "Un erreure est survenue. Tentez de supprimer le sondage et de le rescanner";
+                        $scope.error = "Une erreur est survenue. Tentez de supprimer le sondage et de le rescanner";
+                        $('#answer').fadeIn(800);
                         break;
-                    case "Sondage terminé":
-                        $scope.error = data.message;
-                        break;
+
                     case "Aucune question dans la section":
                         $scope.error = data.message;
+                        $('#answer').fadeIn(800);
                         break;
+
+                    case "Sondage terminé":
+                        break;
+
                     case "OK":
-                        $scope.error = undefined;
-                        console.log(data);
+                        $scope.surveySection = data.section;
+                        $scope.sectionQuestionArray = data.question_array;
+                        $('#answer').fadeIn(800);
+
+                        console.log($scope.sectionQuestionArray);
                         break;
                 }
             })
