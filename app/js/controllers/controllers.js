@@ -51,7 +51,8 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                         {'index':'','id':'1','title': 'Réponse libre', 'label':$sce.trustAsHtml('<h5>question</h5>'), 'code' : $sce.trustAsHtml('<textarea maxlength="255"></textarea>'), 'show':true, 'icon':'text-height'},
                         {'index':'','id':'2','title': 'Question fermée', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<input type="radio" name="yesno" value="0"> <span class="opt1">Oui</span><br><input type="radio" name="yesno" value="1" checked> <span class="opt2">Non</span>'), 'show':true, 'icon':'toggle-on'},
                         {'index':'','id':'3','title': 'Slider', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<input type="range" min="0" max="50" value="25" step="5" />'), 'show':true, 'icon':'sliders'},
-                        {'index':'','id':'4','title': 'Branchement', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml(''), 'show':true, 'icon':'code-fork'}
+                        {'index':'','id':'4','title': 'Branchement', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml(''), 'show':true, 'icon':'code-fork'},
+                        {'index':'','id':'5','title': 'Numérique', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<input type="number" name="number" />'), 'show':true, 'icon':'list-ol'}
                         ]; 
 
         $scope.list4 = [];
@@ -62,7 +63,7 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
 
         $scope.addNewQuestion = function ($index, $item)
         {
-            if($item.id == 0) // Titre
+            if($item.id == 0 || $item.id == 5) // Titre
             {
                 $scope.questionList.push({'index': $index, 'type':$item.id, 'title':$item.title});
             }
@@ -210,6 +211,12 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                 str.push('<span>Minimum</span> <input type="number" name="min" class="form-control" value="'+min+'" required="required" />');
                 str.push('<span>Maximum</span> <input type="number" name="max" class="form-control" value="'+max+'" required="required" />');
                 str.push('<span>Pas</span> <input type="number" name="step" class="form-control" value="'+step+'" required="required" />');
+            }
+            else if($type == 5)
+            {
+                str.push('<h5>Question numérique</h5>');
+                var ttl = $("#itemn"+$index).parent().find("h5").html();
+                str.push('<span>Indiquez un nouveau titre</span> <input type="text" name="questionTitle" class="form-control" value="'+ttl+'" required />');
             }
             else
                 $("#display-item-options").html('error');
