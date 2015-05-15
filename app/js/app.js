@@ -120,6 +120,8 @@ surveyManiaApp.config(function ($httpProvider) {
 
 surveyManiaApp.run(function ($rootScope, $location, $route, $templateCache, $injector) {
 
+    $rootScope.showInfosBubble = true;
+
     // allow user to change route directly in browser url bar without refreshing the page
     var original = $location.path;
     $location.path = function (path, reload) {
