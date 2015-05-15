@@ -1020,19 +1020,18 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
     $scope.surveySection;
     $scope.sectionQuestionArray;
     $scope.error;
-
+    $scope.usertime;
     $scope.startPageDisplayed = true;
 
     $http.post('/app/survey/getSurvey', {survey: $scope.surveyid})
         .success(function (data, status, header, config) {
             $scope.survey = data.survey;
             $scope.surveyEstimatedTime = data.time;
+            $('#startPage').fadeIn(800);
         })
         .error(function (data, status, header, config) {
             $location.path("/mysurveys");
         });
-
-    $('#startPage').fadeIn(800);
 
     $scope.getNextSection = function () {
         if ($scope.startPageDisplayed) {
@@ -1048,7 +1047,6 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
     }
 
     $scope.getNextSectionContent = function () {
-        $scope.error = undefined;
         $scope.surveySection = undefined;
         $scope.sectionQuestionArray = undefined;
 
@@ -1066,6 +1064,7 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
                         break;
 
                     case "Sondage terminé":
+                        $('#endPage').fadeIn(800);
                         break;
 
                     case "OK":
@@ -1078,13 +1077,20 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
                                 else
                                     eval('$scope.sectionQuestionArray[i].param' + $scope.sectionQuestionArray[i].parameters[j].name  + ' = ' + $scope.sectionQuestionArray[i].parameters[j].value_text);
 
-                        $('#answer').fadeIn(800);
+                        $('#answer').fadeIn(800, function() {
+                            $scope.usertime = new Date().getTime();
+                        });
                         break;
                 }
             })
             .error(function (data, status, header, config) {
                 $location.path("/mysurveys");
             });
+    }
+
+    $scope.saveCurrentSection = function () {
+        $scope.error = undefined;
+        $scope.usertime = new Date().getTime() - $scope.usertime;
     }
 }]);
 

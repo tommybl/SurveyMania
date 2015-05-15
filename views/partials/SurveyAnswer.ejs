@@ -70,10 +70,11 @@
                     <!-- Texte simple -->
                     <p ng-if="question.question.type_name == 'Texte'">{{question.question.description}}</p>
 
+                    <!-- Saut d'une ligne, si c'est pas un titre -->
                     <br ng-if="question.question.type_name != 'Titre'"/>
                 </div>
 
-                <button class="btn btn-primary" ng-click="getNextSection()">Suite</button>
+                <button class="btn btn-primary" ng-click="saveCurrentSection()">Suite</button>
             </div>                
         </div>
         <!-- Answer div end -->
