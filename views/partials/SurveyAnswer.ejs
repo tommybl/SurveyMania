@@ -39,11 +39,11 @@
                 <div ng-repeat="question in sectionQuestionArray" class="form-group">
                     <label>{{question.question.description}}</label>
 
-                    <!-- Free texting question -->
-                    <textarea ng-if="question.question.type_name == 'Ouverte'" class="form-control answerOpen" name="optionsRadios{{question.question.question_order}}" rows="3"></textarea>
+                    <!-- Free texting question (maxlength) -->
+                    <textarea ng-if="question.question.type_name == 'Ouverte'" class="form-control answerOpen" name="optionsRadios{{question.question.question_order}}" rows="3" maxlength="{{question.parammax}}"></textarea>
 
-                    <!-- Numerical question -->
-                    <input ng-if="question.question.type_name == 'Numérique'" class="form-control answerOpen" name="optionsRadios{{question.question.question_order}}" type="number" />
+                    <!-- Numerical question (min, max) -->
+                    <input ng-if="question.question.type_name == 'Numérique'" class="form-control answerOpen" name="optionsRadios{{question.question.question_order}}" type="number" min="{{question.parammin}}" max="{{question.parammax}}" />
 
                     <!-- QCM with unique answer -->
                     <div ng-if="question.question.type_name == 'QCM' && !question.question.multiple_answers" ng-repeat="option in question.options" class="radio optionOffset">
@@ -61,8 +61,8 @@
                         </label>
                     </div>
 
-                    <!-- Slider question -->
-                    <input ng-if="question.question.type_name == 'Slider'" class="answerOpen" name="optionsRadios{{question.question.question_order}}" type="range" min="0" max="20" step="1" />
+                    <!-- Slider question (min, max, pas, def) -->
+                    <input ng-if="question.question.type_name == 'Slider'" class="answerOpen" name="optionsRadios{{question.question.question_order}}" type="range" min="{{question.parammin}}" max="{{question.parammax}}" step="{{question.parampas}}" value="{{question.paramdef}}" />
                     <br/>
                 </div>
 

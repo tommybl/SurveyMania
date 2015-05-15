@@ -1071,8 +1071,14 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
                     case "OK":
                         $scope.surveySection = data.section;
                         $scope.sectionQuestionArray = data.question_array;
-                        $('#answer').fadeIn(800);
+                        for (var i = 0; i < $scope.sectionQuestionArray.length; ++i)
+                            for (var j = 0; j < $scope.sectionQuestionArray[i].parameters.length; ++j)
+                                if ($scope.sectionQuestionArray[i].parameters[j].value_num != null)
+                                    eval('$scope.sectionQuestionArray[i].param' + $scope.sectionQuestionArray[i].parameters[j].name  + ' = ' + $scope.sectionQuestionArray[i].parameters[j].value_num);
+                                else
+                                    eval('$scope.sectionQuestionArray[i].param' + $scope.sectionQuestionArray[i].parameters[j].name  + ' = ' + $scope.sectionQuestionArray[i].parameters[j].value_text);
 
+                        $('#answer').fadeIn(800);
                         console.log($scope.sectionQuestionArray);
                         break;
                 }
