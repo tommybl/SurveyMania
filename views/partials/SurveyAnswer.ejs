@@ -48,7 +48,7 @@
                     <!-- QCM with unique answer -->
                     <div ng-if="question.question.type_name == 'QCM' && !question.question.multiple_answers" ng-repeat="option in question.options" class="radio optionOffset">
                         <label>
-                            <input type="radio" name="question{{question.question.question_order}}" value="{{option.option_order}}">
+                            <input type="radio" name="question{{question.question.question_order}}" value="{{option.id}}">
                             {{option.choice_name}}
                         </label>
                     </div>
@@ -56,7 +56,7 @@
                     <!-- QCM with multiple answer -->
                     <div ng-if="question.question.type_name == 'QCM' && question.question.multiple_answers" ng-repeat="option in question.options" class="checkbox optionOffset">
                         <label>
-                            <input type="checkbox" name="question{{question.question.question_order}}" value="{{option.option_order}}">
+                            <input type="checkbox" name="question{{question.question.question_order}}" value="{{option.id}}">
                             {{option.choice_name}}
                         </label>
                     </div>

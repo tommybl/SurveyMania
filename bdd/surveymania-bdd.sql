@@ -284,7 +284,7 @@ CREATE TABLE  surveymania.answers (
   user_id INT NOT NULL,
   option_choice_id INT NULL DEFAULT NULL,
   answer_num INT NULL DEFAULT NULL,
-  answer_text VARCHAR(255) NULL DEFAULT NULL,
+  answer_text VARCHAR(4096) NULL DEFAULT NULL,
   PRIMARY KEY (id),
   CONSTRAINT fk_question_id
     FOREIGN KEY (question_id)
