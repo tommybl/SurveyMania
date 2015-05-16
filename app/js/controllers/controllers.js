@@ -246,7 +246,7 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                 str.push('<div id="allOptionsEdit">');
                 allOptions.each(function($index)
                 {
-                    str.push('<div><input pos="'+$index+'" class="form-control" style="display:inline-block; width:95%;" type="text" value="'+$(this).text()+'" /><span class="removeItem">X</span></div>');
+                    str.push('<div><input pos="'+$index+'" class="form-control" style="display:inline-block; width:95%;" type="text" value="'+$(this).text()+'" /><span class="removeItem fa fa-times"></span></div>');
                 });
                 str.push('</div>');
                 str.push('<button id="addNewOptions" class="btn btn-default">Ajouter une option</button>');

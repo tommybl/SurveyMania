@@ -135,7 +135,6 @@ $(document).on('click', '#closedQuestion', function(event) {
         var multiple = false;
         if($('#multipleAnswers').is(':checked'))
         {
-          console.log("ok"); 
           multiple = true;
           $("#itemn"+idItem).find("select").prop("multiple", true);
         }
@@ -147,17 +146,18 @@ $(document).on('click', '#closedQuestion', function(event) {
 
         // Questions déjà présentes dans le formulaire
         var newOptionsEdit = $(this).parent().children("#allOptionsEdit").find('input');
+        $("#itemn"+idItem).find("select").empty();
         newOptionsEdit.each(function($index)
         {
-          if ($(this).prop("disabled") == "disabled")
-            newOptionIndex--;
-          else
+          if ($(this).prop("disabled") != true)
           {
             newOptionIndex++;
             $txt = $(this).val();
+            console.log($txt+" : "+newOptionIndex);
             options.push($txt);
-            $("#itemn"+idItem).find("option").prop("pos", newOptionIndex).text($txt);
-         }
+            $("#itemn"+idItem).find("select").append('<option pos="'+newOptionIndex+'" value="'+(newOptionIndex+1)+'">'+$txt+'</option>');
+            //$("#itemn"+idItem).find("option").prop("pos", newOptionIndex).text($txt);
+          }
         });
 
         // Questions venant d'être add
@@ -166,7 +166,7 @@ $(document).on('click', '#closedQuestion', function(event) {
         {
           $txt = $(this).val();
           options.push($txt);
-          $("#itemn"+idItem).find("select").append('<option pos="'+($index+newOptionIndex)+'" value="'+($index+newOptionIndex+2)+'">'+$txt+'</option>');
+          $("#itemn"+idItem).find("select").append('<option pos="'+($index+newOptionIndex+1)+'" value="'+($index+newOptionIndex+2)+'">'+$txt+'</option>');
         });
 
         $('#renderPanel').scope().editMultipleQuestion(idItem, newTitle, options, multiple);
