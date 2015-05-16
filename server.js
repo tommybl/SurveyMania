@@ -1195,7 +1195,7 @@ app
                                                             question.parameters = result.rows;
 
                                                             /* Get les options de la question (si QCM) */
-                                                            var query = 'SELECT oc.choice_name, oc.option_order, oc.linked_section_id'
+                                                            var query = 'SELECT oc.id, oc.choice_name, oc.option_order, oc.linked_section_id'
                                                                 + ' FROM surveymania.option_choices oc'
                                                                 + ' WHERE oc.question_id = ' + question.question.id
                                                                 + ' ORDER BY oc.option_order ASC';
@@ -1262,7 +1262,6 @@ app
                 var completionTime = req.body.time;
                 var dateNow = moment().format("YYYY-MM-DD HH:mm:ss");
 
-                /* On vérifie si l'utilisateur a bien accès à la section et au sondage */
                 var query = 'SELECT uss.id'
                     + ' FROM surveymania.user_survey_sections uss'
                     + ' INNER JOIN surveymania.survey_sections ss ON uss.section_id = ss.id'
@@ -1273,9 +1272,10 @@ app
                     done();
                     if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                     else {
-                        if (!result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                        if (!result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "La section n'existe pas"});
                         else {
                             var query = 'INSERT INTO surveymania.answers (question_id, user_id, option_choice_id, answer_num, answer_text) VALUES';
+                            var idArray = [];
                             answers.forEach(function (element, index) {
                                 if (element.ansChecked == undefined) {
                                     query += (index == 0) ? ' (' : ', (';
@@ -1288,10 +1288,12 @@ app
                                         for (var i = 0; i < element.ansChecked.length; ++i) {
                                             query += (index == 0 && i == 0) ? ' (' : ', (';
                                             query += element.id + ', ' + user.id + ', ' + escapeHtml(element.ansChecked[i]) + ', NULL, NULL)';
+                                            idArray.push(element.ansChecked[i]);
                                         }
                                     } else {
                                         query += (index == 0) ? ' (' : ', (';
                                         query += element.id + ', ' + user.id + ', ' + escapeHtml(element.ansChecked) + ', NULL, NULL)';
+                                        idArray.push(element.ansChecked);
                                     }
                                 }
                             });
@@ -1300,14 +1302,51 @@ app
                                 done();
                                 if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                                 else {
-                                    var query = 'UPDATE surveymania.user_survey_sections'
-                                        + ' SET completed = \'' + escapeHtml(dateNow) + '\', duration = ' + completionTime
-                                        + ' WHERE user_id = ' + user.id + 'AND section_id = ' + sectionid;
+                                    var idList = '(';
+                                    idArray.forEach(function (element, index) {
+                                        idList += (index == 0) ? element : ', ' + element;
+                                    });
+                                    idList += ')'
+
+                                    var query = 'SELECT DISTINCT linked_section_id FROM surveymania.option_choices'
+                                        + ' WHERE id IN ' + idList
+                                        + ' AND linked_section_id IS NOT NULL;';
 
                                     client.query(query, function(err, result) {
                                         done();
                                         if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
-                                        else res.status(200).json({code: 200, message: "OK"});
+                                        else {
+                                            if (!result.rows.length) {
+                                                var query = 'UPDATE surveymania.user_survey_sections'
+                                                    + ' SET completed = \'' + escapeHtml(dateNow) + '\', duration = ' + completionTime
+                                                    + ' WHERE user_id = ' + user.id + 'AND section_id = ' + sectionid;
+
+                                                client.query(query, function(err, result) {
+                                                    done();
+                                                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                                    else res.status(200).json({code: 200, message: "OK"});
+                                                });
+                                            } else {
+                                                var query = 'INSERT INTO surveymania.user_survey_sections (user_id, section_id) VALUES';
+                                                result.rows.forEach(function (element, index) {
+                                                    if (index == 0) query = query + ' (' + user.id + ', ' + element.linked_section_id + ')';
+                                                    else query = query + ', (' + user.id + ', ' + element.linked_section_id + ')';
+                                                });
+
+                                                client.query(query, function(err, result) {
+                                                    done();
+                                                    var query = 'UPDATE surveymania.user_survey_sections'
+                                                        + ' SET completed = \'' + escapeHtml(dateNow) + '\', duration = ' + completionTime
+                                                        + ' WHERE user_id = ' + user.id + 'AND section_id = ' + sectionid;
+
+                                                    client.query(query, function(err, result) {
+                                                        done();
+                                                        if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                                        else res.status(200).json({code: 200, message: "OK"});
+                                                    });
+                                                });
+                                            }
+                                        }
                                     });
                                 }
                             });
