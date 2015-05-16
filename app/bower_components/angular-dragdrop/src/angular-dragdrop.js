@@ -182,6 +182,7 @@ var jqyoui = angular.module('ngDragDrop', []).service('ngDragDropService', ['$ti
     };
 
     this.mutateDroppable = function(scope, dropSettings, dragSettings, dropModel, dragItem, jqyoui_pos, y) {
+      console.log(dropModel);
       var dropModelValue = scope.$eval(dropModel);
 
       scope.dndDragItem = dragItem;

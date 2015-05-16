@@ -11,8 +11,9 @@
    </select><br>
    <button class="btn btn-primary" style="width: 100px">Valider</button>
  </div>
+ {{list4 | json}}
+ {{list2 | json}}
  <div>
-  {{questionList | json}}
   <div class="col-md-4">
     <div class="col-sm-12 draganddroptuto">
       <i class="fa fa-arrows faarrows"></i> Cliquez/déposez les items que vous souhaitez inclure dans le sondage
@@ -31,43 +32,66 @@
     </div>
   </div>
   <div class="panel panel-default">
-      <div class="panel-heading">
-        Options <i class="fa fa-gears"></i>
-      </div>
-      <div id="display-item-options" class="panel-body" style="display:none;">
+    <div class="panel-heading">
+      Options <i class="fa fa-gears"></i>
+    </div>
+    <div id="display-item-options" class="panel-body" style="display:none;">
 
-      </div>
+    </div>
   </div>
 </div> 
 <div class="col-md-6" id="renderPanel">
   <div id="optionsbar" class="col-sm-12">
     <button class="optionsbarButton"><i class="fa fa-save"> Enregistrer</i></button>
     <button class="optionsbarButton"><i class="fa fa-search"> Prévisualiser</i></button>
+    <button class="optionsbarButton"><i class="fa fa-plus-square-o addSection"> Ajouter une section</i></button>
   </div>
   <h3 class="ui-widget-header">Création du sondage</h3>
-  <div class="ui-widget-content">
-    <ol class="dropzone" data-drop="true" ng-model='list4' jqyoui-droppable="{multiple:true}" id="list4">
-      <li class="drop_item" ng-repeat="itemlol in list4" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" ng-model="list4" jqyoui-draggable="{index: {{$index}},animate:false}">
-        <!-- Champ pour modifier la question -->
-        <input ng-hide="itemlol.show" type="text" class="answer_field" ng-model="answer"/>
-        <!-- Label de la question -->
-        <span class="question_label" ng-show="itemlol.show" ng-bind-html="itemlol.label"></span>
-        <!-- Code de la question (type de question) -->
-        <span id="itemn{{$index}}" ng-hide="itemlol.title == 'Titre' || itemlol.title == 'Texte libre'" class="question_code" ng-bind-html="itemlol.code"></span>
+  <ul class="nav nav-tabs" role="tablist" id="myTab">
+    <li role="presentation"><a href="#" id="tab1" selectlist="list1" list="1" role="tab" data-toggle="tab">Section 1</a></li>
+  </ul>
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="upload_tab">
+      <div class="ui-widget-content">
+        <ol class="dropzone" data-drop="true" ng-model='displayedList' jqyoui-droppable="{multiple:true}" id="list4">
+          <li class="drop_item" ng-repeat="itemlol in displayedList" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" ng-model="displayedList" jqyoui-draggable="{index: {{$index}},animate:false}">
+            <!-- Champ pour modifier la question -->
+            <input ng-hide="itemlol.show" type="text" class="answer_field" ng-model="answer"/>
+            <!-- Label de la question -->
+            <span class="question_label" ng-show="itemlol.show" ng-bind-html="itemlol.label"></span>
+            <!-- Code de la question (type de question) -->
+            <span id="itemn{{$index}}" ng-hide="itemlol.title == 'Titre' || itemlol.title == 'Texte libre'" class="question_code" ng-bind-html="itemlol.code"></span>
 
-        <!-- Bouton pour valider la modification -->
-        <span ng-hide="itemlol.show" ng-click="validate($index, answer)" class="validate_edit_btn"></span>
-        <!-- Bouton pour modifier la question-->
-        <span ng-show="itemlol.show" ng-click="edit($index, itemlol.id)" class="edit_btn"></span>
-        <!-- Bouton pour supprimer la question -->
-        <span class="delete_btn" ng-click="delete($index)"></span>
-      </li>
-      <li class="placeholder" ng-hide="hideMe()">Cliquez/déposez des éléments depuis le menu pour créer votre sondage</li>
-    </ol>
+            <!-- Bouton pour valider la modification -->
+            <span ng-hide="itemlol.show" ng-click="validate($index, answer)" class="validate_edit_btn"></span>
+            <!-- Bouton pour modifier la question-->
+            <span ng-show="itemlol.show" ng-click="edit($index, itemlol.id)" class="edit_btn"></span>
+            <!-- Bouton pour supprimer la question -->
+            <span class="delete_btn" ng-click="delete($index)"></span>
+          </li>
+          <li class="placeholder" ng-hide="hideMe()">Cliquez/déposez des éléments depuis le menu pour créer votre sondage</li>
+        </ol>
+      </div>
+    </div>
   </div>
+</div>
 </div>
 </div>
 <script>
+$(document).on('click', '#myTab a', function(event)
+{
+  event.preventDefault();
+  console.log("tarace");
+  $('#renderPanel').scope().switchList($(this).attr("selectlist"));
+});
+
+$(document).on('click', '.addSection', function(event)
+{
+  event.preventDefault();
+  console.log("addSection");
+  var pos = $('#myTab').find('a').last().attr('list');
+  $('#myTab').append('<li role="presentation"><a href="#" id="tab'+(parseInt(pos)+1)+'" selectlist="list'+(parseInt(pos)+1)+'" list="'+(parseInt(pos)+1)+'" role="tab" data-toggle="tab">Section '+(parseInt(pos)+1)+'</a></li>');
+});
 
 $(document).on('click', '.removeItem', function(event)
 {
@@ -190,4 +214,3 @@ $(document).on('click', '#closedQuestion', function(event) {
     }
 });
 </script>
-</div>

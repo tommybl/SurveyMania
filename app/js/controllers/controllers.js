@@ -58,10 +58,23 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                         ]; 
 
         $scope.list4 = [];
+        $scope.list2 = [];
         $scope.questionList = [];
         $scope.categories = [];
+        $scope.displayedList = [];
+
+        $scope.displayedList = $scope.list4;
 
         $scope.answer ="";
+
+        $scope.switchList = function ($listName)
+        {
+            if ($listName == "list2")
+                $scope.displayedList = $scope.list2;
+            else
+                $scope.displayedList = $scope.list4;
+            $scope.$apply();
+        }
 
         $scope.addNewQuestion = function ($index, $item)
         {
