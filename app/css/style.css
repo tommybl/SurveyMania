@@ -416,6 +416,22 @@ ol{
     font-style: italic;
 }
 
+.removeItem
+{
+  margin-left: 5px;
+  font-size: 20px;
+}
+
+#addNewOptions, textarea
+{
+  margin-bottom: 10px;
+}
+
+
+/* ******************************************* */
+/* ***************** RANKING ***************** */
+/* ******************************************* */
+
 .pagination>.active>a, .pagination>.active>a:focus, .pagination>.active>a:hover, .pagination>.active>span, .pagination>.active>span:focus, .pagination>.active>span:hover {
     background-color: #f5c950;
     border-color: #f5c950;

@@ -4,6 +4,8 @@
     <h3>Créer un sondage </h3>
     <input ng-model="survey.name" type="text" name="name" placeholder="Entrez le nom du sondage" class="form-control" required="required"/><br>
     <input type="number" name="surveypoints" placeholder="Entrez le nombre de points" class="form-control" required="required"/><br>
+    <textarea name="surveyinstructions" class="form-control" placeholder="Indiquez les instructions..."></textarea>
+    <textarea name="surveydescription" class="form-control" placeholder="Indiquez la description du sondage..."></textarea>
     <select class="form-control">
      <option ng-repeat="category in categories" value="{{category.name}}" >{{category.name}}</option>
    </select><br>
@@ -51,7 +53,7 @@
         <!-- Label de la question -->
         <span class="question_label" ng-show="itemlol.show" ng-bind-html="itemlol.label"></span>
         <!-- Code de la question (type de question) -->
-        <span id="itemn{{$index}}" ng-hide="itemlol.title == 'Titre'" class="question_code" ng-bind-html="itemlol.code"></span>
+        <span id="itemn{{$index}}" ng-hide="itemlol.title == 'Titre' || itemlol.title == 'Texte libre'" class="question_code" ng-bind-html="itemlol.code"></span>
 
         <!-- Bouton pour valider la modification -->
         <span ng-hide="itemlol.show" ng-click="validate($index, answer)" class="validate_edit_btn"></span>
@@ -98,7 +100,16 @@ $(document).on('click', '#closedQuestion', function(event) {
       $("#itemn"+idItem).hide();
 
       var newTitle = $(this).parent().children("input[name='questionTitle']").val();
-      $("#itemn"+idItem).parent().find("h5").html(newTitle);
+      if (typeItem == 0)
+        $("#itemn"+idItem).parent().find("h1").html(newTitle);
+      else if(typeItem == 7)
+      {
+        var newText = $(this).parent().children("textarea[name='questionTitle']").val();
+        console.log("ok 7 : "+newText);
+        $("#itemn"+idItem).parent().find("p").html(newText);
+      }
+      else
+        $("#itemn"+idItem).parent().find("h5").html(newTitle);
 
       if (typeItem == 0 || typeItem == 5)
       {
@@ -135,7 +146,6 @@ $(document).on('click', '#closedQuestion', function(event) {
         var multiple = false;
         if($('#multipleAnswers').is(':checked'))
         {
-          console.log("ok"); 
           multiple = true;
           $("#itemn"+idItem).find("select").prop("multiple", true);
         }
@@ -147,17 +157,18 @@ $(document).on('click', '#closedQuestion', function(event) {
 
         // Questions déjà présentes dans le formulaire
         var newOptionsEdit = $(this).parent().children("#allOptionsEdit").find('input');
+        $("#itemn"+idItem).find("select").empty();
         newOptionsEdit.each(function($index)
         {
-          if ($(this).prop("disabled") == "disabled")
-            newOptionIndex--;
-          else
+          if ($(this).prop("disabled") != true)
           {
             newOptionIndex++;
             $txt = $(this).val();
+            console.log($txt+" : "+newOptionIndex);
             options.push($txt);
-            $("#itemn"+idItem).find("option").prop("pos", newOptionIndex).text($txt);
-         }
+            $("#itemn"+idItem).find("select").append('<option pos="'+newOptionIndex+'" value="'+(newOptionIndex+1)+'">'+$txt+'</option>');
+            //$("#itemn"+idItem).find("option").prop("pos", newOptionIndex).text($txt);
+          }
         });
 
         // Questions venant d'être add
@@ -166,10 +177,14 @@ $(document).on('click', '#closedQuestion', function(event) {
         {
           $txt = $(this).val();
           options.push($txt);
-          $("#itemn"+idItem).find("select").append('<option pos="'+($index+newOptionIndex)+'" value="'+($index+newOptionIndex+2)+'">'+$txt+'</option>');
+          $("#itemn"+idItem).find("select").append('<option pos="'+($index+newOptionIndex+1)+'" value="'+($index+newOptionIndex+2)+'">'+$txt+'</option>');
         });
 
         $('#renderPanel').scope().editMultipleQuestion(idItem, newTitle, options, multiple);
+      }
+      if (typeItem == 7)
+      {
+        $('#renderPanel').scope().editTextQuestion(idItem, newTitle);
       }
       $("#itemn"+idItem).fadeIn(1000);
     }
