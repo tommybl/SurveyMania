@@ -1116,7 +1116,6 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
         $scope.error = undefined;
         var answerArray = [];
 
-        /* On get les réponses de l'utilisateur */
         for (var i = 0; i < $scope.sectionQuestionArray.length; ++i) {
             var q = {id: $scope.sectionQuestionArray[i].question.id};
 
@@ -1150,10 +1149,10 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
         else {
             $http.post('/app/survey/submitSurveyUserSection', {survey: $scope.surveyid, section: $scope.surveySection.id, answerArray: answerArray, time: new Date().getTime() - $scope.usertime})
                 .success(function (data, status, header, config) {
-                    alert(data.message);
+                    $scope.getNextSection();
                 })
                 .error(function (data, status, header, config) {
-                    alert(data.message);
+                    $location.path("/mysurveys");
                 });
         }
     }
