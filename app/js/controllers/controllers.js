@@ -1121,7 +1121,7 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
             var q = {id: $scope.sectionQuestionArray[i].question.id};
 
             if ($scope.sectionQuestionArray[i].question.type_name == 'Ouverte') {
-                q.ansText = $('#question' + $scope.sectionQuestionArray[i].question.question_order).value;
+                q.ansText = document.getElementById('question' + $scope.sectionQuestionArray[i].question.question_order).value;
             }
 
             else if ($scope.sectionQuestionArray[i].question.type_name == 'QCM' && !$scope.sectionQuestionArray[i].question.multiple_answers) {
@@ -1139,7 +1139,7 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
             }
 
             else {
-                q.ansNum = $('#question' + $scope.sectionQuestionArray[i].question.question_order).value;
+                q.ansNum = document.getElementById('question' + $scope.sectionQuestionArray[i].question.question_order).value;
             }
 
             if (q.ansText == undefined && q.ansChecked == undefined && q.ansNum == undefined) break;

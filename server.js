@@ -1281,7 +1281,7 @@ app
                                     query += (index == 0) ? ' (' : ', (';
                                     query += element.id + ', ' + user.id + ', NULL, ';
                                     query += (element.ansNum != undefined) ? escapeHtml(element.ansNum) + ', ' : 'NULL, ';
-                                    query += (element.ansText != undefined) ? '\'' + escapeHtml(element.ansText) + '\', ' : 'NULL, ';
+                                    query += (element.ansText != undefined) ? '\'' + escapeHtml(element.ansText) + '\'' : 'NULL';
                                     query += ')';
                                 } else {
                                     if (Array.isArray(element.ansChecked)) {
