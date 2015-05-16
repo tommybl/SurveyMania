@@ -1145,7 +1145,7 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
             else answerArray.push(q);
         }
 
-        if (answerArray.length != $scope.sectionQuestionArray.length) $scope.error = "Veuillez répondre à toutes les questions";
+        if (answerArray.length != $scope.sectionQuestionArray.length || answer.length == 0) $scope.error = "Veuillez répondre à toutes les questions";
         else {
             $http.post('/app/survey/submitSurveyUserSection', {survey: $scope.surveyid, section: $scope.surveySection.id, answerArray: answerArray, time: new Date().getTime() - $scope.usertime})
                 .success(function (data, status, header, config) {

@@ -1308,7 +1308,7 @@ app
                                     });
                                     idList += ')'
 
-                                    var query = 'SELECT DISTINCT linked_section_id FROM surveymania.option_choices'
+                                    var query = (idArray.length == 0) ? '' : 'SELECT DISTINCT linked_section_id FROM surveymania.option_choices'
                                         + ' WHERE id IN ' + idList
                                         + ' AND linked_section_id IS NOT NULL;';
 
