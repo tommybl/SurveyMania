@@ -1249,7 +1249,11 @@ app
 })
 
 .post('/app/survey/submitSurveyUserSection', function (req, res) {
-
+    console.log(req.user);
+    console.log(req.body.survey);
+    console.log(req.body.section);
+    console.log(req.body.answerArray);
+    console.log(req.body.time);
 })
 
 .get('/app/organizationPanel', function (req, res) {

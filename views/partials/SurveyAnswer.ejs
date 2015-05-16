@@ -40,15 +40,15 @@
                     <label ng-if="question.question.type_name != 'Titre' && question.question.type_name != 'Texte'">{{question.question.description}}</label>
 
                     <!-- Free texting question (maxlength) -->
-                    <textarea ng-if="question.question.type_name == 'Ouverte'" class="form-control answerOpen" name="optionsRadios{{question.question.question_order}}" rows="3" maxlength="{{question.parammax}}"></textarea>
+                    <textarea ng-if="question.question.type_name == 'Ouverte'" class="form-control answerOpen" id="question{{question.question.question_order}}" rows="3" maxlength="{{question.parammax}}"></textarea>
 
                     <!-- Numerical question (min, max) -->
-                    <input ng-if="question.question.type_name == 'Numérique'" class="form-control answerOpen" name="optionsRadios{{question.question.question_order}}" type="number" min="{{question.parammin}}" max="{{question.parammax}}" />
+                    <input ng-if="question.question.type_name == 'Numérique'" class="form-control answerOpen" id="question{{question.question.question_order}}" type="number" min="{{question.parammin}}" max="{{question.parammax}}" />
 
                     <!-- QCM with unique answer -->
                     <div ng-if="question.question.type_name == 'QCM' && !question.question.multiple_answers" ng-repeat="option in question.options" class="radio optionOffset">
                         <label>
-                            <input type="radio" name="optionsRadios{{question.question.question_order}}" value="{{option.option_order}}">
+                            <input type="radio" name="question{{question.question.question_order}}" value="{{option.option_order}}">
                             {{option.choice_name}}
                         </label>
                     </div>
@@ -56,13 +56,13 @@
                     <!-- QCM with multiple answer -->
                     <div ng-if="question.question.type_name == 'QCM' && question.question.multiple_answers" ng-repeat="option in question.options" class="checkbox optionOffset">
                         <label>
-                            <input type="checkbox" name="optionsRadios{{question.question.question_order}}" value="{{option.option_order}}">
+                            <input type="checkbox" name="question{{question.question.question_order}}" value="{{option.option_order}}">
                             {{option.choice_name}}
                         </label>
                     </div>
 
                     <!-- Slider question (min, max, pas, def) -->
-                    <input ng-if="question.question.type_name == 'Slider'" class="answerOpen" name="optionsRadios{{question.question.question_order}}" type="range" min="{{question.parammin}}" max="{{question.parammax}}" step="{{question.parampas}}" value="{{question.paramdef}}" />
+                    <input ng-if="question.question.type_name == 'Slider'" class="answerOpen" id="question{{question.question.question_order}}" type="range" min="{{question.parammin}}" max="{{question.parammax}}" step="{{question.parampas}}" value="{{question.paramdef}}" />
 
                     <!-- Titre -->
                     <h4 ng-if="question.question.type_name == 'Titre'" class="answerTitle">{{question.question.description}}</h4>
