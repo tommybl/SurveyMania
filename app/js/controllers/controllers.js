@@ -47,13 +47,14 @@ surveyManiaControllers.controller('GlobalController', ['$scope', '$window', '$lo
 
 surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$timeout', '$sce', '$http', 
     function($scope, $routeParams, $timeout, $sce, $http){
-        $scope.list1 = [{'index':'','id':'0','title': 'Titre', 'label': $sce.trustAsHtml('<h5>Titre</h5>'), 'code' : $sce.trustAsHtml('<h3 ng-bind="title">Titre</h3>'), 'show':true, 'icon':'header'},
+        $scope.list1 = [{'index':'','id':'0','title': 'Titre', 'label': $sce.trustAsHtml('<h1>Titre</h1>'), 'code' : $sce.trustAsHtml('<h1 ng-bind="title">Titre</h1>'), 'show':true, 'icon':'header'},
                         {'index':'','id':'1','title': 'Réponse libre', 'label':$sce.trustAsHtml('<h5>question</h5>'), 'code' : $sce.trustAsHtml('<textarea maxlength="255"></textarea>'), 'show':true, 'icon':'text-height'},
                         {'index':'','id':'2','title': 'Question fermée', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<input type="radio" name="yesno" value="0"> <span class="opt1">Oui</span><br><input type="radio" name="yesno" value="1" checked> <span class="opt2">Non</span>'), 'show':true, 'icon':'toggle-on'},
                         {'index':'','id':'3','title': 'Slider', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<input type="range" min="0" max="50" value="25" step="5" />'), 'show':true, 'icon':'sliders'},
                         {'index':'','id':'4','title': 'Branchement', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml(''), 'show':true, 'icon':'code-fork'},
                         {'index':'','id':'5','title': 'Numérique', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<input type="number" name="number" />'), 'show':true, 'icon':'list-ol'},
-                        {'index':'','id':'6','title': 'Choix multiple', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<select name="selectform"><option pos="0" value="1">Option 1</option></select>'), 'show':true, 'icon':'list'}
+                        {'index':'','id':'6','title': 'Choix multiple', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<select name="selectform"><option pos="0" value="1">Option 1</option></select>'), 'show':true, 'icon':'list'},
+                        {'index':'','id':'7','title': 'Texte libre', 'label':$sce.trustAsHtml('<p>Texte</p>'),'code' :  $sce.trustAsHtml('<p ng-bind="title">Titre</p>'), 'show':true, 'icon':'font'}
                         ]; 
 
         $scope.list4 = [];
@@ -83,6 +84,10 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
             else if($item.id == 6) // Choix multiple
             {
                 $scope.questionList.push({'index': $index, 'type':$item.id, 'title':$item.title, 'option':[], 'multiple':false});
+            }
+            else if($item.id == 7) // Texte libre
+            {
+                $scope.questionList.push({'index': $index, 'type':$item.id, 'text':''});
             }
             else
             {
@@ -125,6 +130,19 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                 if($scope.questionList[i].index == $index)
                 {
                     $scope.questionList[i] = {'index': $index, 'type':$type, 'title':$title};
+                    $scope.$apply();
+                }
+            }
+        }
+
+        // Edit text in proper object list
+        $scope.editTextQuestion = function ($index, $text)
+        {
+            for (var i = 0; i < $scope.questionList.length; i++)
+            {
+                if($scope.questionList[i].index == $index)
+                {
+                    $scope.questionList[i] = {'index': $index, 'text':$text};
                     $scope.$apply();
                 }
             }
@@ -197,7 +215,7 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
             if($type == 0)
             {
                 str.push('<h5>Titre</h5>');
-                var ttl = $("#itemn"+$index).parent().find("h5").html();
+                var ttl = $("#itemn"+$index).parent().find("h1").html();
                 str.push('<span>Indiquez un nouveau titre</span> <input type="text" name="questionTitle" class="form-control" value="'+ttl+'" required />');
             }
             else if($type == 1)
@@ -252,6 +270,12 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                 str.push('<button id="addNewOptions" class="btn btn-default">Ajouter une option</button>');
                 str.push('<div id="newOptions"></div>');
 
+            }
+            else if($type == 7)
+            {
+                str.push('<h5>Texte libre</h5>');
+                var ttl = $("#itemn"+$index).parent().find("p").html();
+                str.push('<span>Indiquez le texte à afficher</span> <textarea name="questionTitle" class="form-control" required>'+ttl+'</textarea>');
             }
             else
                 $("#display-item-options").html('error');

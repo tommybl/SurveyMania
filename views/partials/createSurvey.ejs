@@ -51,7 +51,7 @@
         <!-- Label de la question -->
         <span class="question_label" ng-show="itemlol.show" ng-bind-html="itemlol.label"></span>
         <!-- Code de la question (type de question) -->
-        <span id="itemn{{$index}}" ng-hide="itemlol.title == 'Titre'" class="question_code" ng-bind-html="itemlol.code"></span>
+        <span id="itemn{{$index}}" ng-hide="itemlol.title == 'Titre' || itemlol.title == 'Texte libre'" class="question_code" ng-bind-html="itemlol.code"></span>
 
         <!-- Bouton pour valider la modification -->
         <span ng-hide="itemlol.show" ng-click="validate($index, answer)" class="validate_edit_btn"></span>
@@ -98,7 +98,16 @@ $(document).on('click', '#closedQuestion', function(event) {
       $("#itemn"+idItem).hide();
 
       var newTitle = $(this).parent().children("input[name='questionTitle']").val();
-      $("#itemn"+idItem).parent().find("h5").html(newTitle);
+      if (typeItem == 0)
+        $("#itemn"+idItem).parent().find("h1").html(newTitle);
+      else if(typeItem == 7)
+      {
+        var newText = $(this).parent().children("textarea[name='questionTitle']").val();
+        console.log("ok 7 : "+newText);
+        $("#itemn"+idItem).parent().find("p").html(newText);
+      }
+      else
+        $("#itemn"+idItem).parent().find("h5").html(newTitle);
 
       if (typeItem == 0 || typeItem == 5)
       {
@@ -170,6 +179,10 @@ $(document).on('click', '#closedQuestion', function(event) {
         });
 
         $('#renderPanel').scope().editMultipleQuestion(idItem, newTitle, options, multiple);
+      }
+      if (typeItem == 7)
+      {
+        $('#renderPanel').scope().editTextQuestion(idItem, newTitle);
       }
       $("#itemn"+idItem).fadeIn(1000);
     }
