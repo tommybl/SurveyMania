@@ -422,10 +422,11 @@ ol{
   font-size: 20px;
 }
 
-#addNewOptions
+#addNewOptions, textarea
 {
   margin-bottom: 10px;
 }
+
 
 /* ******************************************* */
 /* ***************** RANKING ***************** */

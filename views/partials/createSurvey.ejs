@@ -4,6 +4,8 @@
     <h3>Créer un sondage </h3>
     <input ng-model="survey.name" type="text" name="name" placeholder="Entrez le nom du sondage" class="form-control" required="required"/><br>
     <input type="number" name="surveypoints" placeholder="Entrez le nombre de points" class="form-control" required="required"/><br>
+    <textarea name="surveyinstructions" class="form-control" placeholder="Indiquez les instructions..."></textarea>
+    <textarea name="surveydescription" class="form-control" placeholder="Indiquez la description du sondage..."></textarea>
     <select class="form-control">
      <option ng-repeat="category in categories" value="{{category.name}}" >{{category.name}}</option>
    </select><br>
