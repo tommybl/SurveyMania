@@ -151,5 +151,5 @@ INSERT INTO option_choices (question_id, choice_name, option_order, linked_secti
 
 INSERT INTO question_medias (question_id, media_path, media_order, media_type, description) VALUES
 (9, 'http://www.lsa-conso.fr/mediatheque/2/4/6/000017642_74.jpg', 1, 'image_url', 'Boîte de steak Bigard'),
-(9, 'https://www.youtube.com/watch?v=Wg3l9tvDU5Y', 2, 'youtube', 'Pub Bigard'),
+(9, 'Wg3l9tvDU5Y', 2, 'youtube', 'Pub Bigard'),
 (14, 'http://www.prixing.fr/images/product_images/876/8760f0edba11786d5401a047588f194c.jpg', 1, 'image_url', 'Boîte de steak Marque Pouce');

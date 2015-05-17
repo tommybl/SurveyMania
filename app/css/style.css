@@ -633,3 +633,21 @@ blockquote {
     border-bottom: solid #AAA;
     border-width: 2px;
 }
+
+#surveyAnswer .questionMediaContainer {
+    border: 1px solid #ccc;
+    padding: 0px 20px 20px 20px;
+    max-width: 462px;
+    max-height: 406px;
+    margin-bottom: 20px;
+}
+
+#surveyAnswer .questionMedia {
+    max-width: 420px !important;
+    max-height: 345px !important;
+}
+
+#surveyAnswer .questionVideo {
+    width: 420px;
+    height: 345px;
+}

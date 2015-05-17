@@ -1049,7 +1049,7 @@ surveyManiaControllers.controller('MySurveysController', ['$scope', '$http', '$w
     });
 }]);
 
-surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
+surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', '$window', '$sce', '$location', function($scope, $http, $window, $sce, $location) {
     $scope.url = $window.location.hash.split('/');
     $scope.surveyid = $scope.url[$scope.url.length - 1];
     $scope.survey;
@@ -1107,12 +1107,21 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
                     case "OK":
                         $scope.surveySection = data.section;
                         $scope.sectionQuestionArray = data.question_array;
-                        for (var i = 0; i < $scope.sectionQuestionArray.length; ++i)
+
+                        for (var i = 0; i < $scope.sectionQuestionArray.length; ++i) {
                             for (var j = 0; j < $scope.sectionQuestionArray[i].parameters.length; ++j)
                                 if ($scope.sectionQuestionArray[i].parameters[j].value_num != null)
                                     eval('$scope.sectionQuestionArray[i].param' + $scope.sectionQuestionArray[i].parameters[j].name  + ' = ' + $scope.sectionQuestionArray[i].parameters[j].value_num);
                                 else
                                     eval('$scope.sectionQuestionArray[i].param' + $scope.sectionQuestionArray[i].parameters[j].name  + ' = ' + $scope.sectionQuestionArray[i].parameters[j].value_text);
+
+                            for (var j = 0; j < $scope.sectionQuestionArray[i].medias.length; ++j) {
+                                if ($scope.sectionQuestionArray[i].medias[j].media_type == 'youtube')
+                                    $scope.sectionQuestionArray[i].medias[j].media_path = $sce.trustAsResourceUrl('https://www.youtube.com/embed/' + $scope.sectionQuestionArray[i].medias[j].media_path);
+                                else if ($scope.sectionQuestionArray[i].medias[j].media_type = 'image_url')
+                                    $scope.sectionQuestionArray[i].medias[j].media_path = $sce.trustAsResourceUrl($scope.sectionQuestionArray[i].medias[j].media_path);
+                            }
+                        }
 
                         $('#answer').fadeIn(800, function() {
                             $scope.usertime = new Date().getTime();

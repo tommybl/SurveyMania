@@ -17,12 +17,11 @@
             </div>
     		
             <div class="panel-body">
-                <div>Informations relatives au sondage : {{survey.info}}</div>
-        		<div>Instruction supplémentaire : {{survey.instructions}}</div>
-        		<div>Par : {{survey.name}}</div>
-        		<div>Temps estimé : {{surveyEstimatedTime}} minutes</div>
-                <div>Points : {{survey.points}}</div>
-                
+                <div><b>Informations relatives au sondage : </b>{{survey.info}}</div>
+        		<div><b>Instruction supplémentaire : </b>{{survey.instructions}}</div>
+        		<div><b>Par : </b>{{survey.name}}</div>
+        		<div><b>Temps maximum estimé : </b>{{surveyEstimatedTime}} minutes</div>
+                <div><b>Points : </b>{{survey.points}}</div>
                 <br/>
         		<button class="btn btn-primary" ng-click="getNextSection()">Commencer</button>
             </div>
@@ -37,6 +36,19 @@
             
             <div class="panel-body">
                 <div ng-repeat="question in sectionQuestionArray" class="form-group">
+
+                    <!-- Question medias -->
+                    <div ng-repeat="media in question.medias" class="questionMediaContainer">
+                        <h4>
+                            <small ng-if="media.media_type == 'youtube'"><u>Vidéo : {{media.description}}</u></small>
+                            <small ng-if="media.media_type == 'image_url'"><u>Image : {{media.description}}</u></small>
+                        </h4>
+
+                        <iframe ng-if="media.media_type == 'youtube'" ng-src="{{media.media_path}}" class="questionMedia questionVideo"></iframe>
+                        <img ng-if="media.media_type == 'image_url'" ng-src="{{media.media_path}}" class="questionMedia"></img>
+                    </div>
+
+                    <!-- Question description -->
                     <label ng-if="question.question.type_name != 'Titre' && question.question.type_name != 'Texte'">{{question.question.description}}</label>
 
                     <!-- Free texting question (maxlength) -->
