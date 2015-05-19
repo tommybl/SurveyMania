@@ -1076,10 +1076,12 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
         if ($scope.startPageDisplayed) {
             $('#startPage').fadeOut(800, function () {
                 $scope.startPageDisplayed = false;
+                $scope.surveyAnswerProgression = 0;
                 $scope.getNextSectionContent();
             });
         } else {
             $('#answer').fadeOut(800, function () {
+                $scope.surveyAnswerProgression = 0;
                 $scope.getNextSectionContent();
             });
         }
@@ -1094,12 +1096,10 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
                 switch (data.message) {
                     case "Aucune section à remplir":
                         $scope.error = "Une erreur est survenue. Tentez de supprimer le sondage et de le rescanner";
-                        $('#answer').fadeIn(800);
                         break;
 
                     case "Aucune question dans la section":
                         $scope.error = data.message;
-                        $('#answer').fadeIn(800);
                         break;
 
                     case "Sondage terminé":

@@ -15,7 +15,7 @@
             <div class="panel-heading">
                 <h4>Répondre au sondage "{{survey.header_name}}"</h4>
             </div>
-    		
+
             <div class="panel-body">
                 <div><b>Informations relatives au sondage : </b>{{survey.info}}</div>
         		<div><b>Instruction supplémentaire : </b>{{survey.instructions}}</div>
@@ -34,8 +34,13 @@
             <div class="panel-heading">
                 <h4>{{surveySection.title}} <small ng-if="surveySection.subtitle != null">&mdash; {{surveySection.subtitle}}</small></h4>
             </div>
-            
+
             <div class="panel-body">
+                <!-- Bar de progresion -->
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="{{surveyAnswerProgression}}" aria-valuemin="0" aria-valuemax="100" style="width:{{surveyAnswerProgression}}%"></div>
+                </div>
+
                 <div ng-repeat="question in sectionQuestionArray" class="form-group">
 
                     <!-- Question medias -->

@@ -1182,79 +1182,95 @@ app
 
                             if (selected == null) res.status(200).json({code: 200, message: "Sondage terminé"});
                             else {
-                                /* Get les questions de la section et leur type */
-                                var query = 'SELECT it.type_name, q.id, q.description, q.question_order, q.multiple_answers'
-                                    + ' FROM surveymania.questions q INNER JOIN surveymania.input_types it ON q.input_type_id = it.id'
-                                    + ' WHERE q.survey_section_id = ' + selected.id;
-                                    + ' ORDER BY q.question_order ASC';
-                                
+                                var query = 'SELECT MIN(section) * 100 / MAX(section) AS progression FROM'
+                                    + ' (SELECT MIN (ss.section_order - 1) AS section'
+                                    + ' FROM surveymania.user_survey_sections uss INNER JOIN surveymania.survey_sections ss ON uss.section_id = ss.id'
+                                    + ' WHERE uss.user_id = ' + userid + ' AND ss.header_id = ' + surveyid + ' AND uss.completed IS NULL'
+                                    + ' UNION'
+                                    + ' SELECT MAX (ss.section_order) AS section'
+                                    + ' FROM surveymania.survey_sections ss'
+                                    + ' WHERE ss.header_id = ' + surveyid + ') t';
                                 client.query(query, function(err, result) {
                                     done();
-                                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                    if (err || !result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                                     else {
-                                        if (!result.rows.length) res.status(200).json({code: 200, message: "Aucune question dans la section"});
-                                        else {
-                                            var question_array = [];
+                                        var progression = Math.round(result.rows[0].progression);
 
-                                            async.each(result.rows,
-                                                function (q, callback) {
-                                                    var question = {};
-                                                    question.question = q;
+                                        /* Get les questions de la section et leur type */
+                                        var query = 'SELECT it.type_name, q.id, q.description, q.question_order, q.multiple_answers'
+                                            + ' FROM surveymania.questions q INNER JOIN surveymania.input_types it ON q.input_type_id = it.id'
+                                            + ' WHERE q.survey_section_id = ' + selected.id;
+                                            + ' ORDER BY q.question_order ASC';
 
-                                                    /* Get les paramètres de la question */
-                                                    var query = 'SELECT qp.name, qp.value_num, qp.value_text'
-                                                        + ' FROM surveymania.question_params qp'
-                                                        + ' WHERE qp.question_id = ' + question.question.id;
+                                        client.query(query, function(err, result) {
+                                            done();
+                                            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                            else {
+                                                if (!result.rows.length) res.status(200).json({code: 200, message: "Aucune question dans la section"});
+                                                else {
+                                                    var question_array = [];
 
-                                                    client.query(query, function(err, result) {
-                                                        done();
-                                                        if (err) callback("Error running query");
-                                                        else {
-                                                            question.parameters = result.rows;
+                                                    async.each(result.rows,
+                                                        function (q, callback) {
+                                                            var question = {};
+                                                            question.question = q;
 
-                                                            /* Get les options de la question (si QCM) */
-                                                            var query = 'SELECT oc.id, oc.choice_name, oc.option_order, oc.linked_section_id'
-                                                                + ' FROM surveymania.option_choices oc'
-                                                                + ' WHERE oc.question_id = ' + question.question.id
-                                                                + ' ORDER BY oc.option_order ASC';
+                                                            /* Get les paramètres de la question */
+                                                            var query = 'SELECT qp.name, qp.value_num, qp.value_text'
+                                                                + ' FROM surveymania.question_params qp'
+                                                                + ' WHERE qp.question_id = ' + question.question.id;
 
                                                             client.query(query, function(err, result) {
                                                                 done();
                                                                 if (err) callback("Error running query");
                                                                 else {
-                                                                    question.options = result.rows;
-                                                                    /* Get les médias de la question */
-                                                                    var query = 'SELECT qm.media_path, qm.media_order, qm.media_type, qm.description'
-                                                                        + ' FROM surveymania.question_medias qm'
-                                                                        + ' WHERE qm.question_id = ' + question.question.id
-                                                                        + ' ORDER BY qm.media_order ASC';
+                                                                    question.parameters = result.rows;
+
+                                                                    /* Get les options de la question (si QCM) */
+                                                                    var query = 'SELECT oc.id, oc.choice_name, oc.option_order, oc.linked_section_id'
+                                                                        + ' FROM surveymania.option_choices oc'
+                                                                        + ' WHERE oc.question_id = ' + question.question.id
+                                                                        + ' ORDER BY oc.option_order ASC';
 
                                                                     client.query(query, function(err, result) {
                                                                         done();
                                                                         if (err) callback("Error running query");
                                                                         else {
-                                                                            question.medias = result.rows;
-                                                                            /* On ajoute la question à la liste des questions */
-                                                                            question_array.push(question);
-                                                                            callback();
+                                                                            question.options = result.rows;
+                                                                            /* Get les médias de la question */
+                                                                            var query = 'SELECT qm.media_path, qm.media_order, qm.media_type, qm.description'
+                                                                                + ' FROM surveymania.question_medias qm'
+                                                                                + ' WHERE qm.question_id = ' + question.question.id
+                                                                                + ' ORDER BY qm.media_order ASC';
+
+                                                                            client.query(query, function(err, result) {
+                                                                                done();
+                                                                                if (err) callback("Error running query");
+                                                                                else {
+                                                                                    question.medias = result.rows;
+                                                                                    /* On ajoute la question à la liste des questions */
+                                                                                    question_array.push(question);
+                                                                                    callback();
+                                                                                }
+                                                                            });
                                                                         }
                                                                     });
                                                                 }
                                                             });
-                                                        }
-                                                    });
-                                                },
+                                                        },
 
-                                                function (err) {
-                                                    if (err) {
-                                                        res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
-                                                    } else {
-                                                        /* On renvoit toute la liste de questions avec leurs paramètres / options / médias respectifs */
-                                                        res.status(200).json({code: 200, message: "OK", section: selected, question_array: question_array});
-                                                    }
+                                                        function (err) {
+                                                            if (err) {
+                                                                res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                                            } else {
+                                                                /* On renvoit toute la liste de questions avec leurs paramètres / options / médias respectifs */
+                                                                res.status(200).json({code: 200, message: "OK", section: selected, question_array: question_array, progression: progression});
+                                                            }
+                                                        }
+                                                    );
                                                 }
-                                            );
-                                        }
+                                            }
+                                        });
                                     }
                                 });
                             }
@@ -1326,6 +1342,7 @@ app
                                     });
                                     idList += ')'
 
+                                    /* Si il y a eu des qcm dans la sections */
                                     var query = (idArray.length == 0) ? '' : 'SELECT DISTINCT linked_section_id FROM surveymania.option_choices'
                                         + ' WHERE id IN ' + idList
                                         + ' AND linked_section_id IS NOT NULL;';
