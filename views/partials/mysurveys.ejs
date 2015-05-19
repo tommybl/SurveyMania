@@ -56,7 +56,7 @@
                     <th>Nom du sondage</th>
                     <th>Points</th>
                     <th>Informations</th>
-                    <th>Complété</th>
+                    <th>Status</th>
                 </tr>
             </thead>
 
@@ -67,7 +67,8 @@
                     <td>{{userSurvey.surveyname}}</td>
                     <td>{{userSurvey.points}}</td>
                     <td>{{userSurvey.infos}}</td>
-                    <td>{{userSurvey.completed}}</td>
+                    <td ng-if="userSurvey.completed == undefined">{{userSurvey.progression}}%</td>
+                    <td ng-if="userSurvey.completed != undefined">Terminé ({{userSurvey.completed}})</td>
                 </tr>
             </tbody>
         </table>

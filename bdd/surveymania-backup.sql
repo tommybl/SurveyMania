@@ -70,7 +70,11 @@ INSERT INTO survey_sections (header_id, title, subtitle, required, section_order
 (4, 'Votre consommation', 'Les steaks c''est la vie. Mais a quel point les aimez vous ?', false, 2),
 (4, 'Autres remarques', NULL, true, 5),
 (4, 'Les steaks de marque Bigard', 'Bigard, Bigard, ça c''est Bigard !', false, 3),
-(4, 'Les steaks de marque Pouce', NULL, false, 4);
+(4, 'Les steaks de marque Pouce', NULL, false, 4),
+(5, 'La bière au quotidien', NULL, true, 1);
+
+INSERT INTO surveymania.user_survey_sections (user_id, section_id) VALUES
+(7, 6);
 
 INSERT INTO questions (survey_section_id, input_type_id, description, question_order, multiple_answers) VALUES
 (1, 3, 'Quelle est votre situation familiale ?', 1, false),
@@ -90,7 +94,8 @@ INSERT INTO questions (survey_section_id, input_type_id, description, question_o
 (5, 3, 'Que pensez-vous du goût de ces mêmes steaks ?', 2, false),
 (5, 3, 'Que pensez-vous de la texture de ces steaks ?', 3, false),
 (5, 2, 'Combien payerez-vous pour acheter cette boîte de 10 steaks marque Pouce congelés ?', 4, false),
-(5, 1, 'Autres commentaires ?', 5, false);
+(5, 1, 'Autres commentaires ?', 5, false),
+(6, 1, 'T''aimes la bière ?', 1, false);
 
 INSERT INTO question_params(question_id, name, value_num, value_text) VALUES
 (7, 'min', 0, NULL),
