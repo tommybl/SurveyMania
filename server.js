@@ -934,7 +934,7 @@ app
         pg.connect(conString, function(err, client, done) {
             if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
             else {
-                var query = 'SELECT sh.id AS id, o.name AS orgaName, sh.name AS surveyName, sh.points AS points, sh.info AS infos, us.completed, t.progression AS progression'
+                var query = 'SELECT sh.id AS id, o.name AS orgaName, sh.name AS surveyName, sh.points AS points, sh.info AS infos, to_char(us.completed, \'le DD/MM/YYYY à HH24:MI:SS\') AS completed, t.progression AS progression'
                     + ' FROM surveymania.survey_headers sh INNER JOIN surveymania.user_surveys us ON sh.id = us.survey_header_id'
                     + ' INNER JOIN surveymania.organizations o ON sh.organization_id = o.id INNER JOIN'
                     + ' ('
