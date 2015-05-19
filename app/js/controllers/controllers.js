@@ -1103,6 +1103,7 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
                         break;
 
                     case "Sondage terminé":
+                        $scope.surveyAnswerProgression = 100;
                         $('#endPage').fadeIn(800);
                         break;
 

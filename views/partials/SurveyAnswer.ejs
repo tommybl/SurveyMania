@@ -37,8 +37,10 @@
 
             <div class="panel-body">
                 <!-- Bar de progresion -->
-                <div class="progress">
-                    <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="{{surveyAnswerProgression}}" aria-valuemin="0" aria-valuemax="100" style="width:{{surveyAnswerProgression}}%"></div>
+                <div class="progress progress-striped active">
+                    <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="{{surveyAnswerProgression}}" aria-valuemin="0" aria-valuemax="100" style="width:{{surveyAnswerProgression}}%; min-width:1em;">
+                        {{surveyAnswerProgression}}%
+                    </div>
                 </div>
 
                 <div ng-repeat="question in sectionQuestionArray" class="form-group">
@@ -104,7 +106,12 @@
             </div>
             
             <div class="panel-body">
-
+                <!-- Bar de progresion -->
+                <div class="progress progress-striped active">
+                    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{surveyAnswerProgression}}" aria-valuemin="0" aria-valuemax="100" style="width:{{surveyAnswerProgression}}%; min-width:1em;">
+                        {{surveyAnswerProgression}}%
+                    </div>
+                </div>
             </div>
         </div>
         <!-- End div end -->
