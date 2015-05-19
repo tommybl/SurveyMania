@@ -1054,6 +1054,7 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
     $scope.surveyid = $scope.url[$scope.url.length - 1];
     $scope.survey;
     $scope.surveyEstimatedTime;
+    $scope.surveyAnswerProgression;
     $scope.surveySection;
     $scope.sectionQuestionArray;
     $scope.error;
@@ -1064,6 +1065,7 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
         .success(function (data, status, header, config) {
             $scope.survey = data.survey;
             $scope.surveyEstimatedTime = data.time;
+            $scope.surveyAnswerProgression = data.progression;
             $('#startPage').fadeIn(800);
         })
         .error(function (data, status, header, config) {

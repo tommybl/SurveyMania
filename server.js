@@ -1103,6 +1103,7 @@ app
     if (req.user.usertypenumber != 1) res.status(500).json({code: 500});
     else {
         var surveyid = req.body.survey;
+        var user = req.user;
         pg.connect(conString, function(err, client, done) {
             if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
             else {
@@ -1113,20 +1114,37 @@ app
                     done();
                     if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                     else {
-                        if (result.rows.length) {
+                        if (!result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Le sondage n'existe pas"});
+                        else {
                             var survey = result.rows[0];
 
-                            var query = 'SELECT count(q.id) * 0.33 + count(qm.id) * 1.2 AS time'
+                            var query = 'SELECT count(q.id) * 0.15 + count(qm.id) * 1.2 AS time'
                                 + ' FROM surveymania.questions q INNER JOIN surveymania.survey_sections ss ON q.survey_section_id = ss.id'
                                 + ' LEFT OUTER JOIN surveymania.question_medias qm ON qm.question_id = q.id'
                                 + ' WHERE ss.header_id = ' + surveyid;
                             client.query(query, function(err, result) {
                                 done();
                                 if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
-                                else res.status(200).json({code: 200, survey: survey, time: Math.round(result.rows[0].time)});
+                                else {
+                                    var time = Math.round(result.rows[0].time);
+
+                                    var query = 'SELECT MIN(section) * 100 / MAX(section) AS progression FROM'
+                                        + ' (SELECT MIN (ss.section_order - 1) AS section'
+                                        + ' FROM surveymania.user_survey_sections uss INNER JOIN surveymania.survey_sections ss ON uss.section_id = ss.id'
+                                        + ' WHERE uss.user_id = ' + user.id + ' AND ss.header_id = ' + surveyid + ' AND uss.completed IS NULL'
+                                        + ' UNION'
+                                        + ' SELECT MAX (ss.section_order) AS section'
+                                        + ' FROM surveymania.survey_sections ss'
+                                        + ' WHERE ss.header_id = ' + surveyid + ') t';
+                                    client.query(query, function(err, result) {
+                                        done();
+                                        if (err || !result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                        else {
+                                            res.status(200).json({code: 200, survey: survey, time: time, progression: Math.round(result.rows[0].progression)});
+                                        }
+                                    });
+                                }
                             });
-                        } else {
-                            res.status(500).json({code: 500, error: "Internal server error", message: "Le sondage n'existe pas"});
                         }
                     }
                 });
