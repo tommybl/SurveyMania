@@ -158,3 +158,10 @@ INSERT INTO question_medias (question_id, media_path, media_order, media_type, d
 (9, 'http://www.lsa-conso.fr/mediatheque/2/4/6/000017642_74.jpg', 1, 'image_url', 'Boîte de steak Bigard'),
 (9, 'Wg3l9tvDU5Y', 2, 'youtube', 'Pub Bigard'),
 (14, 'http://www.prixing.fr/images/product_images/876/8760f0edba11786d5401a047588f194c.jpg', 1, 'image_url', 'Boîte de steak Marque Pouce');
+
+INSERT INTO surveymania.survey_comments (header_id, user_id, comment, posted) VALUES
+(4, 1, 'Super sondage, mais un peu court', '2014-06-21 15:02:00'),
+(4, 2, 'On veut plus de points !', '2015-03-19 18:25:00'),
+(4, 3, 'J''aime les sondages, à quand le prochain ?', '2015-01-01 01:39:00'),
+(4, 4, 'Joyeux noël les gens !', '2014-12-25 08:12:00'),
+(4, 5, 'Cool :)', '2012-05-20 20:58:00');

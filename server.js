@@ -1440,6 +1440,55 @@ app
     }
 })
 
+.post('/app/survey/getComments', function (req, res) {
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    if (req.user.usertypenumber != 1) res.status(500).json({code: 500});
+    else {
+        pg.connect(conString, function(err, client, done) {
+            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+            else {
+                var surveyid = req.body.survey;
+
+                var query = 'SELECT sc.comment, to_char(sc.posted, \'le DD/MM/YYYY à HH24:MI:SS\') AS posted, u.name, u.lastname, u.town, u.country, u.points, to_char(u.creation_dt, \'le DD/MM/YYYY\') AS creation_dt'
+                    + ' FROM surveymania.survey_comments sc INNER JOIN surveymania.users u ON sc.user_id = u.id'
+                    + ' WHERE header_id = ' + surveyid
+                    + ' ORDER BY sc.posted DESC';
+
+                client.query(query, function(err, result) {
+                    done();
+                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                    else res.status(200).json({code: 200, message: "OK", comments: result.rows});
+                });
+            }
+        });
+    }
+})
+
+.post('/app/survey/addComment', function (req, res) {
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    if (req.user.usertypenumber != 1) res.status(500).json({code: 500});
+    else {
+        pg.connect(conString, function(err, client, done) {
+            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+            else {
+                var user = req.user;
+                var surveyid = req.body.survey;
+                var comment = req.body.comment;
+                var dateNow = moment().format("YYYY-MM-DD HH:mm:ss");
+
+                var query = 'INSERT INTO surveymania.survey_comments (header_id, user_id, comment, posted) VALUES'
+                    + ' (' + surveyid + ', ' + user.id + ', \'' + escapeHtml(comment) + '\', \'' + escapeHtml(dateNow) + '\')';
+
+                client.query(query, function(err, result) {
+                    done();
+                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                    else res.status(200).json({code: 200, message: "OK"});
+                });
+            }
+        });
+    }
+})
+
 .get('/app/organizationPanel', function (req, res) {
     if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.redirect('/401-unauthorized');
     else {

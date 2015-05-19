@@ -112,6 +112,21 @@
                         {{surveyAnswerProgression}}%
                     </div>
                 </div>
+
+                <!-- Ajouter un commentaire -->
+                <div id="addComment">
+                    <b>Ajouter un commentaire</b>
+                    <textarea ng-model="usercomment" class="form-control answerOpen" rows="3" maxlength="4000" placeholder="Ecrivez votre commentaire ici"></textarea>
+                    <button class="btn btn-primary" ng-click="addComment()">Poster</button>
+                </div>
+
+                <!-- Affichage des commentaires -->
+                <div id="lastComment">
+                    {{lastComment.comment}} {{lastComment.posted}} {{lastComment.name}} {{lastComment.lastname}} {{lastComment.town}} {{lastComment.country}} {{lastComment.points}} {{lastComment.creation_dt}}
+                </div>
+                <div ng-repeat="comment in comments">
+                    {{comment.comment}} {{comment.posted}} {{comment.name}} {{comment.lastname}} {{comment.town}} {{comment.country}} {{comment.points}} {{comment.creation_dt}}
+                </div>
             </div>
         </div>
         <!-- End div end -->

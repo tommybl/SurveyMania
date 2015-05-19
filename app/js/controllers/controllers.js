@@ -1057,6 +1057,9 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
     $scope.surveyAnswerProgression;
     $scope.surveySection;
     $scope.sectionQuestionArray;
+    $scope.comments;
+    $scope.lastComment;
+    $scope.usercomment;
     $scope.error;
     $scope.usertime;
     $scope.startPageDisplayed = true;
@@ -1104,6 +1107,10 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
 
                     case "Sondage terminé":
                         $scope.surveyAnswerProgression = 100;
+                        $http.post('/app/survey/getComments', {survey: $scope.surveyid})
+                            .success(function (data, status, header, config) {
+                                $scope.comments = data.comments;
+                            });
                         $('#endPage').fadeIn(800);
                         break;
 
@@ -1181,6 +1188,21 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
                     $location.path("/mysurveys");
                 });
         }
+    }
+
+    $scope.addComment = function () {
+        $http.post('/app/survey/addComment', {survey: $scope.surveyid, comment: $scope.usercomment})
+            .success(function (data, status, header, config) {
+                $scope.usercomment = "";
+                $http.post('/app/survey/getComments', {survey: $scope.surveyid})
+                    .success(function (data, status, header, config) {
+                        var lastComment = data.comments.shift();
+                        $scope.comments = data.comments;
+                        $('#lastComment').hide();
+                        $scope.lastComment = lastComment;
+                        $('#lastComment').fadeIn(500);
+                    });
+            });
     }
 }]);
 
