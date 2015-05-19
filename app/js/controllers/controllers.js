@@ -1038,7 +1038,7 @@ surveyManiaControllers.controller('MySurveysController', ['$scope', '$http', '$w
     $scope.validateAddSurvey = function () {
         $http.post('/app/validateAddUserSurvey/', {qrcode: $scope.QRcode})
             .success(function (data, status, header, config) {
-                $scope.userSurveys.unshift({id: data.userSurveys.id, organame: data.userSurveys.organame, surveyname: data.userSurveys.surveyname, points: data.userSurveys.points, infos: data.userSurveys.infos, completed: data.userSurveys.completed});
+                $scope.userSurveys.unshift({id: data.userSurveys.id, organame: data.userSurveys.organame, surveyname: data.userSurveys.surveyname, points: data.userSurveys.points, infos: data.userSurveys.infos, completed: data.userSurveys.completed, progression: 0});
                 $http.post('/app/survey/initiateUserSurveySection', {survey: data.userSurveys.id});
             });
         $("#confirmScanModal").modal('hide');
