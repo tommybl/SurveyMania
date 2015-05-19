@@ -1109,6 +1109,7 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
                     case "OK":
                         $scope.surveySection = data.section;
                         $scope.sectionQuestionArray = data.question_array;
+                        $scope.surveyAnswerProgression = data.progression;
 
                         for (var i = 0; i < $scope.sectionQuestionArray.length; ++i) {
                             for (var j = 0; j < $scope.sectionQuestionArray[i].parameters.length; ++j)
@@ -1165,7 +1166,7 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
                 q.ansNum = document.getElementById('question' + $scope.sectionQuestionArray[i].question.question_order).value;
             }
 
-            if (q.ansText == undefined && q.ansChecked == undefined && q.ansNum == undefined) break;
+            if ((q.ansText == undefined || q.ansText == "") && q.ansChecked == undefined && (q.ansNum == undefined || q.ansNum == "")) break;
             else answerArray.push(q);
         }
 
