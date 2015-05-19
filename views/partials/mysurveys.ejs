@@ -61,7 +61,7 @@
             </thead>
 
             <tbody>
-                <tr ng-repeat="userSurvey in userSurveys">
+                <tr ng-repeat="userSurvey in userSurveys | orderBy: ['completed', '-progression', 'surveyname']">
                     <td ng-if="userSurvey.completed == undefined"><a class="btn btn-primary" href="/#/surveyAnswer/{{userSurvey.id}}">Remplir</a></td>
                     <td ng-if="userSurvey.completed != undefined"><a class="btn btn-success disabled">Terminé</a></td>
                     <td>{{userSurvey.organame}}</td>
