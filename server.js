@@ -1234,7 +1234,14 @@ app
                                                                 client.query(query, function(err, result) {
                                                                     done();
                                                                     if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
-                                                                    else res.status(200).json({code: 200, message: "Sondage terminé"});
+                                                                    else {
+                                                                        var query = 'SELECT points FROM surveymania.users WHERE id = ' + userid;
+                                                                        client.query(query, function(err, result) {
+                                                                            done();
+                                                                            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                                                            else res.status(200).json({code: 200, message: "Sondage terminé", points: result.rows[0].points});
+                                                                        });
+                                                                    }
                                                                 });
                                                             }
                                                         });

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 <div id="surveyAnswer" ng-controller="SurveyAnswerController" class="col-md-12">
-	<div class="col-md-8 col-md-offset-2 master">
+	<div class="col-md-6 col-md-offset-3 master">
 		
         <!-- Error div -->
         <div class="alert alert-danger alert-dismissible fade in" role="alert" ng-show="error!=undefined">
@@ -113,19 +113,29 @@
                     </div>
                 </div>
 
+                <div id="endPageInfos">
+                    <div class="col-md-12 row-centered">Merci d'avoir pris de votre temps pour nous répondre !</div>
+                    <div class="col-md-12 row-centered"><b>{{survey.points}} points</b> ont été ajoutés à votre compte pour vous aider dans la bataille pour la première place !</div>
+                    <div class="col-md-12 row-centered"><b>{{userpoints - survey.points}} => {{userpoints}}</b></div>
+                </div>
+
+                <hr>
+
                 <!-- Ajouter un commentaire -->
                 <div id="addComment">
                     <b>Ajouter un commentaire</b>
                     <textarea ng-model="usercomment" class="form-control answerOpen" rows="3" maxlength="4000" placeholder="Ecrivez votre commentaire ici"></textarea>
-                    <button class="btn btn-primary" ng-click="addComment()">Poster</button>
+                    <button class="btn btn-primary" ng-click="addComment()">Publier</button>
                 </div>
 
                 <!-- Affichage des commentaires -->
-                <div id="lastComment">
-                    {{lastComment.comment}} {{lastComment.posted}} {{lastComment.name}} {{lastComment.lastname}} {{lastComment.town}} {{lastComment.country}} {{lastComment.points}} {{lastComment.creation_dt}}
+                <div ng-show="lastComment != null" class="comment" id="lastComment">
+                    <b>{{lastComment.name}} {{lastComment.lastname}}</b> <small>{{lastComment.posted}}</small><br>
+                    {{lastComment.comment}}
                 </div>
-                <div ng-repeat="comment in comments">
-                    {{comment.comment}} {{comment.posted}} {{comment.name}} {{comment.lastname}} {{comment.town}} {{comment.country}} {{comment.points}} {{comment.creation_dt}}
+                <div class="comment" ng-repeat="comment in comments">
+                    <b>{{comment.name}} {{comment.lastname}}</b> <small>{{comment.posted}}</small><br>
+                    {{comment.comment}}
                 </div>
             </div>
         </div>

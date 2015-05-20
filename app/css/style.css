@@ -608,6 +608,10 @@ blockquote {
     color: #555;
 }
 
+#surveyAnswer {
+    min-width: 700px;
+}
+
 #surveyAnswer .master {
     padding-top: 100px;
 }
@@ -654,4 +658,17 @@ blockquote {
 #surveyAnswer .questionVideo {
     width: 420px;
     height: 345px;
+}
+
+#surveyAnswer #endPageInfos {
+    padding-top: 10px;
+    height: 100px;
+}
+
+#surveyAnswer #addComment button {
+    margin-left: 429px;
+}
+
+#surveyAnswer .comment {
+    margin-top: 10px;
 }

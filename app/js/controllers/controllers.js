@@ -1062,6 +1062,7 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
     $scope.usercomment;
     $scope.error;
     $scope.usertime;
+    $scope.userpoints;
     $scope.startPageDisplayed = true;
 
     $http.post('/app/survey/getSurvey', {survey: $scope.surveyid})
@@ -1107,6 +1108,7 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
 
                     case "Sondage terminé":
                         $scope.surveyAnswerProgression = 100;
+                        $scope.userpoints = data.points;
                         $http.post('/app/survey/getComments', {survey: $scope.surveyid})
                             .success(function (data, status, header, config) {
                                 $scope.comments = data.comments;
@@ -1191,18 +1193,20 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
     }
 
     $scope.addComment = function () {
-        $http.post('/app/survey/addComment', {survey: $scope.surveyid, comment: $scope.usercomment})
-            .success(function (data, status, header, config) {
-                $scope.usercomment = "";
-                $http.post('/app/survey/getComments', {survey: $scope.surveyid})
-                    .success(function (data, status, header, config) {
-                        var lastComment = data.comments.shift();
-                        $scope.comments = data.comments;
-                        $('#lastComment').hide();
-                        $scope.lastComment = lastComment;
-                        $('#lastComment').fadeIn(500);
-                    });
-            });
+        if ($scope.usercomment != null && $scope.usercomment != "") {
+            $http.post('/app/survey/addComment', {survey: $scope.surveyid, comment: $scope.usercomment})
+                .success(function (data, status, header, config) {
+                    $scope.usercomment = "";
+                    $http.post('/app/survey/getComments', {survey: $scope.surveyid})
+                        .success(function (data, status, header, config) {
+                            var lastComment = data.comments.shift();
+                            $scope.comments = data.comments;
+                            $('#lastComment').hide();
+                            $scope.lastComment = lastComment;
+                            $('#lastComment').fadeIn(500);
+                        });
+                });
+        }
     }
 }]);
 
