@@ -1214,7 +1214,8 @@ app
                                     else {
                                         if (!result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Le sondage n'existe pas"});
                                         else {
-                                            if (result.rows[0].completed == null) {
+                                            if (result.rows[0].completed != null) res.status(200).json({code: 200, message: "Sondage terminé"});
+                                            else {
                                                 var query = 'UPDATE surveymania.user_surveys'
                                                     + ' SET completed = \'' + escapeHtml(moment().format("YYYY-MM-DD HH:mm:ss")) + '\''
                                                     + ' WHERE user_id = ' + userid + ' AND survey_header_id = ' + surveyid;
@@ -1222,9 +1223,24 @@ app
                                                 client.query(query, function(err, result) {
                                                     done();
                                                     if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
-                                                    else res.status(200).json({code: 200, message: "Sondage terminé"});
+                                                    else {
+                                                        var query = 'SELECT sh.points FROM surveymania.survey_headers sh WHERE sh.id = ' + surveyid;
+
+                                                        client.query(query, function(err, result) {
+                                                            done();
+                                                            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                                            else {
+                                                                var query = 'UPDATE surveymania.users SET points = (points + ' + result.rows[0].points + ') WHERE id = ' + userid;
+                                                                client.query(query, function(err, result) {
+                                                                    done();
+                                                                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                                                    else res.status(200).json({code: 200, message: "Sondage terminé"});
+                                                                });
+                                                            }
+                                                        });
+                                                    }
                                                 });
-                                            } else res.status(200).json({code: 200, message: "Sondage terminé"});
+                                            }
                                         }
                                     }
                                 });
