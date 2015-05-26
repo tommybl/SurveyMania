@@ -534,7 +534,7 @@ li a{
   margin: 0 auto;
   text-align: center;
   font-size: 20px;
-  font-family: 'quicksand',inherit;
+  font-family: 'quicksand';
 }
 
 /*.oval-quotes p:before {
