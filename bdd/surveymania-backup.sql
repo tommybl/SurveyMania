@@ -80,8 +80,6 @@ INSERT INTO questions (survey_section_id, input_type_id, description, question_o
 (1, 3, 'Quelle est votre situation familiale ?', 3, false),
 (1, 3, 'Quels sont les revenus mensuels de votre foyer ?', 4, false),
 (1, 3, 'Mangez vous des steaks régulièrement ?', 5, false),
-(1, 5, 'C''est quoi un steak ?', 1, false),
-(1, 6, 'Un steak c''est de la viande de boeuf hachée et en forme de cercle. On les trouve souvent sous leur forme congelée (l''objet de ce sondage). C''est pas ce qu''il y a de mieux mais bon, on fait avec. Justement si tu veux manger du steak frais, répond donc à ce sondage et à plein d''autres, récupère la rémunération et go en acheter à OKABE. Sur ce, on vous souhaite un bon sondage.', 2, false),
 (2, 3, 'Combien de steaks mangez-vous par semaine ?', 1, false),
 (2, 3, 'Quelle(s) marque(s) de steak achetez-vous ?', 2, true),
 (3, 1, 'Avez vous une remarque à ajouter ?', 3, false),
@@ -97,7 +95,9 @@ INSERT INTO questions (survey_section_id, input_type_id, description, question_o
 (5, 3, 'Que pensez-vous de la texture de ces steaks ?', 3, false),
 (5, 2, 'Combien payerez-vous pour acheter cette boîte de 10 steaks marque Pouce congelés ?', 4, false),
 (5, 1, 'Autres commentaires ?', 5, false),
-(6, 1, 'T''aimes la bière ?', 1, false);
+(6, 1, 'T''aimes la bière ?', 1, false),
+(1, 5, 'C''est quoi un steak ?', 1, false),
+(1, 6, 'Un steak c''est de la viande de boeuf hachée et en forme de cercle. On les trouve souvent sous leur forme congelée (l''objet de ce sondage). C''est pas ce qu''il y a de mieux mais bon, on fait avec. Justement si tu veux manger du steak frais, répond donc à ce sondage et à plein d''autres, récupère la rémunération et go en acheter à OKABE. Sur ce, on vous souhaite un bon sondage.', 2, false);
 
 INSERT INTO question_params(question_id, name, value_num, value_text) VALUES
 (6, 'max', 20, NULL),
