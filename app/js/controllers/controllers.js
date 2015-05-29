@@ -1210,6 +1210,11 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
                 });
         }
     }
+
+    $scope.remainingCharacter = function (id) {
+        var elem = $('#question' + id);
+        if (elem.attr('maxlength') != undefined && elem.attr('maxlength') != "") document.getElementById('question' + id + 'remaining').innerHTML = elem.attr('maxlength') - elem[0].value.length + ' caractères restants';
+    }
 }]);
 
 surveyManiaControllers.controller('Ranking', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {

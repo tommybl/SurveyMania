@@ -60,10 +60,17 @@
                     <label ng-if="question.question.type_name != 'Titre' && question.question.type_name != 'Texte'">{{question.question.description}}</label>
 
                     <!-- Free texting question (maxlength) -->
-                    <textarea ng-if="question.question.type_name == 'Ouverte'" class="form-control answerOpen" id="question{{question.question.question_order}}" rows="3" maxlength="{{question.parammax}}"></textarea>
+                    <textarea ng-if="question.question.type_name == 'Ouverte'" ng-keyup="remainingCharacter(question.question.question_order)" class="form-control answerOpen" id="question{{question.question.question_order}}" rows="3" maxlength="{{question.parammax}}"></textarea>
+                    <span ng-if="question.question.type_name == 'Ouverte'" class="help-block">
+                        <span ng-if="question.parammax != undefined" id="question{{question.question.question_order}}remaining">{{question.parammax}} caractères restants</span>
+                    </span>
 
                     <!-- Numerical question (min, max) -->
                     <input ng-if="question.question.type_name == 'Numérique'" class="form-control answerOpen" id="question{{question.question.question_order}}" type="number" min="{{question.parammin}}" max="{{question.parammax}}" />
+                    <span ng-if="question.question.type_name == 'Numérique'" id="helpBlock" class="help-block">
+                        <span ng-if="question.parammin != undefined">Minimum : {{question.parammin}}</span><span ng-if="question.parammin != undefined && question.parammax != undefined">, </span>
+                        <span ng-if="question.parammax != undefined">Maximum : {{question.parammax}}</span>
+                    </span>
 
                     <!-- QCM with unique answer -->
                     <div ng-if="question.question.type_name == 'QCM' && !question.question.multiple_answers" ng-repeat="option in question.options" class="radio optionOffset">
@@ -83,6 +90,10 @@
 
                     <!-- Slider question (min, max, pas, def) -->
                     <input ng-if="question.question.type_name == 'Slider'" class="answerOpen" id="question{{question.question.question_order}}" type="range" min="{{question.parammin}}" max="{{question.parammax}}" step="{{question.parampas}}" value="{{question.paramdef}}" />
+                    <span ng-if="question.question.type_name == 'Slider'" id="helpBlock" class="help-block">
+                        <span ng-if="question.parammin != undefined">Minimum : {{question.parammin}}</span><span ng-if="question.parammin != undefined && question.parammax != undefined">, </span>
+                        <span ng-if="question.parammax != undefined">Maximum : {{question.parammax}}</span>
+                    </span>
 
                     <!-- Titre -->
                     <h4 ng-if="question.question.type_name == 'Titre'" class="answerTitle">{{question.question.description}}</h4>
