@@ -1057,6 +1057,7 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
     $scope.surveyAnswerProgression;
     $scope.surveySection;
     $scope.sectionQuestionArray;
+    $scope.answerArray;
     $scope.comments;
     $scope.lastComment;
     $scope.usercomment;
@@ -1149,7 +1150,7 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
 
     $scope.saveCurrentSection = function () {
         $scope.error = undefined;
-        var answerArray = [];
+        $scope.answerArray = [];
 
         for (var i = 0; i < $scope.sectionQuestionArray.length; ++i) {
             var q = {id: $scope.sectionQuestionArray[i].question.id};
@@ -1157,7 +1158,7 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
             if ($scope.sectionQuestionArray[i].question.type_name == 'Ouverte') {
                 q.ansText = document.getElementById('question' + $scope.sectionQuestionArray[i].question.question_order).value;
 
-                if (q.ansText.length > $scope.sectionQuestionArray[i].parammax) $scope.error = "Veuillez répondre correctement à toutes les questions";
+                if (q.ansText.length > $scope.sectionQuestionArray[i].parammax) {$scope.error = "Veuillez répondre correctement à toutes les questions"; continue;}
             }
 
             else if ($scope.sectionQuestionArray[i].question.type_name == 'QCM' && !$scope.sectionQuestionArray[i].question.multiple_answers) {
@@ -1176,15 +1177,15 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
 
             else {
                 q.ansNum = document.getElementById('question' + $scope.sectionQuestionArray[i].question.question_order).value;
-                if (q.ansNum > $scope.sectionQuestionArray[i].parammax || q.ansNum < $scope.sectionQuestionArray[i].parammin) $scope.error = "Veuillez répondre correctement à toutes les questions";
+                if (q.ansNum > $scope.sectionQuestionArray[i].parammax || q.ansNum < $scope.sectionQuestionArray[i].parammin) {$scope.error = "Veuillez répondre correctement à toutes les questions"; continue;}
             }
 
-            if ((q.ansText == undefined || q.ansText == "") && q.ansChecked == undefined && (q.ansNum == undefined || q.ansNum == "")) $scope.error = "Veuillez répondre à toutes les questions";
-            else answerArray.push(q);
+            if ((q.ansText == undefined || q.ansText == "") && q.ansChecked == undefined && (q.ansNum == undefined || q.ansNum == "")) {$scope.error = "Veuillez répondre correctement à toutes les questions"; continue;}
+            else $scope.answerArray.push(q);
         }
 
-        if (answerArray.length == $scope.sectionQuestionArray.length && answerArray.length != 0 && $scope.error == undefined) {
-            $http.post('/app/survey/submitSurveyUserSection', {survey: $scope.surveyid, section: $scope.surveySection.id, answerArray: answerArray, time: new Date().getTime() - $scope.usertime})
+        if ($scope.answerArray.length == $scope.sectionQuestionArray.length && $scope.answerArray.length != 0 && $scope.error == undefined) {
+            $http.post('/app/survey/submitSurveyUserSection', {survey: $scope.surveyid, section: $scope.surveySection.id, answerArray: $scope.answerArray, time: new Date().getTime() - $scope.usertime})
                 .success(function (data, status, header, config) {
                     $scope.getNextSection();
                 })
@@ -1192,6 +1193,7 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
                     $location.path("/mysurveys");
                 });
         }
+        else window.scrollTo(500, 0);
     }
 
     $scope.addComment = function () {
@@ -1214,6 +1216,10 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
     $scope.remainingCharacter = function (id) {
         var elem = $('#question' + id);
         if (elem.attr('maxlength') != undefined && elem.attr('maxlength') != "") document.getElementById('question' + id + 'remaining').innerHTML = elem.attr('maxlength') - elem[0].value.length + ' caractères restants';
+    }
+
+    $scope.isFailed = function (id) {
+
     }
 }]);
 
