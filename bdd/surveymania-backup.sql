@@ -98,6 +98,7 @@ INSERT INTO questions (survey_section_id, input_type_id, description, question_o
 (6, 1, 'T''aimes la bière ?', 1, false);
 
 INSERT INTO question_params(question_id, name, value_num, value_text) VALUES
+(6, 'max', 20, NULL),
 (7, 'min', 0, NULL),
 (7, 'max', 100, NULL),
 (7, 'def', 50, NULL),
@@ -106,7 +107,9 @@ INSERT INTO question_params(question_id, name, value_num, value_text) VALUES
 (8, 'def', 50, NULL),
 (8, 'pas', 2, NULL),
 (12, 'min', 0, NULL),
-(17, 'min', 0, NULL);
+(12, 'max', 20, NULL),
+(13, 'max', 35, NULL),
+(17, 'max', 5, NULL);
 
 INSERT INTO option_choices (question_id, choice_name, option_order, linked_section_id) VALUES
 (1, 'Célibataire', 1, NULL),
