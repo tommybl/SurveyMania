@@ -1209,7 +1209,7 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
                     $location.path("/mysurveys");
                 });
         }
-        else window.scrollTo(500, 0);
+        else window.scrollTo(0, 0);
     }
 
     $scope.addComment = function () {
