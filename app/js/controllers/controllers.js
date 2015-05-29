@@ -1156,6 +1156,8 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
 
             if ($scope.sectionQuestionArray[i].question.type_name == 'Ouverte') {
                 q.ansText = document.getElementById('question' + $scope.sectionQuestionArray[i].question.question_order).value;
+
+                if (q.ansText.length > $scope.sectionQuestionArray[i].parammax) $scope.error = "Veuillez répondre correctement à toutes les questions";
             }
 
             else if ($scope.sectionQuestionArray[i].question.type_name == 'QCM' && !$scope.sectionQuestionArray[i].question.multiple_answers) {
@@ -1174,14 +1176,14 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
 
             else {
                 q.ansNum = document.getElementById('question' + $scope.sectionQuestionArray[i].question.question_order).value;
+                if (q.ansNum > $scope.sectionQuestionArray[i].parammax || q.ansNum < $scope.sectionQuestionArray[i].parammin) $scope.error = "Veuillez répondre correctement à toutes les questions";
             }
 
-            if ((q.ansText == undefined || q.ansText == "") && q.ansChecked == undefined && (q.ansNum == undefined || q.ansNum == "")) break;
+            if ((q.ansText == undefined || q.ansText == "") && q.ansChecked == undefined && (q.ansNum == undefined || q.ansNum == "")) $scope.error = "Veuillez répondre à toutes les questions";
             else answerArray.push(q);
         }
 
-        if (answerArray.length != $scope.sectionQuestionArray.length || answer.length == 0) $scope.error = "Veuillez répondre à toutes les questions";
-        else {
+        if (answerArray.length == $scope.sectionQuestionArray.length && answerArray.length != 0 && $scope.error == undefined) {
             $http.post('/app/survey/submitSurveyUserSection', {survey: $scope.surveyid, section: $scope.surveySection.id, answerArray: answerArray, time: new Date().getTime() - $scope.usertime})
                 .success(function (data, status, header, config) {
                     $scope.getNextSection();
