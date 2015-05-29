@@ -43,7 +43,7 @@
                     </div>
                 </div>
 
-                <div ng-repeat="question in sectionQuestionArray" class="form-group">
+                <div ng-repeat="question in sectionQuestionArray" id="question{{question.question.question_order}}master" class="form-group">
 
                     <!-- Question medias -->
                     <div ng-repeat="media in question.medias" class="questionMediaContainer">
@@ -57,7 +57,7 @@
                     </div>
 
                     <!-- Question description -->
-                    <label ng-if="question.question.type_name != 'Titre' && question.question.type_name != 'Texte'">{{question.question.description}}</label>
+                    <label ng-if="question.question.type_name != 'Titre' && question.question.type_name != 'Texte'" class="control-label">{{question.question.description}}</label>
 
                     <!-- Free texting question (maxlength) -->
                     <textarea ng-if="question.question.type_name == 'Ouverte'" ng-keyup="remainingCharacter(question.question.question_order)" class="form-control answerOpen" id="question{{question.question.question_order}}" rows="3" maxlength="{{question.parammax}}"></textarea>

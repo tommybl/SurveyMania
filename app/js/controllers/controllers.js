@@ -1154,11 +1154,16 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
 
         for (var i = 0; i < $scope.sectionQuestionArray.length; ++i) {
             var q = {id: $scope.sectionQuestionArray[i].question.id};
+            $('#question' + $scope.sectionQuestionArray[i].question.question_order + 'master').removeClass("has-error");
 
             if ($scope.sectionQuestionArray[i].question.type_name == 'Ouverte') {
                 q.ansText = document.getElementById('question' + $scope.sectionQuestionArray[i].question.question_order).value;
 
-                if (q.ansText.length > $scope.sectionQuestionArray[i].parammax) {$scope.error = "Veuillez répondre correctement à toutes les questions"; continue;}
+                if (q.ansText.length > $scope.sectionQuestionArray[i].parammax) {
+                    $scope.error = "Veuillez répondre correctement à toutes les questions";
+                    $('#question' + $scope.sectionQuestionArray[i].question.question_order + 'master').addClass("has-error");
+                    continue;
+                }
             }
 
             else if ($scope.sectionQuestionArray[i].question.type_name == 'QCM' && !$scope.sectionQuestionArray[i].question.multiple_answers) {
@@ -1177,10 +1182,18 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
 
             else {
                 q.ansNum = document.getElementById('question' + $scope.sectionQuestionArray[i].question.question_order).value;
-                if (q.ansNum > $scope.sectionQuestionArray[i].parammax || q.ansNum < $scope.sectionQuestionArray[i].parammin) {$scope.error = "Veuillez répondre correctement à toutes les questions"; continue;}
+                if (q.ansNum > $scope.sectionQuestionArray[i].parammax || q.ansNum < $scope.sectionQuestionArray[i].parammin) {
+                    $scope.error = "Veuillez répondre correctement à toutes les questions";
+                    $('#question' + $scope.sectionQuestionArray[i].question.question_order + 'master').addClass("has-error");
+                    continue;
+                }
             }
 
-            if ((q.ansText == undefined || q.ansText == "") && q.ansChecked == undefined && (q.ansNum == undefined || q.ansNum == "")) {$scope.error = "Veuillez répondre correctement à toutes les questions"; continue;}
+            if ((q.ansText == undefined || q.ansText == "") && q.ansChecked == undefined && (q.ansNum == undefined || q.ansNum == "")) {
+                $scope.error = "Veuillez répondre correctement à toutes les questions";
+                $('#question' + $scope.sectionQuestionArray[i].question.question_order + 'master').addClass("has-error");
+                continue;
+            }
             else $scope.answerArray.push(q);
         }
 
@@ -1216,10 +1229,6 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
     $scope.remainingCharacter = function (id) {
         var elem = $('#question' + id);
         if (elem.attr('maxlength') != undefined && elem.attr('maxlength') != "") document.getElementById('question' + id + 'remaining').innerHTML = elem.attr('maxlength') - elem[0].value.length + ' caractères restants';
-    }
-
-    $scope.isFailed = function (id) {
-
     }
 }]);
 
