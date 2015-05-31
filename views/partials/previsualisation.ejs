@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+
+<div id="surveyAnswer" ng-controller="PrevisualisationController" class="col-md-12">
+	<div class="col-md-6 col-md-offset-3 master">
+		
+        <!-- Error div -->
+        <div class="alert alert-danger alert-dismissible fade in" role="alert" ng-show="error!=undefined">
+            <button type="button" class="close" ng-click="error=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <span ng-bind-html="error"></span>
+        </div>
+        <!-- Error div end -->
+
+        <!-- Start div -->
+        <div id="startPage" class="panel panel-default answerContainer">
+            <div class="panel-heading">
+                <h4>Répondre au sondage "{{survey.header_name}}"</h4>
+            </div>
+
+            <div class="panel-body">
+                <div><b>Informations relatives au sondage : </b>{{survey.info}}</div>
+        		<div><b>Instruction supplémentaire : </b>{{survey.instructions}}</div>
+        		<div><b>Par : </b>{{survey.name}}</div>
+        		<div><b>Temps maximum estimé : </b>{{surveyEstimatedTime}} minutes</div>
+                <div><b>Progression : </b>0%</div>
+                <div><b>Points : </b>{{survey.points}}</div>
+                <br/>
+        		<button class="btn btn-primary" ng-click="getNextSection()">Commencer</button>
+            </div>
+  		</div>
+        <!-- Start div end -->
+
+        <!-- Answer div -->
+        <div id="answer" class="panel panel-default answerContainer">
+            <div class="panel-heading">
+                <h4>{{surveySection.title}} <small ng-if="surveySection.subtitle != null">&mdash; {{surveySection.subtitle}}</small></h4>
+            </div>
+
+            <div class="panel-body">
+                <!-- Bar de progresion -->
+                <div class="progress progress-striped active">
+                    <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="{{surveyAnswerProgression}}" aria-valuemin="0" aria-valuemax="100" style="width:{{surveyAnswerProgression}}%; min-width:1em;">
+                        {{surveyAnswerProgression}}%
+                    </div>
+                </div>
+
+                <div ng-repeat="question in sectionQuestionArray" id="question{{question.question.question_order}}master" class="form-group">
+
+                    <!-- Question medias -->
+                    <div ng-repeat="media in question.medias" class="questionMediaContainer">
+                        <h4>
+                            <small ng-if="media.media_type == 'youtube'"><u>Vidéo : {{media.description}}</u></small>
+                            <small ng-if="media.media_type == 'image_url'"><u>Image : {{media.description}}</u></small>
+                        </h4>
+
+                        <iframe ng-if="media.media_type == 'youtube'" ng-src="{{media.media_path}}" class="questionMedia questionVideo"></iframe>
+                        <img ng-if="media.media_type == 'image_url'" ng-src="{{media.media_path}}" class="questionMedia"></img>
+                    </div>
+
+                    <!-- Question description -->
+                    <label ng-if="question.question.type_name != 'Titre' && question.question.type_name != 'Texte'">{{question.question.description}}</label>
+
+                    <!-- Free texting question (maxlength) -->
+                    <textarea ng-if="question.question.type_name == 'Ouverte'" ng-keyup="remainingCharacter(question.question.question_order)" class="form-control answerOpen" id="question{{question.question.question_order}}" rows="3" maxlength="{{question.parammax}}"></textarea>
+                    <span ng-if="question.question.type_name == 'Ouverte'" class="help-block">
+                        <span ng-if="question.parammax != undefined" id="question{{question.question.question_order}}remaining">{{question.parammax}} caractères restants</span>
+                    </span>
+
+                    <!-- Numerical question (min, max) -->
+                    <input ng-if="question.question.type_name == 'Numérique'" class="form-control answerOpen" id="question{{question.question.question_order}}" type="number" min="{{question.parammin}}" max="{{question.parammax}}" />
+                    <span ng-if="question.question.type_name == 'Numérique'" id="helpBlock" class="help-block">
+                        <span ng-if="question.parammin != undefined">Minimum : {{question.parammin}}</span><span ng-if="question.parammin != undefined && question.parammax != undefined">, </span>
+                        <span ng-if="question.parammax != undefined">Maximum : {{question.parammax}}</span>
+                    </span>
+
+                    <!-- QCM with unique answer -->
+                    <div ng-if="question.question.type_name == 'QCM' && !question.question.multiple_answers" ng-repeat="option in question.options" class="radio optionOffset">
+                        <label>
+                            <input type="radio" name="question{{question.question.question_order}}" value="{{option.id}}">
+                            {{option.choice_name}}
+                        </label>
+                    </div>
+
+                    <!-- QCM with multiple answer -->
+                    <div ng-if="question.question.type_name == 'QCM' && question.question.multiple_answers" ng-repeat="option in question.options" class="checkbox optionOffset">
+                        <label>
+                            <input type="checkbox" name="question{{question.question.question_order}}" value="{{option.id}}">
+                            {{option.choice_name}}
+                        </label>
+                    </div>
+
+                    <!-- Slider question (min, max, pas, def) -->
+                    <input ng-if="question.question.type_name == 'Slider'" class="answerOpen" id="question{{question.question.question_order}}" type="range" min="{{question.parammin}}" max="{{question.parammax}}" step="{{question.parampas}}" value="{{question.paramdef}}" />
+                    <span ng-if="question.question.type_name == 'Slider'" id="helpBlock" class="help-block">
+                        <span ng-if="question.parammin != undefined">Minimum : {{question.parammin}}</span><span ng-if="question.parammin != undefined && question.parammax != undefined">, </span>
+                        <span ng-if="question.parammax != undefined">Maximum : {{question.parammax}}</span>
+                    </span>
+
+                    <!-- Titre -->
+                    <h4 ng-if="question.question.type_name == 'Titre'" class="answerTitle">{{question.question.description}}</h4>
+
+                    <!-- Texte simple -->
+                    <p ng-if="question.question.type_name == 'Texte'">{{question.question.description}}</p>
+
+                    <!-- Saut d'une ligne, si c'est pas un titre -->
+                    <br ng-if="question.question.type_name != 'Titre'"/>
+                </div>
+
+                <button class="btn btn-primary" ng-click="saveCurrentSection()">Suite</button>
+            </div>                
+        </div>
+        <!-- Answer div end -->
+
+        <!-- End div -->
+        <div id="endPage" class="panel panel-default answerContainer">
+            <div class="panel-heading">
+                <h4>Sondage terminé</h4>
+            </div>
+            
+            <div class="panel-body">
+                <!-- Bar de progresion -->
+                <div class="progress progress-striped active">
+                    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{surveyAnswerProgression}}" aria-valuemin="0" aria-valuemax="100" style="width:{{surveyAnswerProgression}}%; min-width:1em;">
+                        {{surveyAnswerProgression}}%
+                    </div>
+                </div>
+
+                <div id="endPageInfos">
+                    <div class="col-md-12 row-centered">Merci d'avoir pris de votre temps pour nous répondre !</div>
+                    <div class="col-md-12 row-centered"><b>{{survey.points}} points</b> ont été ajoutés à votre compte pour vous aider dans la bataille pour la première place !</div>
+                    <div class="col-md-12 row-centered"><b>{{userpoints - survey.points}} => {{userpoints}}</b></div>
+                </div>
+
+                <hr>
+
+                <!-- Ajouter un commentaire -->
+                <div id="addComment">
+                    <b>Ajouter un commentaire</b>
+                    <textarea ng-model="usercomment" class="form-control answerOpen" rows="3" maxlength="4000" placeholder="Ecrivez votre commentaire ici"></textarea>
+                    <button class="btn btn-primary" ng-click="addComment()">Publier</button>
+                </div>
+
+                <!-- Affichage des commentaires -->
+                <div ng-show="lastComment != null" class="comment" id="lastComment">
+                    <b>{{lastComment.name}} {{lastComment.lastname}}</b> <small>{{lastComment.posted}}</small><br>
+                    {{lastComment.comment}}
+                </div>
+                <div class="comment" ng-repeat="comment in comments">
+                    <b>{{comment.name}} {{comment.lastname}}</b> <small>{{comment.posted}}</small><br>
+                    {{comment.comment}}
+                </div>
+            </div>
+        </div>
+        <!-- End div end -->
+	</div>
+</div>
+
+<script src="js/scroll.js"></script>
