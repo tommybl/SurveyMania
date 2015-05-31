@@ -1547,6 +1547,32 @@ app
     }
 })
 
+.post('/app/previsualisation/getSections', function (req, res) {
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    if (req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
+    else {
+        var surveyid = req.body.surveyid;
+        pg.connect(conString, function(err, client, done) {
+            if (err) res.status(500).json({code: 500});
+            else {
+                var query = 'SELECT title, subtitle, required, section_order'
+                    + ' FROM surveymania.survey_sections'
+                    + ' WHERE header_id = ' + surveyid;
+                client.query(query, function(err, result) {
+                    done();
+                    if (err) res.status(500).json({code: 500});
+                    else {
+                        if (!result.rows.length) res.status(500).json({code: 500});
+                        else {
+                            res.status(200).json({code: 200, message: "OK", sections: result.rows});
+                        }
+                    }
+                });
+            }
+        });
+    }
+})
+
 .post('/app/survey/addComment', function (req, res) {
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
     if (req.user.usertypenumber != 1) res.status(500).json({code: 500});

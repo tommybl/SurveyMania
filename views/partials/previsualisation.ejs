@@ -18,16 +18,42 @@
 
             <div class="panel-body">
                 <div><b>Informations relatives au sondage : </b>{{survey.info}}</div>
-        		<div><b>Instruction supplémentaire : </b>{{survey.instructions}}</div>
-        		<div><b>Par : </b>{{survey.name}}</div>
-        		<div><b>Temps maximum estimé : </b>{{surveyEstimatedTime}} minutes</div>
+                <div><b>Instruction supplémentaire : </b>{{survey.instructions}}</div>
+                <div><b>Par : </b>{{survey.name}}</div>
+                <div><b>Nombre de sections : </b>{{sections.length}}</div>
+                <div><b>Temps maximum estimé : </b>{{surveyEstimatedTime}} minutes</div>
                 <div><b>Progression : </b>0%</div>
                 <div><b>Points : </b>{{survey.points}}</div>
                 <br/>
-        		<button class="btn btn-primary" ng-click="getNextSection()">Commencer</button>
+                <button class="btn btn-primary" ng-click="displaySections()">Suite (sections)</button>
             </div>
-  		</div>
+        </div>
         <!-- Start div end -->
+
+        <!-- Section div -->
+        <div id="sectionPage" class="panel panel-default answerContainer">
+            <div class="panel-heading">
+                <h4>Les sections</h4>
+            </div>
+
+            <div class="panel-body">
+                <table class="table table-hover">
+                    <thead><tr><th>Ordre</th> <th>Titre</th> <th>Sous-titre</th> <th>Obligatoire</th></tr></thead>
+                    <tbody>
+                        <tr ng-repeat="sec in sections">
+                            <td>{{sec.section_order}}</td>
+                            <td>{{sec.title}}</td>
+                            <td>{{sec.subtitle}}</td>
+                            <td ng-if="sec.required"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td>
+                            <td ng-if="!sec.required"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br/>
+                <button class="btn btn-primary" ng-click="displayOneSection()">Commencer</button>
+            </div>
+        </div>
+        <!-- Section div end -->
 
         <!-- Answer div -->
         <div id="answer" class="panel panel-default answerContainer">
@@ -36,13 +62,6 @@
             </div>
 
             <div class="panel-body">
-                <!-- Bar de progresion -->
-                <div class="progress progress-striped active">
-                    <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="{{surveyAnswerProgression}}" aria-valuemin="0" aria-valuemax="100" style="width:{{surveyAnswerProgression}}%; min-width:1em;">
-                        {{surveyAnswerProgression}}%
-                    </div>
-                </div>
-
                 <div ng-repeat="question in sectionQuestionArray" id="question{{question.question.question_order}}master" class="form-group">
 
                     <!-- Question medias -->
@@ -105,52 +124,10 @@
                     <br ng-if="question.question.type_name != 'Titre'"/>
                 </div>
 
-                <button class="btn btn-primary" ng-click="saveCurrentSection()">Suite</button>
+                <button class="btn btn-primary" ng-click="">Suite</button>
             </div>                
         </div>
         <!-- Answer div end -->
-
-        <!-- End div -->
-        <div id="endPage" class="panel panel-default answerContainer">
-            <div class="panel-heading">
-                <h4>Sondage terminé</h4>
-            </div>
-            
-            <div class="panel-body">
-                <!-- Bar de progresion -->
-                <div class="progress progress-striped active">
-                    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{surveyAnswerProgression}}" aria-valuemin="0" aria-valuemax="100" style="width:{{surveyAnswerProgression}}%; min-width:1em;">
-                        {{surveyAnswerProgression}}%
-                    </div>
-                </div>
-
-                <div id="endPageInfos">
-                    <div class="col-md-12 row-centered">Merci d'avoir pris de votre temps pour nous répondre !</div>
-                    <div class="col-md-12 row-centered"><b>{{survey.points}} points</b> ont été ajoutés à votre compte pour vous aider dans la bataille pour la première place !</div>
-                    <div class="col-md-12 row-centered"><b>{{userpoints - survey.points}} => {{userpoints}}</b></div>
-                </div>
-
-                <hr>
-
-                <!-- Ajouter un commentaire -->
-                <div id="addComment">
-                    <b>Ajouter un commentaire</b>
-                    <textarea ng-model="usercomment" class="form-control answerOpen" rows="3" maxlength="4000" placeholder="Ecrivez votre commentaire ici"></textarea>
-                    <button class="btn btn-primary" ng-click="addComment()">Publier</button>
-                </div>
-
-                <!-- Affichage des commentaires -->
-                <div ng-show="lastComment != null" class="comment" id="lastComment">
-                    <b>{{lastComment.name}} {{lastComment.lastname}}</b> <small>{{lastComment.posted}}</small><br>
-                    {{lastComment.comment}}
-                </div>
-                <div class="comment" ng-repeat="comment in comments">
-                    <b>{{comment.name}} {{comment.lastname}}</b> <small>{{comment.posted}}</small><br>
-                    {{comment.comment}}
-                </div>
-            </div>
-        </div>
-        <!-- End div end -->
 	</div>
 </div>
 

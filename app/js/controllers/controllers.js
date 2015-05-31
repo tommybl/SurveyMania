@@ -1239,91 +1239,38 @@ surveyManiaControllers.controller('PrevisualisationController', ['$scope', '$htt
     $scope.url = $window.location.hash.split('/');
     $scope.surveyid = $scope.url[$scope.url.length - 1];
     $scope.survey;
+    $scope.sections;
+    $scope.startPageDisplayed = true;
+
+  
     $scope.surveyEstimatedTime;
     $scope.surveySection;
     $scope.sectionQuestionArray;
-    $scope.startPageDisplayed = true;
 
     $http.post('/app/survey/getSurvey', {survey: $scope.surveyid, prev: true})
         .success(function (data, status, header, config) {
             $scope.survey = data.survey;
             $scope.surveyEstimatedTime = data.time;
-            $scope.surveyAnswerProgression = data.progression;
-            $('#startPage').fadeIn(800);
+            $http.post('/app/previsualisation/getSections', {surveyid: $scope.surveyid})
+                .success(function (data, status, header, config) {
+                    $scope.sections = data.sections;
+                    $('#startPage').fadeIn(800);
+                })
+                .error(function (data, status, header, config) {
+                    $location.path("/app/createSurvey");
+                });
         })
         .error(function (data, status, header, config) {
-            $location.path("/mysurveys");
+            $location.path("/app/createSurvey");
         });
 
-    $scope.getNextSection = function () {
+    $scope.displaySections = function () {
         if ($scope.startPageDisplayed) {
             $('#startPage').fadeOut(800, function () {
                 $scope.startPageDisplayed = false;
-                $scope.surveyAnswerProgression = 0;
-                $scope.getNextSectionContent();
-            });
-        } else {
-            $('#answer').fadeOut(800, function () {
-                $scope.surveyAnswerProgression = 0;
-                $scope.getNextSectionContent();
+                $('#sectionPage').fadeIn(800);
             });
         }
-    }
-
-    $scope.getNextSectionContent = function () {
-        $scope.surveySection = undefined;
-        $scope.sectionQuestionArray = undefined;
-
-        $http.post('/app/survey/getNextSurveyUserSection', {survey: $scope.surveyid})
-            .success(function (data, status, header, config) {
-                switch (data.message) {
-                    case "Aucune section à remplir":
-                        $scope.error = "Une erreur est survenue. Tentez de supprimer le sondage et de le rescanner";
-                        break;
-
-                    case "Aucune question dans la section":
-                        $scope.error = data.message;
-                        break;
-
-                    case "Sondage terminé":
-                        $scope.surveyAnswerProgression = 100;
-                        $scope.userpoints = data.points;
-                        $http.post('/app/survey/getComments', {survey: $scope.surveyid})
-                            .success(function (data, status, header, config) {
-                                $scope.comments = data.comments;
-                            });
-                        $('#endPage').fadeIn(800);
-                        break;
-
-                    case "OK":
-                        $scope.surveySection = data.section;
-                        $scope.sectionQuestionArray = data.question_array;
-                        $scope.surveyAnswerProgression = data.progression;
-
-                        for (var i = 0; i < $scope.sectionQuestionArray.length; ++i) {
-                            for (var j = 0; j < $scope.sectionQuestionArray[i].parameters.length; ++j)
-                                if ($scope.sectionQuestionArray[i].parameters[j].value_num != null)
-                                    eval('$scope.sectionQuestionArray[i].param' + $scope.sectionQuestionArray[i].parameters[j].name  + ' = ' + $scope.sectionQuestionArray[i].parameters[j].value_num);
-                                else
-                                    eval('$scope.sectionQuestionArray[i].param' + $scope.sectionQuestionArray[i].parameters[j].name  + ' = ' + $scope.sectionQuestionArray[i].parameters[j].value_text);
-
-                            for (var j = 0; j < $scope.sectionQuestionArray[i].medias.length; ++j) {
-                                if ($scope.sectionQuestionArray[i].medias[j].media_type == 'youtube')
-                                    $scope.sectionQuestionArray[i].medias[j].media_path = $sce.trustAsResourceUrl('https://www.youtube.com/embed/' + $scope.sectionQuestionArray[i].medias[j].media_path);
-                                else if ($scope.sectionQuestionArray[i].medias[j].media_type = 'image_url')
-                                    $scope.sectionQuestionArray[i].medias[j].media_path = $sce.trustAsResourceUrl($scope.sectionQuestionArray[i].medias[j].media_path);
-                            }
-                        }
-
-                        $('#answer').fadeIn(800, function() {
-                            $scope.usertime = new Date().getTime();
-                        });
-                        break;
-                }
-            })
-            .error(function (data, status, header, config) {
-                $location.path("/mysurveys");
-            });
     }
 
     $scope.remainingCharacter = function (id) {
