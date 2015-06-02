@@ -4,6 +4,7 @@
     <div class="col" data-ng-repeat="c in htmlsub">{{c}}</div>
     <span>------------------------</span>
   </div>
+  {{sectionList}}
   <div class="col-md-2">
     <h3>Créer un sondage </h3>
     <input ng-model="survey.name" type="text" name="name" placeholder="Entrez le nom du sondage" class="form-control" required="required"/><br>
@@ -50,7 +51,7 @@
       </div>
       <h3 class="ui-widget-header">Création du sondage</h3>
       <ul class="nav nav-tabs" role="tablist" id="myTab">
-        <li role="presentation"><a href='' id="tab1" selectlist="list1" list="1" role="tab" data-toggle="tab">Section 1</a></li>
+        <li role="presentation" class="active"><a href='' id="tab1" selectlist="list1" list="1" role="tab" data-toggle="tab">Section 1</a></li>
       </ul>
       <div class="tab-content">
         <div role="tabpanel" class="tab-pane active" id="upload_tab">
@@ -107,10 +108,30 @@ $(document).on('click', '#validateMedia', function(event) {
     }
 });
 
+$(document).on('dblclick', '#myTab a', function(event)
+{
+  event.preventDefault();
+  $(this).parent().append("<div id='editSectionName'><input class='form-control' name='newSectionName' value='"+$(this).html()+"' /><i id='validNewSectionName' class='fa add_media fa-check'></i></div>");
+  $(this).hide();
+  console.log("yattaaaa");
+});
+
+$(document).on('click', '#validNewSectionName', function(event)
+{
+  var newSectionName = $(this).parent().children("input[name='newSectionName']").val();
+  var listId = $(this).parent().parent().children("a").attr("list");
+  console.log(listId);
+
+  $(this).parent().parent().children("a").html(newSectionName);
+  $(this).parent().parent().children("a").show();
+  $("#editSectionName").empty();
+
+  $('#renderPanel').scope().changeSectionName(parseInt(listId) - 1, newSectionName);
+});
+
 $(document).on('click', '#myTab a', function(event)
 {
   event.preventDefault();
-  console.log("tarace");
   $('#renderPanel').scope().switchList($(this).attr("list"));
 });
 
@@ -118,6 +139,7 @@ $(document).on('click', '.addSection', function(event)
 {
   var pos = $('#myTab').find('a').last().attr('list');
   $('#myTab').append('<li role="presentation"><a id="tab'+(parseInt(pos)+1)+'" selectlist="list'+(parseInt(pos)+1)+'" list="'+(parseInt(pos)+1)+'" role="tab" data-toggle="tab">Section '+(parseInt(pos)+1)+'</a></li>');
+  $('#renderPanel').scope().addSection();
 });
 
 $(document).on('click', '.removeItem', function(event)

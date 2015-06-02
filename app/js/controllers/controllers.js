@@ -60,6 +60,8 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
         $scope.htmlList = new Array();
         $scope.htmlList[0] = new Array();
 
+        $scope.sectionList = new Array('Section 1');
+
         $scope.questionList = new Array();
         $scope.categories = [];
         $scope.displayedList = [];
@@ -93,6 +95,18 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
             $scope.displayedList = $scope.htmlList[i];
             $scope.currentListNumber = i;
 
+            $scope.$apply();
+        }
+
+        $scope.addSection = function ()
+        {
+            $scope.sectionList.push("Section "+($scope.sectionList.length + 1));
+            $scope.$apply();
+        }
+
+        $scope.changeSectionName = function($id, $name)
+        {
+            $scope.sectionList[$id] = $name;
             $scope.$apply();
         }
 
