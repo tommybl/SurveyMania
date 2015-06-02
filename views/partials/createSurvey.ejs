@@ -201,7 +201,7 @@ $(document).on('click', '#closedQuestion', function(event) {
       else
         $("#itemn"+idItem).parent().find("h5").html(newTitle);
 
-      if (typeItem == 0 || typeItem == 5)
+      if (typeItem == 0)
       {
         $('#renderPanel').scope().editTitleQuestion(idItem, newTitle, typeItem);
       }
@@ -272,7 +272,17 @@ $(document).on('click', '#closedQuestion', function(event) {
 
         $('#renderPanel').scope().editSectionQuestion(idItem, newTitle, options, multiple);
       }
-      if (typeItem == 6)
+      if(typeItem == 5)
+      {
+        var min = $(this).parent().children("input[name='min']").val();
+        var max = $(this).parent().children("input[name='max']").val();
+
+        $("#itemn"+idItem).children("input[type='number']").prop("min", min);
+        $("#itemn"+idItem).children("input[type='number']").prop("max", max);
+
+        $('#renderPanel').scope().editNumericQuestion(idItem, newTitle, min, max);
+      }
+      if(typeItem == 6)
       {
         var multiple = false;
         if($('#multipleAnswers').is(':checked'))
