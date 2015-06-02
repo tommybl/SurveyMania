@@ -99,7 +99,8 @@ $(document).on('click', '#validateMedia', function(event) {
       var finalurl = "http://youtube.com/embed/"+video_id;
 
       $('#renderPanel').scope().addVideo(idItem, finalurl);
-      $("#itemn"+idItem).append('<iframe style="clear:both;" id="ytplayer" type="text/html" width="640" height="390" src="'+finalurl+'" frameborder="0"/>').hide().fadeIn(2000);
+      console.log($("#itemn"+idItem));
+      $("#itemn"+idItem).after('<iframe style="clear:both;" id="ytplayer" type="text/html" width="640" height="390" src="'+finalurl+'" frameborder="0"/>').hide().fadeIn(2000);
     }
     if(urlimg != '')
     {
