@@ -1099,6 +1099,7 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
     $scope.surveyAnswerProgression;
     $scope.surveySection;
     $scope.sectionQuestionArray;
+    $scope.answerArray;
     $scope.comments;
     $scope.lastComment;
     $scope.usercomment;
@@ -1190,14 +1191,22 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
     }
 
     $scope.saveCurrentSection = function () {
+        var nbOther = 0;
         $scope.error = undefined;
-        var answerArray = [];
+        $scope.answerArray = [];
 
         for (var i = 0; i < $scope.sectionQuestionArray.length; ++i) {
             var q = {id: $scope.sectionQuestionArray[i].question.id};
+            $('#question' + $scope.sectionQuestionArray[i].question.question_order + 'master').removeClass("has-error");
 
             if ($scope.sectionQuestionArray[i].question.type_name == 'Ouverte') {
                 q.ansText = document.getElementById('question' + $scope.sectionQuestionArray[i].question.question_order).value;
+
+                if (q.ansText.length > $scope.sectionQuestionArray[i].parammax) {
+                    $scope.error = "Veuillez répondre correctement à toutes les questions";
+                    $('#question' + $scope.sectionQuestionArray[i].question.question_order + 'master').addClass("has-error");
+                    continue;
+                }
             }
 
             else if ($scope.sectionQuestionArray[i].question.type_name == 'QCM' && !$scope.sectionQuestionArray[i].question.multiple_answers) {
@@ -1214,17 +1223,27 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
                 }
             }
 
-            else {
+            else if ($scope.sectionQuestionArray[i].question.type_name == 'Numérique' || $scope.sectionQuestionArray[i].question.type_name == 'Slider') {
                 q.ansNum = document.getElementById('question' + $scope.sectionQuestionArray[i].question.question_order).value;
+                if (q.ansNum > $scope.sectionQuestionArray[i].parammax || q.ansNum < $scope.sectionQuestionArray[i].parammin) {
+                    $scope.error = "Veuillez répondre correctement à toutes les questions";
+                    $('#question' + $scope.sectionQuestionArray[i].question.question_order + 'master').addClass("has-error");
+                    continue;
+                }
             }
 
-            if ((q.ansText == undefined || q.ansText == "") && q.ansChecked == undefined && (q.ansNum == undefined || q.ansNum == "")) break;
-            else answerArray.push(q);
+            if ($scope.sectionQuestionArray[i].question.type_name == 'Ouverte' || $scope.sectionQuestionArray[i].question.type_name == 'QCM' || $scope.sectionQuestionArray[i].question.type_name == 'Numérique' || $scope.sectionQuestionArray[i].question.type_name == 'Slider') {
+                if ((q.ansText == undefined || q.ansText == "") && q.ansChecked == undefined && (q.ansNum == undefined || q.ansNum == "")) {
+                    $scope.error = "Veuillez répondre correctement à toutes les questions";
+                    $('#question' + $scope.sectionQuestionArray[i].question.question_order + 'master').addClass("has-error");
+                    continue;
+                }
+                else $scope.answerArray.push(q);
+            } else nbOther++;
         }
 
-        if (answerArray.length != $scope.sectionQuestionArray.length || answer.length == 0) $scope.error = "Veuillez répondre à toutes les questions";
-        else {
-            $http.post('/app/survey/submitSurveyUserSection', {survey: $scope.surveyid, section: $scope.surveySection.id, answerArray: answerArray, time: new Date().getTime() - $scope.usertime})
+        if ($scope.answerArray.length == ($scope.sectionQuestionArray.length - nbOther) && $scope.answerArray.length != 0 && $scope.error == undefined) {
+            $http.post('/app/survey/submitSurveyUserSection', {survey: $scope.surveyid, section: $scope.surveySection.id, answerArray: $scope.answerArray, time: new Date().getTime() - $scope.usertime})
                 .success(function (data, status, header, config) {
                     $scope.getNextSection();
                 })
@@ -1232,6 +1251,7 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
                     $location.path("/mysurveys");
                 });
         }
+        else window.scrollTo(0, 0);
     }
 
     $scope.addComment = function () {
@@ -1249,6 +1269,55 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
                         });
                 });
         }
+    }
+
+    $scope.remainingCharacter = function (id) {
+        var elem = $('#question' + id);
+        if (elem.attr('maxlength') != undefined && elem.attr('maxlength') != "") document.getElementById('question' + id + 'remaining').innerHTML = elem.attr('maxlength') - elem[0].value.length + ' caractères restants';
+    }
+}]);
+
+surveyManiaControllers.controller('PrevisualisationController', ['$scope', '$http', '$window', '$sce', '$location', function($scope, $http, $window, $sce, $location) {
+    $scope.url = $window.location.hash.split('/');
+    $scope.surveyid = $scope.url[$scope.url.length - 1];
+    $scope.survey;
+    $scope.sections;
+    $scope.startPageDisplayed = true;
+
+  
+    $scope.surveyEstimatedTime;
+    $scope.surveySection;
+    $scope.sectionQuestionArray;
+
+    $http.post('/app/survey/getSurvey', {survey: $scope.surveyid, prev: true})
+        .success(function (data, status, header, config) {
+            $scope.survey = data.survey;
+            $scope.surveyEstimatedTime = data.time;
+            $http.post('/app/previsualisation/getSections', {surveyid: $scope.surveyid})
+                .success(function (data, status, header, config) {
+                    $scope.sections = data.sections;
+                    $('#startPage').fadeIn(800);
+                })
+                .error(function (data, status, header, config) {
+                    $location.path("/app/createSurvey");
+                });
+        })
+        .error(function (data, status, header, config) {
+            $location.path("/app/createSurvey");
+        });
+
+    $scope.displaySections = function () {
+        if ($scope.startPageDisplayed) {
+            $('#startPage').fadeOut(800, function () {
+                $scope.startPageDisplayed = false;
+                $('#sectionPage').fadeIn(800);
+            });
+        }
+    }
+
+    $scope.remainingCharacter = function (id) {
+        var elem = $('#question' + id);
+        if (elem.attr('maxlength') != undefined && elem.attr('maxlength') != "") document.getElementById('question' + id + 'remaining').innerHTML = elem.attr('maxlength') - elem[0].value.length + ' caractères restants';
     }
 }]);
 

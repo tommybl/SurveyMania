@@ -77,9 +77,9 @@ INSERT INTO surveymania.user_survey_sections (user_id, section_id) VALUES
 (7, 6);
 
 INSERT INTO questions (survey_section_id, input_type_id, description, question_order, multiple_answers) VALUES
-(1, 3, 'Quelle est votre situation familiale ?', 1, false),
-(1, 3, 'Quels sont les revenus mensuels de votre foyer ?', 2, false),
-(1, 3, 'Mangez vous des steaks régulièrement ?', 3, false),
+(1, 3, 'Quelle est votre situation familiale ?', 3, false),
+(1, 3, 'Quels sont les revenus mensuels de votre foyer ?', 4, false),
+(1, 3, 'Mangez vous des steaks régulièrement ?', 5, false),
 (2, 3, 'Combien de steaks mangez-vous par semaine ?', 1, false),
 (2, 3, 'Quelle(s) marque(s) de steak achetez-vous ?', 2, true),
 (3, 1, 'Avez vous une remarque à ajouter ?', 3, false),
@@ -95,9 +95,12 @@ INSERT INTO questions (survey_section_id, input_type_id, description, question_o
 (5, 3, 'Que pensez-vous de la texture de ces steaks ?', 3, false),
 (5, 2, 'Combien payerez-vous pour acheter cette boîte de 10 steaks marque Pouce congelés ?', 4, false),
 (5, 1, 'Autres commentaires ?', 5, false),
-(6, 1, 'T''aimes la bière ?', 1, false);
+(6, 1, 'T''aimes la bière ?', 1, false),
+(1, 5, 'C''est quoi un steak ?', 1, false),
+(1, 6, 'Un steak c''est de la viande de boeuf hachée et en forme de cercle. On les trouve souvent sous leur forme congelée (l''objet de ce sondage). C''est pas ce qu''il y a de mieux mais bon, on fait avec. Justement si tu veux manger du steak frais, répond donc à ce sondage et à plein d''autres, récupère la rémunération et go en acheter à OKABE. Sur ce, on vous souhaite un bon sondage.', 2, false);
 
 INSERT INTO question_params(question_id, name, value_num, value_text) VALUES
+(6, 'max', 20, NULL),
 (7, 'min', 0, NULL),
 (7, 'max', 100, NULL),
 (7, 'def', 50, NULL),
@@ -106,7 +109,9 @@ INSERT INTO question_params(question_id, name, value_num, value_text) VALUES
 (8, 'def', 50, NULL),
 (8, 'pas', 2, NULL),
 (12, 'min', 0, NULL),
-(17, 'min', 0, NULL);
+(12, 'max', 20, NULL),
+(13, 'max', 35, NULL),
+(17, 'max', 5, NULL);
 
 INSERT INTO option_choices (question_id, choice_name, option_order, linked_section_id) VALUES
 (1, 'Célibataire', 1, NULL),
