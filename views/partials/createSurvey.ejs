@@ -105,7 +105,7 @@ $(document).on('click', '#validateMedia', function(event) {
     if(urlimg != '')
     {
       $('#renderPanel').scope().addImage(idItem, urlimg);
-      $("#itemn"+idItem).append('<img src="'+urlimg+'" />').hide().fadeIn(2000);
+      $("#itemn"+idItem).after('<img src="'+urlimg+'" />').hide().fadeIn(2000);
     }
 });
 
