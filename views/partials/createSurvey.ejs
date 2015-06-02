@@ -1,5 +1,9 @@
 <!DOCTYPE html>
 <div ng-controller="DragAndDrop">
+  <div class="row" data-ng-repeat="htmlsub in questionList">
+    <div class="col" data-ng-repeat="c in htmlsub">{{c}}</div>
+    <span>------------------------</span>
+  </div>
   <div class="col-md-2">
     <h3>Créer un sondage </h3>
     <input ng-model="survey.name" type="text" name="name" placeholder="Entrez le nom du sondage" class="form-control" required="required"/><br>
@@ -9,10 +13,8 @@
     <select class="form-control">
      <option ng-repeat="category in categories" value="{{category.name}}" >{{category.name}}</option>
    </select><br>
-   <button class="btn btn-primary" style="width: 100px">Valider</button>
+   <button class="btn btn-primary" ng-click="validateSurvey()" style="width: 100px">Valider</button>
  </div>
- {{list4 | json}}
- {{list2 | json}}
   <div>
     <div class="col-md-4">
       <div class="col-sm-12 draganddroptuto">
@@ -48,7 +50,7 @@
       </div>
       <h3 class="ui-widget-header">Création du sondage</h3>
       <ul class="nav nav-tabs" role="tablist" id="myTab">
-        <li role="presentation"><a href="#" id="tab1" selectlist="list1" list="1" role="tab" data-toggle="tab">Section 1</a></li>
+        <li role="presentation"><a href='' id="tab1" selectlist="list1" list="1" role="tab" data-toggle="tab">Section 1</a></li>
       </ul>
       <div class="tab-content">
         <div role="tabpanel" class="tab-pane active" id="upload_tab">
@@ -82,13 +84,13 @@ $(document).on('click', '#myTab a', function(event)
 {
   event.preventDefault();
   console.log("tarace");
-  $('#renderPanel').scope().switchList($(this).attr("selectlist"));
+  $('#renderPanel').scope().switchList($(this).attr("list"));
 });
 
 $(document).on('click', '.addSection', function(event)
 {
   var pos = $('#myTab').find('a').last().attr('list');
-  $('#myTab').append('<li role="presentation"><a href="#" id="tab'+(parseInt(pos)+1)+'" selectlist="list'+(parseInt(pos)+1)+'" list="'+(parseInt(pos)+1)+'" role="tab" data-toggle="tab">Section '+(parseInt(pos)+1)+'</a></li>');
+  $('#myTab').append('<li role="presentation"><a id="tab'+(parseInt(pos)+1)+'" selectlist="list'+(parseInt(pos)+1)+'" list="'+(parseInt(pos)+1)+'" role="tab" data-toggle="tab">Section '+(parseInt(pos)+1)+'</a></li>');
 });
 
 $(document).on('click', '.removeItem', function(event)

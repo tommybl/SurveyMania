@@ -182,7 +182,6 @@ var jqyoui = angular.module('ngDragDrop', []).service('ngDragDropService', ['$ti
     };
 
     this.mutateDroppable = function(scope, dropSettings, dragSettings, dropModel, dragItem, jqyoui_pos, y) {
-      console.log(dropModel);
       var dropModelValue = scope.$eval(dropModel);
 
       scope.dndDragItem = dragItem;
@@ -194,7 +193,6 @@ var jqyoui = angular.module('ngDragDrop', []).service('ngDragDropService', ['$ti
       ********************************************************/
 
       if (angular.isArray(dropModelValue)) {
-        console.log(dropSettings);
         if (dropSettings && dropSettings.index >= 0) {
           dropModelValue[dropSettings.index] = dragItem;
         } 
@@ -230,7 +228,6 @@ var jqyoui = angular.module('ngDragDrop', []).service('ngDragDropService', ['$ti
           if (mybool)
           {
             dragItem.index = dropModelValue.length;
-            console.log(">>"+dragItem.index);
             $('#renderPanel').scope().addNewQuestion(dropModelValue.length, dragItem);
             dropModelValue.push(dragItem);
           }

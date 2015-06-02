@@ -97,6 +97,20 @@ app
     res.render('partials/createSurvey');
 })
 
+.post('/app/account/admin/validate/survey', function (req, res) {
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    res.setHeader('Accept', 'application/json');
+    var questionList = req.body.list;
+    for (var i = 0; i < questionList.length; i++)
+    {
+        for (var j = 0; j < questionList[i].length; j++)
+        {
+            console.log(questionList[i][j].title);
+        }
+    }
+    console.log("ok");
+})
+
 .post('/login', function (req, res) {
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
     res.setHeader('Accept', 'application/json');

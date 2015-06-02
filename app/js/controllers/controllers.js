@@ -57,50 +57,74 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                         {'index':'','id':'7','title': 'Texte libre', 'label':$sce.trustAsHtml('<p>Texte</p>'),'code' :  $sce.trustAsHtml('<p ng-bind="title">Titre</p>'), 'show':true, 'icon':'font'}
                         ]; 
 
-        $scope.list4 = [];
-        $scope.list2 = [];
-        $scope.questionList = [];
+        $scope.htmlList = new Array();
+        $scope.htmlList[0] = new Array();
+
+        $scope.questionList = new Array();
         $scope.categories = [];
         $scope.displayedList = [];
 
-        $scope.displayedList = $scope.list4;
+        $scope.currentListNumber = 0;
+        $scope.displayedList = $scope.htmlList[0];
 
         $scope.answer ="";
 
-        $scope.switchList = function ($listName)
+        $scope.validateSurvey = function ()
         {
-            if ($listName == "list2")
-                $scope.displayedList = $scope.list2;
-            else
-                $scope.displayedList = $scope.list4;
+            $http.post('/app/account/admin/validate/survey', {list: $scope.questionList})
+            .success(function (data, status, headers, config) {
+                if (data.error == undefined) {
+                    console.log("lol");
+                    $scope.verifSuccMess = "Le compte a bien été refusé.";
+                }
+                else $scope.verifErrMess = data.error + '. ' + data.message;
+            })
+            .error(function (data, status, headers, config) {
+                console.log(data);
+            });
+        }
+
+        $scope.switchList = function ($listNumber)
+        {
+            var i = parseInt($listNumber) - 1;
+            if (!$scope.htmlList[i])
+                $scope.htmlList[i] = new Array();
+           
+            $scope.displayedList = $scope.htmlList[i];
+            $scope.currentListNumber = i;
+
             $scope.$apply();
         }
 
         $scope.addNewQuestion = function ($index, $item)
         {
+            var i = $scope.currentListNumber;
+            if(!$scope.questionList[i])
+                $scope.questionList[i] = new Array();
+
             if($item.id == 0 || $item.id == 5) // Titre
             {
-                $scope.questionList.push({'index': $index, 'type':$item.id, 'title':$item.title});
+                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'title':$item.title});
             }
             else if ($item.id == 1) // Question ouverte
             {
-                $scope.questionList.push({'index': $index, 'type':$item.id, 'title':$item.title, 'maxlength':'255'});
+                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'title':$item.title, 'maxlength':'255'});
             }
             else if($item.id == 2) // Question fermée
             {
-                $scope.questionList.push({'index': $index, 'type':$item.id, 'title':$item.title, 'label1':'Oui', 'label2':'Non'});
+                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'title':$item.title, 'label1':'Oui', 'label2':'Non'});
             }
             else if($item.id == 3) // Slider
             {
-                $scope.questionList.push({'index': $index, 'type':$item.id, 'title':$item.title, 'min':'', 'max':'', 'range':''});
+                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'title':$item.title, 'min':'', 'max':'', 'range':''});
             }
             else if($item.id == 6) // Choix multiple
             {
-                $scope.questionList.push({'index': $index, 'type':$item.id, 'title':$item.title, 'option':[], 'multiple':false});
+                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'title':$item.title, 'option':[], 'multiple':false});
             }
             else if($item.id == 7) // Texte libre
             {
-                $scope.questionList.push({'index': $index, 'type':$item.id, 'text':''});
+                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'text':''});
             }
             else
             {
@@ -113,10 +137,13 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
         {
             for (var i = 0; i < $scope.questionList.length; i++)
             {
-                if($scope.questionList[i].index == $index)
+                for (var j = 0; j < $scope.questionList[i].length; j++)
                 {
-                    $scope.questionList[i] = {'index': $index, 'type':'2', 'title':$title, 'label1':$opt1, 'label2':$opt2};
-                    $scope.$apply();
+                    if($scope.questionList[i][j].index == $index)
+                    {
+                        $scope.questionList[i][j] = {'index': $index, 'type':'2', 'title':$title, 'label1':$opt1, 'label2':$opt2};
+                        $scope.$apply();
+                    }
                 }
             }
         }
@@ -127,10 +154,13 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
         {
             for (var i = 0; i < $scope.questionList.length; i++)
             {
-                if($scope.questionList[i].index == $index)
+                for (var j = 0; j < $scope.questionList[i].length; j++)
                 {
-                    $scope.questionList[i] = {'index': $index, 'type':'3', 'title':$title, 'min':$min, 'max':$max, 'step':$step};
-                    $scope.$apply();
+                    if($scope.questionList[i][j].index == $index)
+                    {
+                        $scope.questionList[i][j] = {'index': $index, 'type':'3', 'title':$title, 'min':$min, 'max':$max, 'step':$step};
+                        $scope.$apply();
+                    }
                 }
             }
         }
@@ -140,10 +170,13 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
         {
             for (var i = 0; i < $scope.questionList.length; i++)
             {
-                if($scope.questionList[i].index == $index)
+                for (var j = 0; j < $scope.questionList[i].length; j++)
                 {
-                    $scope.questionList[i] = {'index': $index, 'type':$type, 'title':$title};
-                    $scope.$apply();
+                    if($scope.questionList[i][j].index == $index)
+                    {
+                        $scope.questionList[i][j] = {'index': $index, 'type':$type, 'title':$title};
+                        $scope.$apply();
+                    }
                 }
             }
         }
@@ -153,10 +186,13 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
         {
             for (var i = 0; i < $scope.questionList.length; i++)
             {
-                if($scope.questionList[i].index == $index)
+                for (var j = 0; j < $scope.questionList[i].length; j++)
                 {
-                    $scope.questionList[i] = {'index': $index, 'text':$text};
-                    $scope.$apply();
+                    if($scope.questionList[i][j].index == $index)
+                    {
+                        $scope.questionList[i][j] = {'index': $index, 'text':$text};
+                        $scope.$apply();
+                    }
                 }
             }
         }
@@ -166,10 +202,13 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
         {
             for (var i = 0; i < $scope.questionList.length; i++)
             {
-                if($scope.questionList[i].index == $index)
+                for (var j = 0; j < $scope.questionList[i].length; j++)
                 {
-                    $scope.questionList[i] = {'index': $index, 'title':$title, 'option':$options, 'multiple':$multiple};
-                    $scope.$apply();
+                    if($scope.questionList[i][j].index == $index)
+                    {
+                        $scope.questionList[i][j] = {'index': $index, 'title':$title, 'option':$options, 'multiple':$multiple};
+                        $scope.$apply();
+                    }
                 }
             }
         }
@@ -179,10 +218,13 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
         {
             for (var i = 0; i < $scope.questionList.length; i++)
             {
-                if($scope.questionList[i].index == $index)
+                for (var j = 0; j < $scope.questionList[i].length; j++)
                 {
-                    $scope.questionList[i] = {'index': $index, 'type':$type, 'title':$title, 'maxlength':$maxlength};
-                    $scope.$apply();
+                    if($scope.questionList[i][j].index == $index)
+                    {
+                        $scope.questionList[i][j] = {'index': $index, 'type':$type, 'title':$title, 'maxlength':$maxlength};
+                        $scope.$apply();
+                    }
                 }
             }
         }
@@ -203,7 +245,7 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
         }*/
 
         $scope.hideMe = function() {
-            return $scope.list4.length > 0;
+            return $scope.displayedList.length > 0;
         }
 
         $scope.edit = function($index, $type){
