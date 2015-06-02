@@ -369,8 +369,10 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
             $("#media_panel").append("<div id='display-media-options' class='panel-body'></div>");
             $("#display-media-options").append('<input type="hidden" name="itemIndex" value="'+$index+'" />');
             $("#display-media-options").append("<span>Url de la vidéo youtube</span><input name='videoUrl' type='text' class='form-control'/>");
+            $("#display-media-options").append("<input name='videoDescription' type='text' class='form-control' placeholder='Description...'/>");
             $("#display-media-options").append("<hr>");
             $("#display-media-options").append("<span>Url de l'image</span><input name='imageUrl' type='text' class='form-control'/>");
+            $("#display-media-options").append("<input name='imageDescription' type='text' class='form-control' placeholder='Description...'/>");
             $("#display-media-options").append('<input type="submit" id="validateMedia" value="Valider" class="btn btn-primary" />');
             $("#media_panel").fadeIn();
         }

@@ -98,13 +98,18 @@ $(document).on('click', '#validateMedia', function(event) {
         video_id = video_id.substring(0, amp);
       var finalurl = "http://youtube.com/embed/"+video_id;
 
-      $('#renderPanel').scope().addVideo(idItem, finalurl);
+      var desc = $(this).parent().children("input[name='videoDescription']").val();
+
+      $('#renderPanel').scope().addVideo(idItem, {'description':desc, 'url':finalurl});
       console.log($("#itemn"+idItem));
       $("#itemn"+idItem).after('<iframe style="clear:both;" id="ytplayer" type="text/html" width="640" height="390" src="'+finalurl+'" frameborder="0"/>').hide().fadeIn(2000);
     }
     if(urlimg != '')
     {
-      $('#renderPanel').scope().addImage(idItem, urlimg);
+      var idesc = $(this).parent().children("input[name='videoDescription']").val();
+
+      $('#renderPanel').scope().addImage(idItem, {'description':idesc, 'url':urlimg});
+
       $("#itemn"+idItem).after('<img src="'+urlimg+'" />').hide().fadeIn(2000);
     }
 });
