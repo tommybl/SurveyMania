@@ -132,6 +132,10 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
             {
                 $scope.questionList[i].push({'index': $index, 'type':$item.id, 'title':$item.title, 'min':'', 'max':'', 'range':'', 'video':[], 'image':[]});
             }
+            else if($item.id == 4) // Branchement
+            {
+                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'title':$item.title, 'option':[], 'multiple':false, 'video':[], 'image':[]});
+            }
             else if($item.id == 6) // Choix multiple
             {
                 $scope.questionList[i].push({'index': $index, 'type':$item.id, 'title':$item.title, 'option':[], 'multiple':false, 'video':[], 'image':[]});

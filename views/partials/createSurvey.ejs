@@ -124,7 +124,7 @@ $(document).on('click', '#validNewSectionName', function(event)
 
   $(this).parent().parent().children("a").html(newSectionName);
   $(this).parent().parent().children("a").show();
-  $("#editSectionName").empty();
+  $("#editSectionName").remove();
 
   $('#renderPanel').scope().changeSectionName(parseInt(listId) - 1, newSectionName);
 });
