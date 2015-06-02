@@ -104,31 +104,61 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
 
             if($item.id == 0 || $item.id == 5) // Titre
             {
-                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'title':$item.title});
+                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'title':$item.title, 'video':[], 'image':[]});
             }
             else if ($item.id == 1) // Question ouverte
             {
-                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'title':$item.title, 'maxlength':'255'});
+                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'title':$item.title, 'maxlength':'255', 'video':[], 'image':[]});
             }
             else if($item.id == 2) // Question fermée
             {
-                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'title':$item.title, 'label1':'Oui', 'label2':'Non'});
+                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'title':$item.title, 'label1':'Oui', 'label2':'Non', 'video':[], 'image':[]});
             }
             else if($item.id == 3) // Slider
             {
-                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'title':$item.title, 'min':'', 'max':'', 'range':''});
+                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'title':$item.title, 'min':'', 'max':'', 'range':'', 'video':[], 'image':[]});
             }
             else if($item.id == 6) // Choix multiple
             {
-                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'title':$item.title, 'option':[], 'multiple':false});
+                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'title':$item.title, 'option':[], 'multiple':false, 'video':[], 'image':[]});
             }
             else if($item.id == 7) // Texte libre
             {
-                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'text':''});
+                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'text':'', 'video':[], 'image':[]});
             }
             else
             {
                 console.log("caca : "+$item.id);   
+            }
+        }
+
+        // Add video to question
+        $scope.addVideo = function($index, $url){
+            for (var i = 0; i < $scope.questionList.length; i++)
+            {
+                for (var j = 0; j < $scope.questionList[i].length; j++)
+                {
+                    if($scope.questionList[i][j].index == $index)
+                    {
+                        $scope.questionList[i][j].video.push($url);
+                        $scope.$apply();
+                    }
+                }
+            }
+        }
+
+        // Add image to question
+        $scope.addImage = function($index, $url){
+            for (var i = 0; i < $scope.questionList.length; i++)
+            {
+                for (var j = 0; j < $scope.questionList[i].length; j++)
+                {
+                    if($scope.questionList[i][j].index == $index)
+                    {
+                        $scope.questionList[i][j].image.push($url);
+                        $scope.$apply();
+                    }
+                }
             }
         }
 
@@ -262,6 +292,8 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
             $("#media_panel").append("<div id='display-media-options' class='panel-body'></div>");
             $("#display-media-options").append('<input type="hidden" name="itemIndex" value="'+$index+'" />');
             $("#display-media-options").append("<span>Url de la vidéo youtube</span><input name='videoUrl' type='text' class='form-control'/>");
+            $("#display-media-options").append("<hr>");
+            $("#display-media-options").append("<span>Url de l'image</span><input name='imageUrl' type='text' class='form-control'/>");
             $("#display-media-options").append('<input type="submit" id="validateMedia" value="Valider" class="btn btn-primary" />');
             $("#media_panel").fadeIn();
         }

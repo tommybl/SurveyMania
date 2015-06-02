@@ -86,14 +86,25 @@
 $(document).on('click', '#validateMedia', function(event) {
     event.preventDefault();
     var urlyt = $(this).parent().children("input[name='videoUrl']").val();
-    var video_id = urlyt.split('v=')[1];
-    var amp = video_id.indexOf('&');
-    if(amp != -1)
-      video_id = video_id.substring(0, amp);
-    var finalurl = "http://youtube.com/embed/"+video_id;
-
+    var urlimg = $(this).parent().children("input[name='imageUrl']").val();
     var idItem = $(this).parent().children("input[name='itemIndex']").val();
-    $("#itemn"+idItem).append('<iframe style="clear:both;" id="ytplayer" type="text/html" width="640" height="390" src="'+finalurl+'" frameborder="0"/>').hide().fadeIn(2000);
+
+    if(urlyt != '')
+    {
+      var video_id = urlyt.split('v=')[1];
+      var amp = video_id.indexOf('&');
+      if(amp != -1)
+        video_id = video_id.substring(0, amp);
+      var finalurl = "http://youtube.com/embed/"+video_id;
+
+      $('#renderPanel').scope().addVideo(idItem, finalurl);
+      $("#itemn"+idItem).append('<iframe style="clear:both;" id="ytplayer" type="text/html" width="640" height="390" src="'+finalurl+'" frameborder="0"/>').hide().fadeIn(2000);
+    }
+    if(urlimg != '')
+    {
+      $('#renderPanel').scope().addImage(idItem, urlimg);
+      $("#itemn"+idItem).append('<img src="'+urlimg+'" />').hide().fadeIn(2000);
+    }
 });
 
 $(document).on('click', '#myTab a', function(event)
