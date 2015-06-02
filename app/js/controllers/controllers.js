@@ -254,6 +254,18 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
             //$scope.hide($index);
         }
 
+        $scope.addMedia = function($index){
+            $("#media_panel_container").empty();
+            $("#media_panel_container").append("<div id='media_panel' class='panel panel-default'></div>");
+            $("#media_panel").hide();
+            $("#media_panel").append("<div class='panel-heading'>Ajouter un média <i class='fa fa-file-image-o'></i>");
+            $("#media_panel").append("<div id='display-media-options' class='panel-body'></div>");
+            $("#display-media-options").append('<input type="hidden" name="itemIndex" value="'+$index+'" />');
+            $("#display-media-options").append("<span>Url de la vidéo youtube</span><input name='videoUrl' type='text' class='form-control'/>");
+            $("#display-media-options").append('<input type="submit" id="validateMedia" value="Valider" class="btn btn-primary" />');
+            $("#media_panel").fadeIn();
+        }
+
         $scope.displayOptions = function($index, $type)
         {
             $("#display-item-options").hide();

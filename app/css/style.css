@@ -296,7 +296,7 @@ header
     padding:10px;
 }
 
-#display-item-options input{
+#display-item-options input, #display-media-options input{
     margin-bottom: 10px;
 }
 
@@ -371,6 +371,13 @@ header
   top: 10px;
 }
 
+.add_media
+{
+  position: absolute;
+  right: 70px;
+  top: 10px;
+}
+
 .edit_btn
 {
   background-position: 0px 88px;
@@ -389,7 +396,7 @@ header
   right: 20px;
 }
 
-.edit_btn:hover, .validate_edit_btn:hover, .delete_btn:hover
+.edit_btn:hover, .validate_edit_btn:hover, .delete_btn:hover, .add_media:hover 
 {
   cursor: pointer;
 }

@@ -16,7 +16,7 @@
    <button class="btn btn-primary" ng-click="validateSurvey()" style="width: 100px">Valider</button>
  </div>
   <div>
-    <div class="col-md-4">
+    <div class="col-md-4" id="tool_panel">
       <div class="col-sm-12 draganddroptuto">
         <i class="fa fa-arrows faarrows"></i> Cliquez/déposez les items que vous souhaitez inclure dans le sondage
       </div>
@@ -38,9 +38,9 @@
           Options <i class="fa fa-gears"></i>
         </div>
         <div id="display-item-options" class="panel-body" style="display:none;">
-
         </div>
       </div>
+      <div id="media_panel_container"></div>
     </div> 
     <div class="col-md-6" id="renderPanel">
       <div id="optionsbar" class="col-sm-12">
@@ -68,6 +68,8 @@
                 <span ng-hide="itemlol.show" ng-click="validate($index, answer)" class="validate_edit_btn"></span>
                 <!-- Bouton pour modifier la question-->
                 <span ng-show="itemlol.show" ng-click="edit($index, itemlol.id)" class="edit_btn"></span>
+                <!-- Bouton pour ajouter un média-->
+                <i ng-show="itemlol.show" ng-click="addMedia($index)" class="fa add_media fa-file-image-o"></i>
                 <!-- Bouton pour supprimer la question -->
                 <span class="delete_btn" ng-click="delete($index)"></span>
               </li>
@@ -80,6 +82,20 @@
   </div>
 </div>
 <script type="text/javascript">
+
+$(document).on('click', '#validateMedia', function(event) {
+    event.preventDefault();
+    var urlyt = $(this).parent().children("input[name='videoUrl']").val();
+    var video_id = urlyt.split('v=')[1];
+    var amp = video_id.indexOf('&');
+    if(amp != -1)
+      video_id = video_id.substring(0, amp);
+    var finalurl = "http://youtube.com/embed/"+video_id;
+
+    var idItem = $(this).parent().children("input[name='itemIndex']").val();
+    $("#itemn"+idItem).append('<iframe style="clear:both;" id="ytplayer" type="text/html" width="640" height="390" src="'+finalurl+'" frameborder="0"/>').hide().fadeIn(2000);
+});
+
 $(document).on('click', '#myTab a', function(event)
 {
   event.preventDefault();
