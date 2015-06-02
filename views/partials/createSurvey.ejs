@@ -113,7 +113,6 @@ $(document).on('dblclick', '#myTab a', function(event)
   event.preventDefault();
   $(this).parent().append("<div id='editSectionName'><input class='form-control' name='newSectionName' value='"+$(this).html()+"' /><i id='validNewSectionName' class='fa add_media fa-check'></i></div>");
   $(this).hide();
-  console.log("yattaaaa");
 });
 
 $(document).on('click', '#validNewSectionName', function(event)
@@ -153,6 +152,23 @@ $(document).on('click', '#addNewOptions', function(event)
   event.preventDefault();
   $('#newOptions').append('<input class="form-control" type="text" value="" />');
 });
+
+$(document).on('click', '#addNewSectionOptions', function(event)
+{
+  event.preventDefault();
+  var str = [];
+  str.push('<div pos>');
+  str.push('<input class="form-control" style="display:inline-block; width:45%;" type="text" />');
+  str.push('<select class="form-control" style="display:inline-block; width:45%;" >');
+  for (var i = 0; i < $('#renderPanel').scope().sectionList.length; i++)
+  {
+    str.push('<option value="'+i+'">'+$('#renderPanel').scope().sectionList[i]+'</option>');
+  }
+  str.push('</select>');
+  str.push('<span class="removeItem fa fa-times"></span></div>');
+  $('#newSectionOptions').append(str.join(""));
+});
+
 
 $(document).on('click', '#closedQuestion', function(event) {
     event.preventDefault(); 
@@ -213,6 +229,47 @@ $(document).on('click', '#closedQuestion', function(event) {
         $("#itemn"+idItem).children("input[type='range']").prop("step", step);
 
         $('#renderPanel').scope().editSliderQuestion(idItem, newTitle, min, max, step);
+      }
+      if (typeItem == 4)
+      {
+        var multiple = false;
+        if($('#multipleAnswers').is(':checked'))
+        {
+          multiple = true;
+          $("#itemn"+idItem).find("select").prop("multiple", true);
+        }
+        else
+          $("#itemn"+idItem).find("select").prop("multiple", false);
+
+        var options = [];
+        var newOptionIndex = 0;
+
+        var allElements = $(this).parent().children("#allOptionsEdit").find('div[pos]');
+        $("#itemn"+idItem).find("select").empty();
+
+        allElements.each(function($index){
+          if ($(this).find('input').prop("disabled") != true)
+          {
+            newOptionIndex++;
+            var opt = $(this).find('input').val();
+            var selectedSectionId = $(this).find('select option:selected').val();
+            options.push({'title':opt, 'sectionId':selectedSectionId});
+
+            $("#itemn"+idItem).find("select").append('<option pos="'+newOptionIndex+'" value="'+selectedSectionId+'">'+opt+'</option>');
+          }
+        });
+
+        // Questions venant d'être add
+        var newOptions = $(this).parent().children("#newSectionOptions").find('div[pos]');
+        newOptions.each(function($index)
+        {
+          var opt = $(this).find('input').val();
+          var selectedSectionId = $(this).find('select option:selected').val();
+          options.push({'title':opt, 'sectionId':selectedSectionId});
+          $("#itemn"+idItem).find("select").append('<option pos="'+($index+newOptionIndex+1)+'" value="'+selectedSectionId+'">'+opt+'</option>');
+        });
+
+        $('#renderPanel').scope().editSectionQuestion(idItem, newTitle, options, multiple);
       }
       if (typeItem == 6)
       {

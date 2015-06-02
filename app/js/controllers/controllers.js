@@ -51,7 +51,7 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                         {'index':'','id':'1','title': 'Réponse libre', 'label':$sce.trustAsHtml('<h5>question</h5>'), 'code' : $sce.trustAsHtml('<textarea maxlength="255"></textarea>'), 'show':true, 'icon':'text-height'},
                         {'index':'','id':'2','title': 'Question fermée', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<input type="radio" name="yesno" value="0"> <span class="opt1">Oui</span><br><input type="radio" name="yesno" value="1" checked> <span class="opt2">Non</span>'), 'show':true, 'icon':'toggle-on'},
                         {'index':'','id':'3','title': 'Slider', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<input type="range" min="0" max="50" value="25" step="5" />'), 'show':true, 'icon':'sliders'},
-                        {'index':'','id':'4','title': 'Branchement', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml(''), 'show':true, 'icon':'code-fork'},
+                        {'index':'','id':'4','title': 'Branchement', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<select name="selectform"><option pos="0" value="1">Option 1</option></select>'), 'show':true, 'icon':'code-fork'},
                         {'index':'','id':'5','title': 'Numérique', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<input type="number" name="number" />'), 'show':true, 'icon':'list-ol'},
                         {'index':'','id':'6','title': 'Choix multiple', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<select name="selectform"><option pos="0" value="1">Option 1</option></select>'), 'show':true, 'icon':'list'},
                         {'index':'','id':'7','title': 'Texte libre', 'label':$sce.trustAsHtml('<p>Texte</p>'),'code' :  $sce.trustAsHtml('<p ng-bind="title">Titre</p>'), 'show':true, 'icon':'font'}
@@ -189,7 +189,11 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                 {
                     if($scope.questionList[i][j].index == $index)
                     {
-                        $scope.questionList[i][j] = {'index': $index, 'type':'2', 'title':$title, 'label1':$opt1, 'label2':$opt2};
+                        $scope.questionList[i][j].index = $index;
+                        $scope.questionList[i][j].type = 2;
+                        $scope.questionList[i][j].title = $title;
+                        $scope.questionList[i][j].label1 = $opt1;
+                        $scope.questionList[i][j].label2 = $opt2;
                         $scope.$apply();
                     }
                 }
@@ -206,7 +210,12 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                 {
                     if($scope.questionList[i][j].index == $index)
                     {
-                        $scope.questionList[i][j] = {'index': $index, 'type':'3', 'title':$title, 'min':$min, 'max':$max, 'step':$step};
+                        $scope.questionList[i][j].index = $index;
+                        $scope.questionList[i][j].type = 3;
+                        $scope.questionList[i][j].title = $title;
+                        $scope.questionList[i][j].min = $min;
+                        $scope.questionList[i][j].max = $max;
+                        $scope.questionList[i][j].step = $step;
                         $scope.$apply();
                     }
                 }
@@ -222,7 +231,9 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                 {
                     if($scope.questionList[i][j].index == $index)
                     {
-                        $scope.questionList[i][j] = {'index': $index, 'type':$type, 'title':$title};
+                        $scope.questionList[i][j].index = $index;
+                        $scope.questionList[i][j].type = $type;
+                        $scope.questionList[i][j].title = $title;
                         $scope.$apply();
                     }
                 }
@@ -238,14 +249,15 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                 {
                     if($scope.questionList[i][j].index == $index)
                     {
-                        $scope.questionList[i][j] = {'index': $index, 'text':$text};
+                        $scope.questionList[i][j].index =  $index;
+                        $scope.questionList[i][j].text = $text;
                         $scope.$apply();
                     }
                 }
             }
         }
 
-        // Edit open question in proper object list
+        // Edit multiple question in proper object list
         $scope.editMultipleQuestion = function ($index, $title, $options, $multiple)
         {
             for (var i = 0; i < $scope.questionList.length; i++)
@@ -254,7 +266,29 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                 {
                     if($scope.questionList[i][j].index == $index)
                     {
-                        $scope.questionList[i][j] = {'index': $index, 'title':$title, 'option':$options, 'multiple':$multiple};
+                        $scope.questionList[i][j].index = $index;
+                        $scope.questionList[i][j].title = $title;
+                        $scope.questionList[i][j].option = $options;
+                        $scope.questionList[i][j].multiple = $multiple;
+                        $scope.$apply();
+                    }
+                }
+            }
+        }
+
+        // Edit section question in proper object list
+        $scope.editSectionQuestion = function ($index, $title, $options, $multiple)
+        {
+            for (var i = 0; i < $scope.questionList.length; i++)
+            {
+                for (var j = 0; j < $scope.questionList[i].length; j++)
+                {
+                    if($scope.questionList[i][j].index == $index)
+                    {
+                        $scope.questionList[i][j].index = $index;
+                        $scope.questionList[i][j].title = $title;
+                        $scope.questionList[i][j].option = $options;
+                        $scope.questionList[i][j].multiple = $multiple;
                         $scope.$apply();
                     }
                 }
@@ -270,7 +304,10 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                 {
                     if($scope.questionList[i][j].index == $index)
                     {
-                        $scope.questionList[i][j] = {'index': $index, 'type':$type, 'title':$title, 'maxlength':$maxlength};
+                        $scope.questionList[i][j].index = $index;
+                        $scope.questionList[i][j].type = $type;
+                        $scope.questionList[i][j].title = $title;
+                        $scope.questionList[i][j].maxlength = $maxlength;
                         $scope.$apply();
                     }
                 }
@@ -364,6 +401,31 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                 str.push('<span>Minimum</span> <input type="number" name="min" class="form-control" value="'+min+'" required="required" />');
                 str.push('<span>Maximum</span> <input type="number" name="max" class="form-control" value="'+max+'" required="required" />');
                 str.push('<span>Pas</span> <input type="number" name="step" class="form-control" value="'+step+'" required="required" />');
+            }
+            else if($type == 4)
+            {
+                str.push('<h5>Branchement</h5>');
+                var ttl = $("#itemn"+$index).parent().find("h5").html();
+                str.push('<span>Indiquez un nouveau titre</span> <input type="text" name="questionTitle" class="form-control" value="'+ttl+'" required />');
+                str.push('<input type="checkbox" value="1" id="multipleAnswers"> Autoriser la selection multiple ?');
+                var allOptions = $("#itemn"+$index).children("select").children();
+                str.push('<div id="allOptionsEdit">');
+                allOptions.each(function($index)
+                {
+                    str.push('<div pos="'+$index+'">');
+                    str.push('<input class="form-control" style="display:inline-block; width:45%;" type="text" value="'+$(this).text()+'" />');
+                    str.push('<select class="form-control" style="display:inline-block; width:45%;" >');
+                    for (var i = 0; i < $scope.sectionList.length; i++)
+                    {
+                        str.push('<option value="'+i+'">'+$scope.sectionList[i]+'</option>');
+                    }
+                    str.push('</select>');
+                    str.push('<span class="removeItem fa fa-times"></span></div>');
+                });
+                str.push('</div>');
+                str.push('<button id="addNewSectionOptions" class="btn btn-default">Ajouter une option</button>');
+                str.push('<div id="newSectionOptions" style="margin-top:15px;"></div>');
+
             }
             else if($type == 5)
             {
