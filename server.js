@@ -316,8 +316,9 @@ app
         pg.connect(conString, function(err, client, done) {
             if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
             else {
-                var query = 'UPDATE surveymania.survey_headers SET publied = true AND publication_date = \'' + dateNow + '\''
+                var query = 'UPDATE surveymania.survey_headers SET publied = TRUE, publication_date = \'' + dateNow + '\''
                     + ' WHERE organization_id = ' + orgaid + ' AND id = ' + surveyid;
+
                 client.query(query, function(err, result) {
                     done();
                     if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
