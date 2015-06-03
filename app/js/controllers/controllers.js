@@ -1553,6 +1553,9 @@ surveyManiaControllers.controller('PrevisualisationController', ['$scope', '$htt
 
         $('#answer').fadeIn(400, function() {
             $scope.moving = false;
+            $('html, body').animate({
+                scrollTop: $("#answer").offset().top - 30
+            }, 1100);
         });
     }
 
