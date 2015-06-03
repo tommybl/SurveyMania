@@ -41,11 +41,11 @@
                     <thead><tr><th>Ordre</th> <th>Titre</th> <th>Sous-titre</th> <th>Obligatoire</th></tr></thead>
                     <tbody>
                         <tr ng-repeat="sec in sections">
-                            <td>{{sec.section_order}}</td>
-                            <td>{{sec.title}}</td>
-                            <td>{{sec.subtitle}}</td>
-                            <td ng-if="sec.required"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td>
-                            <td ng-if="!sec.required"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></td>
+                            <td>{{sec.section.section_order}}</td>
+                            <td>{{sec.section.title}}</td>
+                            <td>{{sec.section.subtitle}}</td>
+                            <td ng-if="sec.section.required"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td>
+                            <td ng-if="!sec.section.required"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></td>
                         </tr>
                     </tbody>
                 </table>
