@@ -334,9 +334,10 @@ app
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
     if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
     else {
-        var encrypted = CryptoJS.AES.encrypt(req.body.surveyid, SurveyManiasecret, { format: JsonFormatter }).toString();
-        var tmp = encrypted.replace(/\+/g, ".");
-        res.json({code: 200, qrcodestr: tmp});
+        var surveyid = req.body.surveyid.toString();
+        var encrypted = CryptoJS.AES.encrypt(surveyid, SurveyManiasecret, { format: JsonFormatter }).toString();
+        var result = encrypted.replace(/\+/g, ".");
+        res.json({code: 200, qrcodestr: result});
     }
 })
 
