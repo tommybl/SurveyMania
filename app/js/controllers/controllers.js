@@ -56,7 +56,7 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                         {'index':'','id':'6','title': 'Choix multiple', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<select name="selectform"><option pos="0" value="1">Option 1</option></select>'), 'show':true, 'icon':'list'},
                         {'index':'','id':'7','title': 'Texte libre', 'label':$sce.trustAsHtml('<p>Texte</p>'),'code' :  $sce.trustAsHtml('<p ng-bind="title">Titre</p>'), 'show':true, 'icon':'font'}
                         ]; 
-
+        $scope.survey = {name: "", }
         $scope.htmlList = new Array();
         $scope.htmlList[0] = new Array();
 
@@ -73,7 +73,7 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
 
         $scope.validateSurvey = function ()
         {
-            $http.post('/app/account/admin/validate/survey', {list: $scope.questionList})
+            $http.post('/app/account/admin/validate/survey', {name: $scope.survey.name, list: $scope.questionList, sections: $scope.sectionList})
             .success(function (data, status, headers, config) {
                 if (data.error == undefined) {
                     console.log("lol");
