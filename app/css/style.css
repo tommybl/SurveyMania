@@ -680,15 +680,24 @@ blockquote {
     margin-top: 10px;
 }
 
-#surveyAnswer .previsuContainer {
-    border-radius: 5px;
-    box-shadow: 2px 2px 10px #AAA;
+#surveyAnswer .section_link_label {
+    margin-left: 15px;
 }
 
 #surveyAnswer .previsuMaster {
     padding-top: 50px;
 }
 
-#surveyAnswer .section_link_label {
-    margin-left: 15px;
+#surveyAnswer .previsuContainer {
+    border-radius: 5px;
+    box-shadow: 2px 2px 10px #AAA;
+}
+
+#surveyAnswer .scrollTopDiv {
+    position: relative;
+}
+
+#surveyAnswer .scrollTop {
+    width: 60px;
+    height: 60px;
 }

@@ -51,10 +51,10 @@
         <!-- Section div end -->
     </div>
 
-    <div class="col-md-12 previsuMaster">
-        <!-- Answer div -->
+    <!-- Answer div -->
+    <div id="answer" class="col-md-12 previsuMaster">
         <div class="col-md-6 col-md-offset-3">
-            <div id="answer" class="panel panel-default answerContainer">
+            <div class="panel panel-default previsuContainer">
                 <div class="panel-heading">
                     <h4>{{surveySection.title}} <small ng-if="surveySection.subtitle != null">&mdash; {{surveySection.subtitle}}</small></h4>
                 </div>
@@ -126,8 +126,29 @@
                 </div>
             </div>
         </div>
-        <!-- Answer div end -->
+
+        <div id="scrollTop" class="scrollTopDiv">
+            <a onclick="$('html, body').animate({scrollTop: 0}, 1100);">
+                <img class="scrollTop" src="../img/Scroll-to-top-button2.png" alt="scrollTop" />
+            </a>
+        </div>
 	</div>
+    <!-- Answer div end -->
 </div>
 
 <script src="js/scroll.js"></script>
+
+<script type="text/javascript">
+    var orig_pos;
+
+    $(function() {
+        orig_pos = $("#answer").offset();
+        $('#answer').css('display', 'none');
+    });
+
+    $(window).scroll(function() {
+        var new_pos = $(window).scrollTop();
+        if (new_pos > orig_pos.top) $("#scrollTop").stop().animate({"top": new_pos - orig_pos.top + 'px'}, {duration: 200} );
+        else $("#scrollTop").stop().animate({"top": '0px'}, {duration: 200} );
+   });
+</script>
