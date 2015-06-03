@@ -82,7 +82,6 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                 else
                     $scope.sectionList[i].required = true;
             }
-            $scope.$apply();
         }
 
         $scope.getRequiredSections = function()
@@ -354,6 +353,8 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                     }
                 }
             }
+            $scope.getRequiredSections();
+            $scope.updateSectionList();
         }
 
         // Edit title question in proper object list
