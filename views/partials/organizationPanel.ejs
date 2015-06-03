@@ -61,7 +61,10 @@
                     <td>{{orgaSurvey.surveyname}}</td>
                     <td>{{orgaSurvey.points}}</td>
                     <td>{{orgaSurvey.infos}}</td>
-                    <td><i class="fa fa-check" ng-click="publishSurvey(orgaSurvey.surveyid)"></i></td>
+                    <td>
+                        <i ng-if="orgaSurvey.publied == false" class="fa fa-check" ng-click="publishSurvey(orgaSurvey.surveyid)"></i>
+                        <i ng-if="orgaSurvey.publied == true" class="fa fa-close"></i>
+                    </td>
                     <td><i class="fa fa-print" ng-click="printQrCode(orgaSurvey.surveyid)"></i></td>
                 </tr>
             </tbody>

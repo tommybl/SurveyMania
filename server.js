@@ -2055,7 +2055,7 @@ app
         pg.connect(conString, function(err, client, done) {
             if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
             else {
-                var query = 'SELECT sh.id AS surveyId, sh.name AS surveyName, sh.points AS points, sh.info AS infos FROM surveymania.survey_headers sh WHERE sh.organization_id = ' + orgaid;
+                var query = 'SELECT sh.id AS surveyId, sh.name AS surveyName, sh.points AS points, sh.info AS infos, sh.publied AS publied FROM surveymania.survey_headers sh WHERE sh.organization_id = ' + orgaid;
                 client.query(query, function(err, result) {
                     done();
                     if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
