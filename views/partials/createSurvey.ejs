@@ -4,7 +4,8 @@
     <div class="col" data-ng-repeat="c in htmlsub">{{c}}</div>
     <span>------------------------</span>
   </div>
-  {{displayedList}}
+  {{requiredSections}}
+  {{SectionList | json}}
   <div class="col-md-2">
     <h3>Créer un sondage </h3>
     <input ng-model="survey.name" type="text" name="name" placeholder="Entrez le nom du sondage" class="form-control" required="required"/><br>
@@ -168,7 +169,7 @@ $(document).on('click', '#addNewSectionOptions', function(event)
   str.push('<select class="form-control" style="display:inline-block; width:45%;" >');
   for (var i = 0; i < $('#renderPanel').scope().sectionList.length; i++)
   {
-    str.push('<option value="'+i+'">'+$('#renderPanel').scope().sectionList[i]+'</option>');
+    str.push('<option value="'+i+'">'+$('#renderPanel').scope().sectionList[i].title+'</option>');
   }
   str.push('</select>');
   str.push('<span class="removeItem fa fa-times"></span></div>');
