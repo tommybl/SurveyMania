@@ -1,3 +1,23 @@
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .section-to-print, .section-to-print * {
+    visibility: visible;
+  }
+  .section-to-print {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  #no-print
+  {
+    display:none;
+  }
+}
+
 /* ******************************************* */
 /* ****************** GLOBAL ***************** */
 /* ******************************************* */
@@ -680,26 +700,17 @@ blockquote {
     margin-top: 10px;
 }
 
-#surveyAnswer .section_link_label {
-    margin-left: 15px;
+#surveyAnswer .previsuContainer {
+    border-radius: 5px;
+    box-shadow: 2px 2px 10px #AAA;
 }
 
 #surveyAnswer .previsuMaster {
     padding-top: 50px;
 }
 
-#surveyAnswer .previsuContainer {
-    border-radius: 5px;
-    box-shadow: 2px 2px 10px #AAA;
-}
-
-#surveyAnswer .scrollTopDiv {
-    position: relative;
-}
-
-#surveyAnswer .scrollTop {
-    width: 60px;
-    height: 60px;
+#surveyAnswer .section_link_label {
+    margin-left: 15px;
 }
 
 .fa-print:hover

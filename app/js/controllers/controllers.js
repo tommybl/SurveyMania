@@ -1633,11 +1633,11 @@ surveyManiaControllers.controller('OrganizationPanel', ['$scope', '$http', '$win
         $http.post('/app/account/admin/survey/getCode', {surveyid: $id})
             .success(function (data, status, header, config) {
                 qrcodestr = data.qrcodestr;
+                document.getElementById("qrimage").innerHTML = "<img onload='window.print()' src='https://chart.googleapis.com/chart?chs=500x500&cht=qr&chl=" + qrcodestr + "'/>";
             })
             .error(function (data, status, header, config) {
 
             });
-        console.log(qrcodestr);
     }
 
     $scope.categoryNameCheck = function () {$scope.isValidCategoryName = (/^.{2,25}$/.test($scope.newCategory.name));}

@@ -9,7 +9,7 @@
 </script>
 
 <div ng-controller="OrganizationPanel" class="col-md-12 row-centered">
-    <div class="col-md-6 col-centered">
+    <div id="no-print" class="col-md-6 col-centered">
         <h1>Catégories</h1>
         <table class="table">
             <thead>
@@ -43,6 +43,7 @@
     </div>
 
     <div class="col-md-6 col-centered" style="margin:auto;display:block">
+        <div id="qrimage" class="section-to-print" style="visibility:hidden;height:1px;"></div>
         <h1>Sondages</h1>
         <table class="table">
             <thead>
