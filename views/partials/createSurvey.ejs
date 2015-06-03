@@ -57,22 +57,22 @@
         <div role="tabpanel" class="tab-pane active" id="upload_tab">
           <div class="ui-widget-content">
             <ol class="dropzone" data-drop="true" ng-model='displayedList' jqyoui-droppable="{multiple:true}" id="list4">
-              <li class="drop_item" ng-repeat="itemlol in displayedList" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" ng-model="displayedList" jqyoui-draggable="{index: {{$index}},animate:false}">
+              <li class="drop_item" ng-repeat="itemlol in displayedList" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" ng-model="displayedList" jqyoui-draggable="{index: {{$index+(currentListNumber*100)}},animate:false}">
                 <!-- Champ pour modifier la question -->
                 <input ng-hide="itemlol.show" type="text" class="answer_field" ng-model="answer"/>
                 <!-- Label de la question -->
                 <span class="question_label" ng-show="itemlol.show" ng-bind-html="itemlol.label"></span>
                 <!-- Code de la question (type de question) -->
-                <span id="itemn{{$index}}" ng-hide="itemlol.title == 'Titre' || itemlol.title == 'Texte libre'" class="question_code" ng-bind-html="itemlol.code"></span>
+                <span id="itemn{{$index+(currentListNumber*100)}}" ng-hide="itemlol.title == 'Titre' || itemlol.title == 'Texte libre'" class="question_code" ng-bind-html="itemlol.code"></span>
 
                 <!-- Bouton pour valider la modification -->
-                <span ng-hide="itemlol.show" ng-click="validate($index, answer)" class="validate_edit_btn"></span>
+                <span ng-hide="itemlol.show" ng-click="validate($index+(currentListNumber*100), answer)" class="validate_edit_btn"></span>
                 <!-- Bouton pour modifier la question-->
-                <span ng-show="itemlol.show" ng-click="edit($index, itemlol.id)" class="edit_btn"></span>
+                <span ng-show="itemlol.show" ng-click="edit($index+(currentListNumber*100), itemlol.id)" class="edit_btn"></span>
                 <!-- Bouton pour ajouter un média-->
-                <i ng-show="itemlol.show" ng-click="addMedia($index)" class="fa add_media fa-file-image-o"></i>
+                <i ng-show="itemlol.show" ng-click="addMedia($index+(currentListNumber*100))" class="fa add_media fa-file-image-o"></i>
                 <!-- Bouton pour supprimer la question -->
-                <span class="delete_btn" ng-click="delete($index)"></span>
+                <span class="delete_btn" ng-click="delete($index+(currentListNumber*100))"></span>
               </li>
               <li class="placeholder" ng-hide="hideMe()">Cliquez/déposez des éléments depuis le menu pour créer votre sondage</li>
             </ol>
@@ -98,13 +98,19 @@ $(document).on('click', '#validateMedia', function(event) {
         video_id = video_id.substring(0, amp);
       var finalurl = "http://youtube.com/embed/"+video_id;
 
-      $('#renderPanel').scope().addVideo(idItem, finalurl);
-      $("#itemn"+idItem).append('<iframe style="clear:both;" id="ytplayer" type="text/html" width="640" height="390" src="'+finalurl+'" frameborder="0"/>').hide().fadeIn(2000);
+      var desc = $(this).parent().children("input[name='videoDescription']").val();
+
+      $('#renderPanel').scope().addVideo(idItem, {'description':desc, 'url':finalurl});
+      console.log($("#itemn"+idItem));
+      $("#itemn"+idItem).after('<iframe style="clear:both;" id="ytplayer" type="text/html" width="640" height="390" src="'+finalurl+'" frameborder="0"/><div>'+desc+'</div>').hide().fadeIn(2000);
     }
     if(urlimg != '')
     {
-      $('#renderPanel').scope().addImage(idItem, urlimg);
-      $("#itemn"+idItem).append('<img src="'+urlimg+'" />').hide().fadeIn(2000);
+      var idesc = $(this).parent().children("input[name='videoDescription']").val();
+
+      $('#renderPanel').scope().addImage(idItem, {'description':idesc, 'url':urlimg});
+
+      $("#itemn"+idItem).after('<img src="'+urlimg+'" /><div>'+idesc+'</div>').hide().fadeIn(2000);
     }
 });
 
@@ -200,7 +206,7 @@ $(document).on('click', '#closedQuestion', function(event) {
       else
         $("#itemn"+idItem).parent().find("h5").html(newTitle);
 
-      if (typeItem == 0 || typeItem == 5)
+      if (typeItem == 0)
       {
         $('#renderPanel').scope().editTitleQuestion(idItem, newTitle, typeItem);
       }
@@ -271,7 +277,17 @@ $(document).on('click', '#closedQuestion', function(event) {
 
         $('#renderPanel').scope().editSectionQuestion(idItem, newTitle, options, multiple);
       }
-      if (typeItem == 6)
+      if(typeItem == 5)
+      {
+        var min = $(this).parent().children("input[name='min']").val();
+        var max = $(this).parent().children("input[name='max']").val();
+
+        $("#itemn"+idItem).children("input[type='number']").prop("min", min);
+        $("#itemn"+idItem).children("input[type='number']").prop("max", max);
+
+        $('#renderPanel').scope().editNumericQuestion(idItem, newTitle, min, max);
+      }
+      if(typeItem == 6)
       {
         var multiple = false;
         if($('#multipleAnswers').is(':checked'))
