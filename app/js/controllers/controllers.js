@@ -82,7 +82,6 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                 else
                     $scope.sectionList[i].required = true;
             }
-            $scope.$apply();
         }
 
         $scope.getRequiredSections = function()
