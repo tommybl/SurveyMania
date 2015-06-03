@@ -1550,13 +1550,14 @@ surveyManiaControllers.controller('PrevisualisationController', ['$scope', '$htt
         $scope.surveySection = $scope.sections[index].section;
         $scope.sectionQuestionArray = $scope.sections[index].question_array;
 
-        console.log($scope.sectionQuestionArray);
-
         if ($scope.sectionDisplayed) $scope.$apply();
         else $scope.sectionDisplayed = true;
 
         $('#answer').fadeIn(400, function() {
             $scope.moving = false;
+            $('html, body').animate({
+                scrollTop: $("#answer").offset().top - 30
+            }, 1100);
         });
     }
 

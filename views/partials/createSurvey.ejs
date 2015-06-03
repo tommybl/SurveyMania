@@ -15,7 +15,6 @@
     <select id="survey-categories" ng-model="survey.category" class="form-control">
      <option ng-repeat="category in categories" value="{{category.category_id}}" >{{category.name}}</option>
    </select><br>
-   <button class="btn btn-primary" ng-click="validateSurvey()" style="width: 100px">Valider</button>
  </div>
   <div>
     <div class="col-md-4" id="tool_panel">
@@ -46,7 +45,7 @@
     </div> 
     <div class="col-md-6" id="renderPanel">
       <div id="optionsbar" class="col-sm-12">
-        <button class="optionsbarButton"><i class="fa fa-save"> Enregistrer</i></button>
+        <button class="optionsbarButton" ng-click="validateSurvey()"><i class="fa fa-save"> Enregistrer</i></button>
         <button class="optionsbarButton"><i class="fa fa-search"> Prévisualiser</i></button>
         <button class="optionsbarButton"><i class="fa fa-plus-square-o addSection"> Ajouter une section</i></button>
       </div>
