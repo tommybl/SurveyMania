@@ -701,3 +701,8 @@ blockquote {
     width: 60px;
     height: 60px;
 }
+
+.fa-print:hover
+{
+  cursor: pointer;
+}

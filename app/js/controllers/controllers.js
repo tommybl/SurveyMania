@@ -1627,6 +1627,19 @@ surveyManiaControllers.controller('OrganizationPanel', ['$scope', '$http', '$win
             $scope.orgaSurveys = data.orgaSurveys;
     });
 
+    $scope.printQrCode = function($id)
+    {
+        var qrcodestr;
+        $http.post('/app/account/admin/survey/getCode', {surveyid: $id})
+            .success(function (data, status, header, config) {
+                qrcodestr = data.qrcodestr;
+            })
+            .error(function (data, status, header, config) {
+
+            });
+        console.log(qrcodestr);
+    }
+
     $scope.categoryNameCheck = function () {$scope.isValidCategoryName = (/^.{2,25}$/.test($scope.newCategory.name));}
     $scope.categoryColorCheck = function () {$scope.isValidCategoryColor = (/^#(\d|[A-Fa-f]){6}$/.test($scope.newCategory.color));}
 
