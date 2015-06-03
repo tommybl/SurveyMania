@@ -305,6 +305,41 @@ app
     });
 })
 
+.post('/app/account/admin/publish/survey', function (req, res) {
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
+    else {
+        var orgaid = req.user.organization;
+        var surveyid = req.body.surveyid;
+        var dateNow = escapeHtml(moment().format("YYYY-MM-DD HH:mm:ss"));
+
+        pg.connect(conString, function(err, client, done) {
+            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+            else {
+                var query = 'UPDATE surveymania.survey_headers SET publied = true AND publication_date = \'' + dateNow + '\''
+                    + ' WHERE organization_id = ' + orgaid + ' AND id = ' + surveyid;
+                client.query(query, function(err, result) {
+                    done();
+                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                    else {
+                        res.json({code: 200, message: "OK"});
+                    }
+                });
+            }
+        });
+    }
+})
+
+.post('/app/account/admin/survey/getCode', function (req, res) {
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
+    else {
+        var encrypted = CryptoJS.AES.encrypt(req.body.surveyid, SurveyManiasecret, { format: JsonFormatter }).toString();
+        var tmp = encrypted.replace(/\+/g, ".");
+        res.json({code: 200, code: tmp});
+    }
+})
+
 .post('/login', function (req, res) {
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
     res.setHeader('Accept', 'application/json');
@@ -1186,10 +1221,6 @@ app
         res.setHeader('Content-Type', 'application/json; charset=UTF-8');
         var user = req.user;
 
-        /*console.log(req.body.qrcode);
-        var encrypted = CryptoJS.AES.encrypt(req.body.qrcode, SurveyManiasecret, { format: JsonFormatter }).toString();
-        var tmp = encrypted.replace(/\+/g, ".");
-        console.log(tmp);*/
         if (req.body.qrcode == "error decoding QR Code")
             res.status(200).json({code: 200, message: "Scanning error"});
         else {
