@@ -1627,6 +1627,18 @@ surveyManiaControllers.controller('OrganizationPanel', ['$scope', '$http', '$win
             $scope.orgaSurveys = data.orgaSurveys;
     });
 
+    $scope.publishSurvey = function($id)
+    {
+        var qrcodestr;
+        $http.post('/app/account/admin/publish/survey', {surveyid: $id})
+            .success(function (data, status, header, config) {
+                console.log("success");
+            })
+            .error(function (data, status, header, config) {
+
+            });
+    }
+
     $scope.printQrCode = function($id)
     {
         var qrcodestr;

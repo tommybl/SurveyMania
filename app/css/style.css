@@ -713,7 +713,7 @@ blockquote {
     margin-left: 15px;
 }
 
-.fa-print:hover
+.fa-print:hover, .fa-check:hover
 {
   cursor: pointer;
 }
