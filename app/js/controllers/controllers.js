@@ -1420,10 +1420,12 @@ surveyManiaControllers.controller('PrevisualisationController', ['$scope', '$htt
             $http.post('/app/previsualisation/getSections', {surveyid: $scope.surveyid})
                 .success(function (data, status, header, config) {
                     $scope.sections = data.sections;
+                    console.log($scope.sections);
                     $('#startPage').fadeIn(800);
                 })
                 .error(function (data, status, header, config) {
-                    $location.path("/app/createSurvey");
+                    console.log("YOOUUU FAIILLLED MOTHER FUCKER");
+                    //$location.path("/app/createSurvey");
                 });
         })
         .error(function (data, status, header, config) {
