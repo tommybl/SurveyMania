@@ -679,3 +679,16 @@ blockquote {
 #surveyAnswer .comment {
     margin-top: 10px;
 }
+
+#surveyAnswer .previsuContainer {
+    border-radius: 5px;
+    box-shadow: 2px 2px 10px #AAA;
+}
+
+#surveyAnswer .previsuMaster {
+    padding-top: 50px;
+}
+
+#surveyAnswer .section_link_label {
+    margin-left: 15px;
+}

@@ -1447,12 +1447,12 @@ surveyManiaControllers.controller('PrevisualisationController', ['$scope', '$htt
     $scope.surveyid = $scope.url[$scope.url.length - 1];
     $scope.survey;
     $scope.sections;
-    $scope.startPageDisplayed = true;
-
-  
-    $scope.surveyEstimatedTime;
     $scope.surveySection;
+    $scope.selectedSection;
     $scope.sectionQuestionArray;
+    $scope.surveyEstimatedTime;
+    $scope.sectionDisplayed = false;
+    $scope.moving = false;
 
     $http.post('/app/survey/getSurvey', {survey: $scope.surveyid, prev: true})
         .success(function (data, status, header, config) {
@@ -1461,25 +1461,58 @@ surveyManiaControllers.controller('PrevisualisationController', ['$scope', '$htt
             $http.post('/app/previsualisation/getSections', {surveyid: $scope.surveyid})
                 .success(function (data, status, header, config) {
                     $scope.sections = data.sections;
-                    console.log($scope.sections);
-                    $('#startPage').fadeIn(800);
+
+                    for (var h = 0; h < $scope.sections.length; ++h) {
+                        $scope.sectionQuestionArray = $scope.sections[h].question_array;
+                        for (var i = 0; i < $scope.sectionQuestionArray.length; ++i) {
+                            for (var j = 0; j < $scope.sectionQuestionArray[i].parameters.length; ++j)
+                                if ($scope.sectionQuestionArray[i].parameters[j].value_num != null)
+                                    eval('$scope.sectionQuestionArray[i].param' + $scope.sectionQuestionArray[i].parameters[j].name  + ' = ' + $scope.sectionQuestionArray[i].parameters[j].value_num);
+                                else
+                                    eval('$scope.sectionQuestionArray[i].param' + $scope.sectionQuestionArray[i].parameters[j].name  + ' = ' + $scope.sectionQuestionArray[i].parameters[j].value_text);
+
+                            for (var j = 0; j < $scope.sectionQuestionArray[i].medias.length; ++j) {
+                                if ($scope.sectionQuestionArray[i].medias[j].media_type == 'youtube')
+                                    $scope.sectionQuestionArray[i].medias[j].media_path = $sce.trustAsResourceUrl('https://www.youtube.com/embed/' + $scope.sectionQuestionArray[i].medias[j].media_path);
+                                else if ($scope.sectionQuestionArray[i].medias[j].media_type = 'image_url')
+                                    $scope.sectionQuestionArray[i].medias[j].media_path = $sce.trustAsResourceUrl($scope.sectionQuestionArray[i].medias[j].media_path);
+                            }
+                        }
+                    }
+                    $scope.sectionQuestionArray = undefined;
                 })
                 .error(function (data, status, header, config) {
-                    console.log("YOOUUU FAIILLLED MOTHER FUCKER");
-                    //$location.path("/app/createSurvey");
+                    $location.path("/app/createSurvey");
                 });
         })
         .error(function (data, status, header, config) {
             $location.path("/app/createSurvey");
         });
 
-    $scope.displaySections = function () {
-        if ($scope.startPageDisplayed) {
-            $('#startPage').fadeOut(800, function () {
-                $scope.startPageDisplayed = false;
-                $('#sectionPage').fadeIn(800);
-            });
+    $scope.displaySection = function (index) {
+        if (!$scope.moving) {
+            $scope.moving = true;
+            $scope.selectedSection = index;
+            if ($scope.sectionDisplayed) {
+                $('#answer').fadeOut(400, function() {
+                    $scope.getSection(index);
+                });
+            } else {
+                $scope.getSection(index);
+            }
         }
+    }
+
+    $scope.getSection = function (index) {
+        $scope.surveySection = $scope.sections[index].section;
+        $scope.sectionQuestionArray = $scope.sections[index].question_array;
+
+        if ($scope.sectionDisplayed) $scope.$apply();
+        else $scope.sectionDisplayed = true;
+
+        $('#answer').fadeIn(400, function() {
+            $scope.moving = false;
+        });
     }
 
     $scope.remainingCharacter = function (id) {
