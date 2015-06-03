@@ -100,15 +100,247 @@ app
 .post('/app/account/admin/validate/survey', function (req, res) {
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
     res.setHeader('Accept', 'application/json');
-    var questionList = req.body.list;
-    for (var i = 0; i < questionList.length; i++)
-    {
-        for (var j = 0; j < questionList[i].length; j++)
-        {
-            console.log(questionList[i][j].title);
+    if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) {res.status(401).json({code: 401, error: "Unauthorized", message: "Unauthorized"}); return;}
+    var questions = req.body.list;
+    var sections = req.body.sections;
+    var name = (req.body.name == null || req.body.name == "") ? "Sondage" : escapeHtml(req.body.name);
+    var points = (req.body.points == null || req.body.points == "") ? 100 : req.body.points;
+    var instructions = (req.body.instructions == null || req.body.instructions == "") ? "NULL" : escapeHtml(req.body.instructions);
+    var description = (req.body.description == null || req.body.description == "") ? "NULL" : escapeHtml(req.body.description);
+    var category = req.body.category;
+    var dateNow = escapeHtml(moment().format("YYYY-MM-DD HH:mm:ss"));
+    console.log(name);
+    console.log(points);
+    console.log(instructions);
+    console.log(description);
+    console.log(category);
+    console.log(sections);
+    console.log(questions);
+
+    pg.connect(conString, function(err, client, done) {
+        if(err) {console.log("err1"); res.status(500).json({code: 500, error: "Internal server error", message: "Error fetching client from pool"});}
+        else {
+            var query = 'INSERT INTO surveymania.survey_headers(organization_id, category_id, theme_id, name, instructions, info, points, publied, publication_date) ' +
+                        'VALUES (' + req.user.organization + ', ' + category + ', 1, \'' + name + '\', \'' + instructions + '\', \'' + description + '\', ' + points + ', FALSE, NULL) ' +
+                        'RETURNING id';
+            client.query(query, function(err, result) {
+                done();
+                if(err) {console.log("err2"); res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});}
+                else {
+                    var header_id = result.rows[0].id;
+                    var section_index = 0;
+                    async.eachSeries(questions,
+                        function (s, callback) {
+                            var section = s;
+                            var query = 'INSERT INTO surveymania.survey_sections(header_id, title, required, section_order) ' +
+                                        'VALUES (' + header_id + ', \'' + sections[section_index] + '\', TRUE, ' + (section_index+1) + ') ' +
+                                        'RETURNING id';
+                            client.query(query, function(err, result) {
+                                done();
+                                if(err) {console.log("err3"); res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});}
+                                else {
+                                    var section_id = result.rows[0].id;
+                                    var question_index = 0;
+                                    async.eachSeries(section,
+                                        function (q, callback2) {
+                                            var question = q;
+                                            if (question.type == '0') {
+                                                var query = 'INSERT INTO surveymania.questions(survey_section_id, input_type_id, description, question_order, multiple_answers) ' +
+                                                            'VALUES (' + section_id + ', 5, \'' + escapeHtml(question.title) + '\', ' + (question_index+1) + ', FALSE) ' +
+                                                            'RETURNING id';
+                                                client.query(query, function(err, result) {
+                                                    done();
+                                                    if(err) {console.log("err4"); res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});}
+                                                    else {
+                                                        var question_id = result.rows[0].id;
+                                                        question_index += 1;
+                                                        callback2();
+                                                    }
+                                                });
+                                            }
+                                            else if (question.type == '1') {
+                                                var query = 'INSERT INTO surveymania.questions(survey_section_id, input_type_id, description, question_order, multiple_answers) ' +
+                                                            'VALUES (' + section_id + ', 1, \'' + escapeHtml(question.title) + '\', ' + (question_index+1) + ', FALSE) ' +
+                                                            'RETURNING id';
+                                                client.query(query, function(err, result) {
+                                                    done();
+                                                    if(err) {console.log("err5"); res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});}
+                                                    else {
+                                                        var question_id = result.rows[0].id;
+                                                        var query = 'INSERT INTO surveymania.question_params(question_id, name, value_num) ' +
+                                                                    'VALUES (' + question_id + ', \'max\', ' + question.maxlength + ')';
+                                                        client.query(query, function(err, result) {
+                                                            done();
+                                                            if(err) {console.log("err6"); res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});}
+                                                        });
+                                                        question_index += 1;
+                                                        callback2();
+                                                    }
+                                                });
+                                            }
+                                            else if (question.type == '2') {
+                                                var query = 'INSERT INTO surveymania.questions(survey_section_id, input_type_id, description, question_order, multiple_answers) ' +
+                                                            'VALUES (' + section_id + ', 3, \'' + escapeHtml(question.title) + '\', ' + (question_index+1) + ', FALSE) ' +
+                                                            'RETURNING id';
+                                                client.query(query, function(err, result) {
+                                                    done();
+                                                    if(err) {console.log("err7"); res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});}
+                                                    else {
+                                                        var question_id = result.rows[0].id;
+                                                        var query = 'INSERT INTO surveymania.option_choices(question_id, choice_name, option_order, linked_section_id) VALUES ' +
+                                                                    '(' + question_id + ', \'' + escapeHtml(question.label1) + '\', 1, NULL), ' +
+                                                                    '(' + question_id + ', \'' + escapeHtml(question.label2) + '\', 2, NULL)';
+                                                        client.query(query, function(err, result) {
+                                                            done();
+                                                            if(err) {console.log("err8"); res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});}
+                                                        });
+                                                        question_index += 1;
+                                                        callback2();
+                                                    }
+                                                });
+                                            }
+                                            else if (question.type == '3') {
+                                                var query = 'INSERT INTO surveymania.questions(survey_section_id, input_type_id, description, question_order, multiple_answers) ' +
+                                                            'VALUES (' + section_id + ', 4, \'' + escapeHtml(question.title) + '\', ' + (question_index+1) + ', FALSE) ' +
+                                                            'RETURNING id';
+                                                client.query(query, function(err, result) {
+                                                    done();
+                                                    if(err) {console.log("err9"); res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});}
+                                                    else {
+                                                        var question_id = result.rows[0].id;
+                                                        var query = 'INSERT INTO surveymania.question_params(question_id, name, value_num) VALUES ' +
+                                                                    '(' + question_id + ', \'min\', ' + question.min + '), ' +
+                                                                    '(' + question_id + ', \'max\', ' + question.max + '), ' +
+                                                                    '(' + question_id + ', \'pas\', ' + question.step + ')';
+                                                        client.query(query, function(err, result) {
+                                                            done();
+                                                            if(err) {console.log("err10"); console.log(err); res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});}
+                                                        });
+                                                        question_index += 1;
+                                                        callback2();
+                                                    }
+                                                });
+                                            }
+                                            else if (question.type == '5') {
+                                                var query = 'INSERT INTO surveymania.questions(survey_section_id, input_type_id, description, question_order, multiple_answers) ' +
+                                                            'VALUES (' + section_id + ', 2, \'' + escapeHtml(question.title) + '\', ' + (question_index+1) + ', FALSE) ' +
+                                                            'RETURNING id';
+                                                client.query(query, function(err, result) {
+                                                    done();
+                                                    if(err) {console.log("err11"); res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});}
+                                                    else {
+                                                        var question_id = result.rows[0].id;
+                                                        var query = 'INSERT INTO surveymania.question_params(question_id, name, value_num) VALUES ' +
+                                                                    '(' + question_id + ', \'min\', ' + question.min + '), ' +
+                                                                    '(' + question_id + ', \'max\', ' + question.max + ')';
+                                                        client.query(query, function(err, result) {
+                                                            done();
+                                                            if(err) {console.log("err12"); res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});}
+                                                        });
+                                                        question_index += 1;
+                                                        callback2();
+                                                    }
+                                                });
+                                            }
+                                            else if (question.type == '7') {
+                                                var query = 'INSERT INTO surveymania.questions(survey_section_id, input_type_id, description, question_order, multiple_answers) ' +
+                                                            'VALUES (' + section_id + ', 6, \'' + escapeHtml(question.text) + '\', ' + (question_index+1) + ', FALSE) ' +
+                                                            'RETURNING id';
+                                                client.query(query, function(err, result) {
+                                                    done();
+                                                    if(err) {console.log("err13"); res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});}
+                                                    else {
+                                                        var question_id = result.rows[0].id;
+                                                        question_index += 1;
+                                                        callback2();
+                                                    }
+                                                });
+                                            }
+                                            else if (question.type == '6') {
+                                                var query = 'INSERT INTO surveymania.questions(survey_section_id, input_type_id, description, question_order, multiple_answers) ' +
+                                                            'VALUES (' + section_id + ', 3, \'' + escapeHtml(question.title) + '\', ' + (question_index+1) + ', ' + question.multiple + ') ' +
+                                                            'RETURNING id';
+                                                client.query(query, function(err, result) {
+                                                    done();
+                                                    if(err) {console.log("err14"); res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});}
+                                                    else {
+                                                        var question_id = result.rows[0].id;
+                                                        if (question.option.length == 0) {
+                                                            var query = 'INSERT INTO surveymania.option_choices(question_id, choice_name, option_order, linked_section_id) VALUES ' +
+                                                                        '(' + question_id + ', \'Option 1\', 1, NULL)';
+                                                        }
+                                                        else {
+                                                            var query = 'INSERT INTO surveymania.option_choices(question_id, choice_name, option_order, linked_section_id) VALUES ';
+                                                            for (var k = 0; k < question.option.length; k++) {
+                                                                query += '(' + question_id + ', \'' + question.option[k] + '\', ' + (k+1) + ', NULL)';
+                                                                if (k != question.option.length - 1) query += ', ';
+                                                            }
+                                                        }
+                                                        client.query(query, function(err, result) {
+                                                            done();
+                                                            if(err) {console.log("err15"); res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});}
+                                                        });
+                                                        question_index += 1;
+                                                        callback2();
+                                                    }
+                                                });
+                                            }
+                                            else if (question.type == '4') {
+                                                var query = 'INSERT INTO surveymania.questions(survey_section_id, input_type_id, description, question_order, multiple_answers) ' +
+                                                            'VALUES (' + section_id + ', 7, \'' + escapeHtml(question.title) + '\', ' + (question_index+1) + ', ' + question.multiple + ') ' +
+                                                            'RETURNING id';
+                                                client.query(query, function(err, result) {
+                                                    done();
+                                                    if(err) {console.log("err16"); res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});}
+                                                    else {
+                                                        var question_id = result.rows[0].id;
+                                                        if (question.option.length == 0) {
+                                                            var query = 'INSERT INTO surveymania.option_choices(question_id, choice_name, option_order, linked_section_id) VALUES ' +
+                                                                        '(' + question_id + ', \'Option 1\', 1, NULL)';
+                                                        }
+                                                        else {
+                                                            var query = 'INSERT INTO surveymania.option_choices(question_id, choice_name, option_order, linked_section_id) VALUES ';
+                                                            for (var k = 0; k < question.option.length; k++) {
+                                                                query += '(' + question_id + ', \'' + question.option[k].title + '\', ' + (k+1) + ', ' + question.option[k].sectionId + ')';
+                                                                if (k != question.option.length - 1) query += ', ';
+                                                            }
+                                                        }
+                                                        client.query(query, function(err, result) {
+                                                            done();
+                                                            if(err) {console.log("err17"); console.log(err); res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});}
+                                                        });
+                                                        question_index += 1;
+                                                        callback2();
+                                                    }
+                                                });
+                                            }
+                                        },
+                                        function (err) {
+                                            if (err) {
+                                                console.log("err18"); 
+                                                res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                            } else {
+                                                section_index += 1;
+                                                callback();
+                                            }
+                                        }
+                                    );
+                                }
+                            });
+                        },
+                        function (err) {
+                            if (err) {
+                                console.log("err19"); 
+                                res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                            } else {
+                                res.status(200).json({code: 200, message: "Survey successfully created"});
+                            }
+                        }
+                    );
+                }
+            });
         }
-    }
-    console.log("ok");
+    });
 })
 
 .post('/login', function (req, res) {
@@ -1717,7 +1949,7 @@ app
         pg.connect(conString, function(err, client, done) {
             if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
             else {
-                var query = 'SELECT name, color FROM surveymania.organization_categories WHERE organization_id = ' + orgaid;
+                var query = 'SELECT id as category_id, name, color FROM surveymania.organization_categories WHERE organization_id = ' + orgaid + ' ORDER BY name';
                 client.query(query, function(err, result) {
                     done();
                     if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
@@ -1738,7 +1970,7 @@ app
         pg.connect(conString, function(err, client, done) {
             if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
             else {
-                var query = 'SELECT name, color FROM surveymania.organization_categories WHERE organization_id = ' + orgaid;
+                var query = 'SELECT id as category_id, name, color FROM surveymania.organization_categories WHERE organization_id = ' + orgaid + ' ORDER BY name';
                 client.query(query, function(err, result) {
                     done();
                     if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});

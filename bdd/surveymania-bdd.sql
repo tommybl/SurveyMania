@@ -33,6 +33,23 @@ CREATE TABLE  surveymania.organizations (
   verified_dt TIMESTAMP NULL DEFAULT NULL,
   PRIMARY KEY (id));
 
+-- -----------------------------------------------------
+-- Table surveymania.organization_categories
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS surveymania.organization_categories CASCADE;
+
+CREATE TABLE  surveymania.organization_categories (
+  id SERIAL NOT NULL ,
+  organization_id INT NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  color VARCHAR(7) NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE (organization_id, name),
+  CONSTRAINT fk_organization_id
+    FOREIGN KEY (organization_id)
+    REFERENCES surveymania.organizations (id)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
 
 -- -----------------------------------------------------
 -- Table surveymania.survey_themes
@@ -53,6 +70,7 @@ DROP TABLE IF EXISTS surveymania.survey_headers CASCADE;
 CREATE TABLE  surveymania.survey_headers (
   id SERIAL NOT NULL ,
   organization_id INT NOT NULL,
+  category_id INT NOT NULL,
   theme_id INT NOT NULL,
   name VARCHAR(80) NOT NULL,
   instructions VARCHAR(4096) NULL DEFAULT NULL,
@@ -64,6 +82,11 @@ CREATE TABLE  surveymania.survey_headers (
   CONSTRAINT fk_organization_id
     FOREIGN KEY (organization_id)
     REFERENCES surveymania.organizations (id)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT fk_category_id
+    FOREIGN KEY (category_id)
+    REFERENCES surveymania.organization_categories (id)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT fk_theme_id
@@ -399,21 +422,3 @@ CREATE TABLE  surveymania.user_achievements (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);
 
-
--- -----------------------------------------------------
--- Table surveymania.organization_categories
--- -----------------------------------------------------
-DROP TABLE IF EXISTS surveymania.organization_categories CASCADE;
-
-CREATE TABLE  surveymania.organization_categories (
-  id SERIAL NOT NULL ,
-  organization_id INT NOT NULL,
-  name VARCHAR(255) NOT NULL,
-  color VARCHAR(7) NOT NULL,
-  PRIMARY KEY (id),
-  UNIQUE (organization_id, name),
-  CONSTRAINT fk_organization_id
-    FOREIGN KEY (organization_id)
-    REFERENCES surveymania.organizations (id)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);

@@ -56,7 +56,7 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                         {'index':'','id':'6','title': 'Choix multiple', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<select name="selectform"><option pos="0" value="1">Option 1</option></select>'), 'show':true, 'icon':'list'},
                         {'index':'','id':'7','title': 'Texte libre', 'label':$sce.trustAsHtml('<p>Texte</p>'),'code' :  $sce.trustAsHtml('<p ng-bind="title">Titre</p>'), 'show':true, 'icon':'font'}
                         ]; 
-        $scope.survey = {name: "", }
+        $scope.survey = {name: "", description: "", instructions: "", points: 100};
         $scope.htmlList = new Array();
         $scope.htmlList[0] = new Array();
 
@@ -73,11 +73,11 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
 
         $scope.validateSurvey = function ()
         {
-            $http.post('/app/account/admin/validate/survey', {name: $scope.survey.name, list: $scope.questionList, sections: $scope.sectionList})
+            $http.post('/app/account/admin/validate/survey', {name: $scope.survey.name, description: $scope.survey.description, instructions: $scope.survey.instructions, points: $scope.survey.points, category: $scope.survey.category, list: $scope.questionList, sections: $scope.sectionList})
             .success(function (data, status, headers, config) {
+                console.log(data);
                 if (data.error == undefined) {
-                    console.log("lol");
-                    $scope.verifSuccMess = "Le compte a bien été refusé.";
+                    $scope.verifSuccMess = "Le sondage a bien été enregistré.";
                 }
                 else $scope.verifErrMess = data.error + '. ' + data.message;
             })
@@ -529,6 +529,8 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
             console.log(data);
             if (data.error == undefined) {
                 $scope.categories = data.categories;
+                $("#survey-categories option:first").remove();
+                $scope.survey.category = $scope.categories[0].category_id;
             }
         })
         .error(function (data, status, headers, config) {

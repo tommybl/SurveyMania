@@ -4,15 +4,15 @@
     <div class="col" data-ng-repeat="c in htmlsub">{{c}}</div>
     <span>------------------------</span>
   </div>
-  {{displayedList}}
+  {{sectionList}}
   <div class="col-md-2">
     <h3>Créer un sondage </h3>
     <input ng-model="survey.name" type="text" name="name" placeholder="Entrez le nom du sondage" class="form-control" required="required"/><br>
     <input ng-model="survey.points" type="number" name="surveypoints" placeholder="Entrez le nombre de points" class="form-control" required="required"/><br>
     <textarea ng-model="survey.instructions" name="surveyinstructions" class="form-control" placeholder="Indiquez les instructions..."></textarea>
     <textarea ng-model="survey.description" name="surveydescription" class="form-control" placeholder="Indiquez la description du sondage..."></textarea>
-    <select ng-model="survey.category" class="form-control">
-     <option ng-repeat="category in categories" value="{{category.id}}" >{{category.name}}</option>
+    <select id="survey-categories" ng-model="survey.category" class="form-control">
+     <option ng-repeat="category in categories" value="{{category.category_id}}" >{{category.name}}</option>
    </select><br>
    <button class="btn btn-primary" ng-click="validateSurvey()" style="width: 100px">Valider</button>
  </div>
