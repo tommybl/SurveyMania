@@ -1812,7 +1812,6 @@ app
                         if (!result.rows.length) res.status(500).json({code: 500});
                         else {
                             var sectionList = result.rows;
-                            console.log(sectionList);
                             var section_array = [];
 
                             var queue = async.queue(function (s, mainCallback) {
@@ -1847,8 +1846,8 @@ app
                                                         else {
                                                             question.parameters = result.rows;
 
-                                                            var query = 'SELECT oc.id, oc.choice_name, oc.option_order, oc.linked_section_id'
-                                                                + ' FROM surveymania.option_choices oc'
+                                                            var query = 'SELECT oc.id, oc.choice_name, oc.option_order, oc.linked_section_id, ss.title'
+                                                                + ' FROM surveymania.option_choices oc LEFT JOIN surveymania.survey_sections ss ON oc.linked_section_id = ss.id'
                                                                 + ' WHERE oc.question_id = ' + question.question.id
                                                                 + ' ORDER BY oc.option_order ASC';
 
