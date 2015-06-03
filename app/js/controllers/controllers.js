@@ -118,35 +118,35 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
 
             if($item.id == 0) // Titre
             {
-                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'title':$item.title, 'video':[], 'image':[]});
+                $scope.questionList[i].push({'index': $index+($scope.currentListNumber*100), 'type':$item.id, 'title':$item.title, 'video':[], 'image':[]});
             }
             else if ($item.id == 1) // Question ouverte
             {
-                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'title':$item.title, 'maxlength':'255', 'video':[], 'image':[]});
+                $scope.questionList[i].push({'index': $index+($scope.currentListNumber*100), 'type':$item.id, 'title':$item.title, 'maxlength':'255', 'video':[], 'image':[]});
             }
             else if($item.id == 2) // Question fermée
             {
-                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'title':$item.title, 'label1':'Oui', 'label2':'Non', 'video':[], 'image':[]});
+                $scope.questionList[i].push({'index': $index+($scope.currentListNumber*100), 'type':$item.id, 'title':$item.title, 'label1':'Oui', 'label2':'Non', 'video':[], 'image':[]});
             }
             else if($item.id == 3) // Slider
             {
-                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'title':$item.title, 'min':'', 'max':'', 'range':'', 'video':[], 'image':[]});
+                $scope.questionList[i].push({'index': $index+($scope.currentListNumber*100), 'type':$item.id, 'title':$item.title, 'min':'', 'max':'', 'range':'', 'video':[], 'image':[]});
             }
             else if($item.id == 4) // Branchement
             {
-                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'title':$item.title, 'option':[], 'multiple':false, 'video':[], 'image':[]});
+                $scope.questionList[i].push({'index': $index+($scope.currentListNumber*100), 'type':$item.id, 'title':$item.title, 'option':[], 'multiple':false, 'video':[], 'image':[]});
             }
             else if($item.id == 5) // Question numérique
             {
-                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'title':$item.title, 'min':'', 'max':'', 'video':[], 'image':[]});
+                $scope.questionList[i].push({'index': $index+($scope.currentListNumber*100), 'type':$item.id, 'title':$item.title, 'min':'', 'max':'', 'video':[], 'image':[]});
             }
             else if($item.id == 6) // Choix multiple
             {
-                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'title':$item.title, 'option':[], 'multiple':false, 'video':[], 'image':[]});
+                $scope.questionList[i].push({'index': $index+($scope.currentListNumber*100), 'type':$item.id, 'title':$item.title, 'option':[], 'multiple':false, 'video':[], 'image':[]});
             }
             else if($item.id == 7) // Texte libre
             {
-                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'text':'', 'video':[], 'image':[]});
+                $scope.questionList[i].push({'index': $index+($scope.currentListNumber*100), 'type':$item.id, 'text':'', 'video':[], 'image':[]});
             }
             else
             {
@@ -509,7 +509,7 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
             $("#display-item-options").fadeOut("slow", function() {
                  $("#display-item-options").empty();
             });
-            $scope.list4.splice($index, 1);
+            $scope.displayedList.splice($index, 1);
         }
 
         $http.post('/app/category/get')
