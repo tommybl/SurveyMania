@@ -160,8 +160,10 @@ app
                         },
                         function (err) {
                             if (err) {
+                                console.log("err3"); 
                                 res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                             } else {
+                                console.log(sections_details);
                                 var section_index = 0;
                                 async.eachSeries(questions,
                                     function (s, callback) {
@@ -173,11 +175,11 @@ app
                                                 var question = q;
 
                                                 var query = 'INSERT INTO surveymania.questions(survey_section_id, input_type_id, description, question_order, multiple_answers) ' +
-                                                            'VALUES (' + section_id + ', ' + getInputType(question.type) + ', \'' + escapeHtml(question.title) + '\', ' + (question_index+1) + ', FALSE) ' +
+                                                            'VALUES (' + section_id + ', ' + getInputType(question.type) + ', \'' + escapeHtml((question.type == '7') ? question.text : question.title) + '\', ' + (question_index+1) + ', FALSE) ' +
                                                             'RETURNING id';
                                                 client.query(query, function(err, result) {
                                                     done();
-                                                    if(err) {res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});}
+                                                    if(err) {console.log("err5"); res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});}
                                                     else {
                                                         var question_id = result.rows[0].id;
 
@@ -248,24 +250,24 @@ app
                                                             }
                                                             client.query(query, function(err, result) {
                                                                 done();
-                                                                if(err) {console.log("err17"); res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});}
+                                                                if(err) {console.log("err16"); res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});}
                                                             });
                                                         }
 
                                                         if (question.video.length > 0 || question.image.length > 0) {
                                                             var query = 'INSERT INTO surveymania.question_medias(question_id, media_path, media_order, media_type, description) VALUES ';
                                                             for (var k = 0; k < question.image.length; k++) {
-                                                                query += '(' + question_id + ', \'' + question.image[k].url + '\', ' + (k+1) + '\'image_url\', \'' + question.image[k].description + '\')';
+                                                                query += '(' + question_id + ', \'' + question.image[k].url + '\', ' + (k+1) + ', \'image_url\', \'' + question.image[k].description + '\')';
                                                                 if (k != question.image.length - 1) query += ', ';
                                                             }
                                                             for (var k = 0; k < question.video.length; k++) {
                                                                 if (k == 0 && question.image.length > 0) query += ', ';
-                                                                query += '(' + question_id + ', \'' + question.video[k].url + '\', ' + (k+1) + '\'youtube\', \'' + question.video[k].description + '\')';
+                                                                query += '(' + question_id + ', \'' + question.video[k].url + '\', ' + (k+1) + ', \'youtube\', \'' + question.video[k].description + '\')';
                                                                 if (k != question.video.length - 1) query += ', ';
                                                             }
                                                             client.query(query, function(err, result) {
                                                                 done();
-                                                                if(err) {res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});}
+                                                                if(err) {console.log("err17"); console.log(err); res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});}
                                                             });
                                                         }
 
