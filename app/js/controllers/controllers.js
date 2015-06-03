@@ -1509,8 +1509,6 @@ surveyManiaControllers.controller('PrevisualisationController', ['$scope', '$htt
         $scope.surveySection = $scope.sections[index].section;
         $scope.sectionQuestionArray = $scope.sections[index].question_array;
 
-        console.log($scope.sectionQuestionArray);
-
         if ($scope.sectionDisplayed) $scope.$apply();
         else $scope.sectionDisplayed = true;
 
