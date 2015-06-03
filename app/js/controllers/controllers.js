@@ -60,7 +60,7 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
         $scope.htmlList = new Array();
         $scope.htmlList[0] = new Array();
 
-        $scope.sectionList = new Array('Section 1');
+        $scope.sectionList = new Array({'title':'Section 1', 'required':true});
 
         $scope.questionList = new Array();
         $scope.categories = [];
@@ -71,8 +71,47 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
 
         $scope.answer ="";
 
+        $scope.requiredSections = [];
+
+        $scope.updateSectionList = function()
+        {
+            for (var i = 0; i < $scope.sectionList.length; i++)
+            {
+                if($scope.requiredSections[i] == 1)
+                    $scope.sectionList[i].required = false;
+                else
+                    $scope.sectionList[i].required = true;
+            }
+            $scope.$apply();
+        }
+
+        $scope.getRequiredSections = function()
+        {
+            $scope.requiredSections = [];
+            for (var i = 0; i < $scope.questionList.length; i++)
+            {
+                for (var j = 0; j < $scope.questionList[i].length; j++)
+                {
+                    if($scope.questionList[i][j].type == 4)
+                    {
+                        var allopts = $scope.questionList[i][j].option;
+                        console.log(allopts);
+                        for (var k = 0; k < allopts.length; k++)
+                        {
+                            $scope.requiredSections[allopts[k].sectionId] = 1;
+                            $scope.$apply();
+                        }
+                    }
+                }
+            }
+        }
+
         $scope.validateSurvey = function ()
         {
+            // Get optionnal sections
+            $scope.getRequiredSections();
+            $scope.updateSectionList();
+
             $http.post('/app/account/admin/validate/survey', {name: $scope.survey.name, description: $scope.survey.description, instructions: $scope.survey.instructions, points: $scope.survey.points, category: $scope.survey.category, list: $scope.questionList, sections: $scope.sectionList})
             .success(function (data, status, headers, config) {
                 console.log(data);
@@ -100,7 +139,7 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
 
         $scope.addSection = function ()
         {
-            $scope.sectionList.push("Section "+($scope.sectionList.length + 1));
+            $scope.sectionList.push({'title':"Section "+($scope.sectionList.length + 1), 'required':true});
             $scope.$apply();
         }
 
@@ -130,7 +169,7 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
             }
             else if($item.id == 3) // Slider
             {
-                $scope.questionList[i].push({'index': $index+($scope.currentListNumber*100), 'type':$item.id, 'title':$item.title, 'min':'', 'max':'', 'range':'', 'video':[], 'image':[]});
+                $scope.questionList[i].push({'index': $index+($scope.currentListNumber*100), 'type':$item.id, 'title':$item.title, 'min':'', 'max':'', 'step':'', 'video':[], 'image':[]});
             }
             else if($item.id == 4) // Branchement
             {
@@ -441,7 +480,7 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                     str.push('<select class="form-control" style="display:inline-block; width:45%;" >');
                     for (var i = 0; i < $scope.sectionList.length; i++)
                     {
-                        str.push('<option value="'+i+'">'+$scope.sectionList[i]+'</option>');
+                        str.push('<option value="'+i+'">'+$scope.sectionList[i].title+'</option>');
                     }
                     str.push('</select>');
                     str.push('<span class="removeItem fa fa-times"></span></div>');
