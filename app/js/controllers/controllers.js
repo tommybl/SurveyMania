@@ -509,7 +509,19 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
             $("#display-item-options").fadeOut("slow", function() {
                  $("#display-item-options").empty();
             });
-            $scope.displayedList.splice($index, 1);
+
+            $scope.displayedList.splice(($index - ($scope.currentListNumber*100)), 1);
+
+            for (var i = 0; i < $scope.questionList.length; i++)
+            {
+                for (var j = 0; j < $scope.questionList[i].length; j++)
+                {
+                    if($scope.questionList[i][j].index == $index)
+                    {
+                        $scope.questionList[i].splice(j,1);
+                    }
+                }
+            }
         }
 
         $http.post('/app/category/get')
