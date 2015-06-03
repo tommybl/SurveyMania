@@ -1,131 +1,130 @@
 <!DOCTYPE html>
 
 <div id="surveyAnswer" ng-controller="PrevisualisationController" class="col-md-12">
-	<div class="col-md-6 col-md-offset-3 master">
+	<div class="col-md-12 previsuMaster">
 		
-        <!-- Error div -->
-        <div class="alert alert-danger alert-dismissible fade in" role="alert" ng-show="error!=undefined">
-            <button type="button" class="close" ng-click="error=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            <span ng-bind-html="error"></span>
-        </div>
-        <!-- Error div end -->
+        <!-- Info div -->
+        <div class="col-md-5">
+            <div id="startPage" class="panel panel-default previsuContainer">
+                <div class="panel-heading">
+                    <h4>Informations générales</h4>
+                </div>
 
-        <!-- Start div -->
-        <div id="startPage" class="panel panel-default answerContainer">
-            <div class="panel-heading">
-                <h4>Répondre au sondage "{{survey.header_name}}"</h4>
-            </div>
-
-            <div class="panel-body">
-                <div><b>Informations relatives au sondage : </b>{{survey.info}}</div>
-                <div><b>Instruction supplémentaire : </b>{{survey.instructions}}</div>
-                <div><b>Par : </b>{{survey.name}}</div>
-                <div><b>Nombre de sections : </b>{{sections.length}}</div>
-                <div><b>Temps maximum estimé : </b>{{surveyEstimatedTime}} minutes</div>
-                <div><b>Progression : </b>0%</div>
-                <div><b>Points : </b>{{survey.points}}</div>
-                <br/>
-                <button class="btn btn-primary" ng-click="displaySections()">Suite (sections)</button>
+                <div class="panel-body">
+                    <div><b>Nom du sondage : </b>{{survey.header_name}}</div>
+                    <div><b>Informations relatives au sondage : </b>{{survey.info}}</div>
+                    <div><b>Instruction supplémentaire : </b>{{survey.instructions}}</div>
+                    <div><b>Par : </b>{{survey.name}}</div>
+                    <div><b>Nombre de sections : </b>{{sections.length}}</div>
+                    <div><b>Temps maximum estimé : </b>{{surveyEstimatedTime}} minutes</div>
+                    <div><b>Progression : </b>0%</div>
+                    <div><b>Points : </b>{{survey.points}}</div>
+                </div>
             </div>
         </div>
-        <!-- Start div end -->
+        <!-- Info div end -->
 
         <!-- Section div -->
-        <div id="sectionPage" class="panel panel-default answerContainer">
-            <div class="panel-heading">
-                <h4>Les sections</h4>
-            </div>
+        <div class="col-md-7">
+            <div id="sectionPage" class="panel panel-default previsuContainer">
+                <div class="panel-heading">
+                    <h4>Vos sections</h4>
+                </div>
 
-            <div class="panel-body">
-                <table class="table table-hover">
-                    <thead><tr><th>Ordre</th> <th>Titre</th> <th>Sous-titre</th> <th>Obligatoire</th></tr></thead>
-                    <tbody>
-                        <tr ng-repeat="sec in sections">
-                            <td>{{sec.section.section_order}}</td>
-                            <td>{{sec.section.title}}</td>
-                            <td>{{sec.section.subtitle}}</td>
-                            <td ng-if="sec.section.required"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td>
-                            <td ng-if="!sec.section.required"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></td>
-                        </tr>
-                    </tbody>
-                </table>
-                <br/>
-                <button class="btn btn-primary" ng-click="displayOneSection()">Commencer</button>
+                <div class="panel-body">
+                    <div class="alert alert-warning"><span class="glyphicon glyphicon glyphicon-info-sign" aria-hidden="true"></span> Sélectionnez une section pour en afficher le contenu !</div>
+                    <table class="table table-hover">
+                        <thead><tr><th>Ordre</th> <th>Titre</th> <th>Sous-titre</th> <th>Obligatoire</th></tr></thead>
+                        <tbody>
+                            <tr ng-repeat="sec in sections" ng-class="{warning: $index == selectedSection}" ng-click="displaySection($index)">
+                                <td>{{sec.section.section_order}}</td>
+                                <td>{{sec.section.title}}</td>
+                                <td>{{sec.section.subtitle}}</td>
+                                <td ng-if="sec.section.required"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td>
+                                <td ng-if="!sec.section.required"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
         <!-- Section div end -->
+    </div>
 
+    <div class="col-md-12 previsuMaster">
         <!-- Answer div -->
-        <div id="answer" class="panel panel-default answerContainer">
-            <div class="panel-heading">
-                <h4>{{surveySection.title}} <small ng-if="surveySection.subtitle != null">&mdash; {{surveySection.subtitle}}</small></h4>
-            </div>
-
-            <div class="panel-body">
-                <div ng-repeat="question in sectionQuestionArray" id="question{{question.question.question_order}}master" class="form-group">
-
-                    <!-- Question medias -->
-                    <div ng-repeat="media in question.medias" class="questionMediaContainer">
-                        <h4>
-                            <small ng-if="media.media_type == 'youtube'"><u>Vidéo : {{media.description}}</u></small>
-                            <small ng-if="media.media_type == 'image_url'"><u>Image : {{media.description}}</u></small>
-                        </h4>
-
-                        <iframe ng-if="media.media_type == 'youtube'" ng-src="{{media.media_path}}" class="questionMedia questionVideo"></iframe>
-                        <img ng-if="media.media_type == 'image_url'" ng-src="{{media.media_path}}" class="questionMedia"></img>
-                    </div>
-
-                    <!-- Question description -->
-                    <label ng-if="question.question.type_name != 'Titre' && question.question.type_name != 'Texte'">{{question.question.description}}</label>
-
-                    <!-- Free texting question (maxlength) -->
-                    <textarea ng-if="question.question.type_name == 'Ouverte'" ng-keyup="remainingCharacter(question.question.question_order)" class="form-control answerOpen" id="question{{question.question.question_order}}" rows="3" maxlength="{{question.parammax}}"></textarea>
-                    <span ng-if="question.question.type_name == 'Ouverte'" class="help-block">
-                        <span ng-if="question.parammax != undefined" id="question{{question.question.question_order}}remaining">{{question.parammax}} caractères restants</span>
-                    </span>
-
-                    <!-- Numerical question (min, max) -->
-                    <input ng-if="question.question.type_name == 'Numérique'" class="form-control answerOpen" id="question{{question.question.question_order}}" type="number" min="{{question.parammin}}" max="{{question.parammax}}" />
-                    <span ng-if="question.question.type_name == 'Numérique'" id="helpBlock" class="help-block">
-                        <span ng-if="question.parammin != undefined">Minimum : {{question.parammin}}</span><span ng-if="question.parammin != undefined && question.parammax != undefined">, </span>
-                        <span ng-if="question.parammax != undefined">Maximum : {{question.parammax}}</span>
-                    </span>
-
-                    <!-- QCM with unique answer -->
-                    <div ng-if="question.question.type_name == 'QCM' && !question.question.multiple_answers" ng-repeat="option in question.options" class="radio optionOffset">
-                        <label>
-                            <input type="radio" name="question{{question.question.question_order}}" value="{{option.id}}">
-                            {{option.choice_name}}
-                        </label>
-                    </div>
-
-                    <!-- QCM with multiple answer -->
-                    <div ng-if="question.question.type_name == 'QCM' && question.question.multiple_answers" ng-repeat="option in question.options" class="checkbox optionOffset">
-                        <label>
-                            <input type="checkbox" name="question{{question.question.question_order}}" value="{{option.id}}">
-                            {{option.choice_name}}
-                        </label>
-                    </div>
-
-                    <!-- Slider question (min, max, pas, def) -->
-                    <input ng-if="question.question.type_name == 'Slider'" class="answerOpen" id="question{{question.question.question_order}}" type="range" min="{{question.parammin}}" max="{{question.parammax}}" step="{{question.parampas}}" value="{{question.paramdef}}" />
-                    <span ng-if="question.question.type_name == 'Slider'" id="helpBlock" class="help-block">
-                        <span ng-if="question.parammin != undefined">Minimum : {{question.parammin}}</span><span ng-if="question.parammin != undefined && question.parammax != undefined">, </span>
-                        <span ng-if="question.parammax != undefined">Maximum : {{question.parammax}}</span>
-                    </span>
-
-                    <!-- Titre -->
-                    <h4 ng-if="question.question.type_name == 'Titre'" class="answerTitle">{{question.question.description}}</h4>
-
-                    <!-- Texte simple -->
-                    <p ng-if="question.question.type_name == 'Texte'">{{question.question.description}}</p>
-
-                    <!-- Saut d'une ligne, si c'est pas un titre -->
-                    <br ng-if="question.question.type_name != 'Titre'"/>
+        <div class="col-md-6 col-md-offset-3">
+            <div id="answer" class="panel panel-default answerContainer">
+                <div class="panel-heading">
+                    <h4>{{surveySection.title}} <small ng-if="surveySection.subtitle != null">&mdash; {{surveySection.subtitle}}</small></h4>
                 </div>
 
-                <button class="btn btn-primary" ng-click="">Suite</button>
-            </div>                
+                <div class="panel-body">
+                    <div ng-repeat="question in sectionQuestionArray" id="question{{question.question.question_order}}master" class="form-group">
+
+                        <!-- Question medias -->
+                        <div ng-repeat="media in question.medias" class="questionMediaContainer">
+                            <h4>
+                                <small ng-if="media.media_type == 'youtube'"><u>Vidéo : {{media.description}}</u></small>
+                                <small ng-if="media.media_type == 'image_url'"><u>Image : {{media.description}}</u></small>
+                            </h4>
+
+                            <iframe ng-if="media.media_type == 'youtube'" ng-src="{{media.media_path}}" class="questionMedia questionVideo"></iframe>
+                            <img ng-if="media.media_type == 'image_url'" ng-src="{{media.media_path}}" class="questionMedia"></img>
+                        </div>
+
+                        <!-- Question description -->
+                        <label ng-if="question.question.type_name != 'Titre' && question.question.type_name != 'Texte'">{{question.question.description}}</label>
+
+                        <!-- Free texting question (maxlength) -->
+                        <textarea ng-if="question.question.type_name == 'Ouverte'" ng-keyup="remainingCharacter(question.question.question_order)" class="form-control answerOpen" id="question{{question.question.question_order}}" rows="3" maxlength="{{question.parammax}}"></textarea>
+                        <span ng-if="question.question.type_name == 'Ouverte'" class="help-block">
+                            <span ng-if="question.parammax != undefined" id="question{{question.question.question_order}}remaining">{{question.parammax}} caractères restants</span>
+                        </span>
+
+                        <!-- Numerical question (min, max) -->
+                        <input ng-if="question.question.type_name == 'Numérique'" class="form-control answerOpen" id="question{{question.question.question_order}}" type="number" min="{{question.parammin}}" max="{{question.parammax}}" />
+                        <span ng-if="question.question.type_name == 'Numérique'" id="helpBlock" class="help-block">
+                            <span ng-if="question.parammin != undefined">Minimum : {{question.parammin}}</span><span ng-if="question.parammin != undefined && question.parammax != undefined">, </span>
+                            <span ng-if="question.parammax != undefined">Maximum : {{question.parammax}}</span>
+                        </span>
+
+                        <!-- QCM with unique answer -->
+                        <div ng-if="question.question.type_name == 'QCM' && !question.question.multiple_answers" ng-repeat="option in question.options" class="radio optionOffset">
+                            <label>
+                                <input type="radio" name="question{{question.question.question_order}}" value="{{option.id}}">
+                                {{option.choice_name}} <span ng-if="option.title != undefined" class="label label-warning section_link_label"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> {{option.title}}</span>
+                            </label>
+                        </div>
+
+                        <!-- QCM with multiple answer -->
+                        <div ng-if="question.question.type_name == 'QCM' && question.question.multiple_answers" ng-repeat="option in question.options" class="checkbox optionOffset">
+                            <label>
+                                <input type="checkbox" name="question{{question.question.question_order}}" value="{{option.id}}">
+                                {{option.choice_name}} <span ng-if="option.title != undefined" class="label label-warning section_link_label"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> {{option.title}}</span>
+                            </label>
+                        </div>
+
+                        <!-- Slider question (min, max, pas, def) -->
+                        <input ng-if="question.question.type_name == 'Slider'" class="answerOpen" id="question{{question.question.question_order}}" type="range" min="{{question.parammin}}" max="{{question.parammax}}" step="{{question.parampas}}" value="{{question.paramdef}}" />
+                        <span ng-if="question.question.type_name == 'Slider'" id="helpBlock" class="help-block">
+                            <span ng-if="question.parammin != undefined">Minimum : {{question.parammin}}</span><span ng-if="question.parammin != undefined && question.parammax != undefined">, </span>
+                            <span ng-if="question.parammax != undefined">Maximum : {{question.parammax}}</span>
+                        </span>
+
+                        <!-- Titre -->
+                        <h4 ng-if="question.question.type_name == 'Titre'" class="answerTitle">{{question.question.description}}</h4>
+
+                        <!-- Texte simple -->
+                        <p ng-if="question.question.type_name == 'Texte'">{{question.question.description}}</p>
+
+                        <!-- Saut d'une ligne, si c'est pas un titre -->
+                        <br ng-if="question.question.type_name != 'Titre'"/>
+                    </div>
+
+                    <button class="btn btn-primary">Suite</button>
+                </div>
+            </div>
         </div>
         <!-- Answer div end -->
 	</div>
