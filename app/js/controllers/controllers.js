@@ -52,7 +52,7 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                         {'index':'','id':'2','title': 'Question fermée', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<input type="radio" name="yesno" value="0"> <span class="opt1">Oui</span><br><input type="radio" name="yesno" value="1" checked> <span class="opt2">Non</span>'), 'show':true, 'icon':'toggle-on'},
                         {'index':'','id':'3','title': 'Slider', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<input type="range" min="0" max="50" value="25" step="5" />'), 'show':true, 'icon':'sliders'},
                         {'index':'','id':'4','title': 'Branchement', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<select name="selectform"><option pos="0" value="1">Option 1</option></select>'), 'show':true, 'icon':'code-fork'},
-                        {'index':'','id':'5','title': 'Numérique', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<input type="number" name="number" />'), 'show':true, 'icon':'list-ol'},
+                        {'index':'','id':'5','title': 'Numérique', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<input type="number" min="0" max="50" name="number" />'), 'show':true, 'icon':'list-ol'},
                         {'index':'','id':'6','title': 'Choix multiple', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<select name="selectform"><option pos="0" value="1">Option 1</option></select>'), 'show':true, 'icon':'list'},
                         {'index':'','id':'7','title': 'Texte libre', 'label':$sce.trustAsHtml('<p>Texte</p>'),'code' :  $sce.trustAsHtml('<p ng-bind="title">Titre</p>'), 'show':true, 'icon':'font'}
                         ]; 
@@ -116,33 +116,37 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
             if(!$scope.questionList[i])
                 $scope.questionList[i] = new Array();
 
-            if($item.id == 0 || $item.id == 5) // Titre
+            if($item.id == 0) // Titre
             {
-                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'title':$item.title, 'video':[], 'image':[]});
+                $scope.questionList[i].push({'index': $index+($scope.currentListNumber*100), 'type':$item.id, 'title':$item.title, 'video':[], 'image':[]});
             }
             else if ($item.id == 1) // Question ouverte
             {
-                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'title':$item.title, 'maxlength':'255', 'video':[], 'image':[]});
+                $scope.questionList[i].push({'index': $index+($scope.currentListNumber*100), 'type':$item.id, 'title':$item.title, 'maxlength':'255', 'video':[], 'image':[]});
             }
             else if($item.id == 2) // Question fermée
             {
-                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'title':$item.title, 'label1':'Oui', 'label2':'Non', 'video':[], 'image':[]});
+                $scope.questionList[i].push({'index': $index+($scope.currentListNumber*100), 'type':$item.id, 'title':$item.title, 'label1':'Oui', 'label2':'Non', 'video':[], 'image':[]});
             }
             else if($item.id == 3) // Slider
             {
-                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'title':$item.title, 'min':'', 'max':'', 'range':'', 'video':[], 'image':[]});
+                $scope.questionList[i].push({'index': $index+($scope.currentListNumber*100), 'type':$item.id, 'title':$item.title, 'min':'', 'max':'', 'range':'', 'video':[], 'image':[]});
             }
             else if($item.id == 4) // Branchement
             {
-                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'title':$item.title, 'option':[], 'multiple':false, 'video':[], 'image':[]});
+                $scope.questionList[i].push({'index': $index+($scope.currentListNumber*100), 'type':$item.id, 'title':$item.title, 'option':[], 'multiple':false, 'video':[], 'image':[]});
+            }
+            else if($item.id == 5) // Question numérique
+            {
+                $scope.questionList[i].push({'index': $index+($scope.currentListNumber*100), 'type':$item.id, 'title':$item.title, 'min':'', 'max':'', 'video':[], 'image':[]});
             }
             else if($item.id == 6) // Choix multiple
             {
-                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'title':$item.title, 'option':[], 'multiple':false, 'video':[], 'image':[]});
+                $scope.questionList[i].push({'index': $index+($scope.currentListNumber*100), 'type':$item.id, 'title':$item.title, 'option':[], 'multiple':false, 'video':[], 'image':[]});
             }
             else if($item.id == 7) // Texte libre
             {
-                $scope.questionList[i].push({'index': $index, 'type':$item.id, 'text':'', 'video':[], 'image':[]});
+                $scope.questionList[i].push({'index': $index+($scope.currentListNumber*100), 'type':$item.id, 'text':'', 'video':[], 'image':[]});
             }
             else
             {
@@ -200,6 +204,24 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
             }
         }
 
+        // Edit numric question in proper object list
+        $scope.editNumericQuestion = function ($index, $title, $min, $max)
+        {
+            for (var i = 0; i < $scope.questionList.length; i++)
+            {
+                for (var j = 0; j < $scope.questionList[i].length; j++)
+                {
+                    if($scope.questionList[i][j].index == $index)
+                    {
+                        $scope.questionList[i][j].index = $index;
+                        $scope.questionList[i][j].title = $title;
+                        $scope.questionList[i][j].min = $min;
+                        $scope.questionList[i][j].max = $max;
+                        $scope.$apply();
+                    }
+                }
+            }
+        }
 
         // Edit Slider question in proper object list
         $scope.editSliderQuestion = function ($index, $title, $min, $max, $step)
@@ -347,8 +369,10 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
             $("#media_panel").append("<div id='display-media-options' class='panel-body'></div>");
             $("#display-media-options").append('<input type="hidden" name="itemIndex" value="'+$index+'" />');
             $("#display-media-options").append("<span>Url de la vidéo youtube</span><input name='videoUrl' type='text' class='form-control'/>");
+            $("#display-media-options").append("<input name='videoDescription' type='text' class='form-control' placeholder='Description...'/>");
             $("#display-media-options").append("<hr>");
             $("#display-media-options").append("<span>Url de l'image</span><input name='imageUrl' type='text' class='form-control'/>");
+            $("#display-media-options").append("<input name='imageDescription' type='text' class='form-control' placeholder='Description...'/>");
             $("#display-media-options").append('<input type="submit" id="validateMedia" value="Valider" class="btn btn-primary" />');
             $("#media_panel").fadeIn();
         }
@@ -432,6 +456,11 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                 str.push('<h5>Question numérique</h5>');
                 var ttl = $("#itemn"+$index).parent().find("h5").html();
                 str.push('<span>Indiquez un nouveau titre</span> <input type="text" name="questionTitle" class="form-control" value="'+ttl+'" required />');
+
+                var min = $("#itemn"+$index).children("input[type='number']").prop("min");
+                var max = $("#itemn"+$index).children("input[type='number']").prop("max");
+                str.push('<span>Minimum</span> <input type="number" name="min" class="form-control" value="'+min+'" required="required" />');
+                str.push('<span>Maximum</span> <input type="number" name="max" class="form-control" value="'+max+'" required="required" />');
             }
             else if($type == 6)
             {
@@ -480,7 +509,19 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
             $("#display-item-options").fadeOut("slow", function() {
                  $("#display-item-options").empty();
             });
-            $scope.list4.splice($index, 1);
+
+            $scope.displayedList.splice(($index - ($scope.currentListNumber*100)), 1);
+
+            for (var i = 0; i < $scope.questionList.length; i++)
+            {
+                for (var j = 0; j < $scope.questionList[i].length; j++)
+                {
+                    if($scope.questionList[i][j].index == $index)
+                    {
+                        $scope.questionList[i].splice(j,1);
+                    }
+                }
+            }
         }
 
         $http.post('/app/category/get')
@@ -1420,10 +1461,12 @@ surveyManiaControllers.controller('PrevisualisationController', ['$scope', '$htt
             $http.post('/app/previsualisation/getSections', {surveyid: $scope.surveyid})
                 .success(function (data, status, header, config) {
                     $scope.sections = data.sections;
+                    console.log($scope.sections);
                     $('#startPage').fadeIn(800);
                 })
                 .error(function (data, status, header, config) {
-                    $location.path("/app/createSurvey");
+                    console.log("YOOUUU FAIILLLED MOTHER FUCKER");
+                    //$location.path("/app/createSurvey");
                 });
         })
         .error(function (data, status, header, config) {

@@ -227,13 +227,15 @@ var jqyoui = angular.module('ngDragDrop', []).service('ngDragDropService', ['$ti
           //console.log("bool: "+mybool);
           if (mybool)
           {
-            dragItem.index = dropModelValue.length;
+            dragItem.index = dropModelValue.length + ($('#renderPanel').scope().currentListNumber*100);
+            console.log("drameeeeeeeeeeeee "+dragItem.index);
             $('#renderPanel').scope().addNewQuestion(dropModelValue.length, dragItem);
             dropModelValue.push(dragItem);
           }
           else
           {
-            dragItem.index = elemToInsert;
+            dragItem.index = elemToInsert + ($('#renderPanel').scope().currentListNumber*100);
+            console.log("coucous "+dragItem.index);
             dropModelValue.splice(elemToInsert, 0, dragItem);
             $('#renderPanel').scope().addNewQuestion(elemToInsert, dragItem);
           } 
