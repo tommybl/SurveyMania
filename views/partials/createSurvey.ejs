@@ -330,7 +330,8 @@ $(document).on('click', '#closedQuestion', function(event) {
       }
       if (typeItem == 7)
       {
-        $('#renderPanel').scope().editTextQuestion(idItem, newTitle);
+        var newOpenQTitle = $(this).parent().children("textarea[name='questionTitle']").val();
+        $('#renderPanel').scope().editTextQuestion(idItem, newOpenQTitle);
       }
       $("#itemn"+idItem).fadeIn(1000);
     }

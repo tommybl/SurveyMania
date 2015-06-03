@@ -271,7 +271,7 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                 {
                     if($scope.questionList[i][j].index == $index)
                     {
-                        $scope.questionList[i][j].index =  $index;
+                        $scope.questionList[i][j].index = $index;
                         $scope.questionList[i][j].text = $text;
                         $scope.$apply();
                     }
