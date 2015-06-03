@@ -354,6 +354,8 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                     }
                 }
             }
+            $scope.getRequiredSections();
+            $scope.updateSectionList();
         }
 
         // Edit title question in proper object list
