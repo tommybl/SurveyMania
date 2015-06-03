@@ -1639,13 +1639,13 @@ surveyManiaControllers.controller('OrganizationPanel', ['$scope', '$http', '$win
             });
     }
 
-    $scope.printQrCode = function($id)
+    $scope.printQrCode = function($id, $title)
     {
         var qrcodestr;
         $http.post('/app/account/admin/survey/getCode', {surveyid: $id})
             .success(function (data, status, header, config) {
                 qrcodestr = data.qrcodestr;
-                document.getElementById("qrimage").innerHTML = "<img onload='window.print()' src='https://chart.googleapis.com/chart?chs=500x500&cht=qr&chl=" + qrcodestr + "'/>";
+                document.getElementById("qrimage").innerHTML = "<h1>"+$title+"</h1><img onload='window.print()' src='https://chart.googleapis.com/chart?chs=500x500&cht=qr&chl=" + qrcodestr + "'/>";
             })
             .error(function (data, status, header, config) {
 
