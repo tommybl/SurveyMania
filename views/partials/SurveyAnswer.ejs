@@ -10,10 +10,18 @@
         </div>
         <!-- Error div end -->
 
-        <div class="modal fade" id="myPhaserModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal fade" id="myInvadersModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
           <div class="modal-dialog" role="document">
             <div class="modal-content">
-              <div id="phaser-example" style="width: 800px; height: 600px; margin: auto; margin-top: 6%"></div>
+              <div id="phaser-invaders" style="width: 800px; height: 600px; margin: auto; margin-top: 6%"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="myStarstruckModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabe2">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div id="phaser-starstruck" style="width: 800px; height: 600px; margin: auto; margin-top: 6%"></div>
             </div>
           </div>
         </div>
@@ -65,7 +73,8 @@
                     </div>
 
                     <!-- Question description -->
-                    <label ng-if="question.question.type_name != 'Titre' && question.question.type_name != 'Texte'">{{question.question.description}}</label> <button ng-if="question.question.type_name != 'Titre' && question.question.type_name != 'Texte'" class="btn btn-success" data-toggle="modal" data-target="#myPhaserModal" onclick="launchGame()" style="margin-left:15px;padding:0 6px 2px 4px"><i class="fa fa-gamepad fa-lg"></i></button>
+                    <label ng-if="question.question.type_name != 'Titre' && question.question.type_name != 'Texte'">{{question.question.description}}</label>
+                    <button ng-if="question.question.type_name != 'Titre' && question.question.type_name != 'Texte'" class="btn btn-success" data-toggle="modal" data-target="#myStarstruckModal" ng-click="launch_phaser_starstruck(question.question.description, question.options)" style="margin-left:15px;padding:0 6px 2px 4px"><i class="fa fa-gamepad fa-lg"></i></button>
 
                     <!-- Free texting question (maxlength) -->
                     <textarea ng-if="question.question.type_name == 'Ouverte'" ng-keyup="remainingCharacter(question.question.question_order)" class="form-control answerOpen" id="question{{question.question.question_order}}" rows="3" maxlength="{{question.parammax}}"></textarea>
@@ -136,6 +145,10 @@
                     <div class="col-md-12 row-centered">Merci d'avoir pris de votre temps pour nous répondre !</div>
                     <div class="col-md-12 row-centered"><b>{{survey.points}} points</b> ont été ajoutés à votre compte pour vous aider dans la bataille pour la première place !</div>
                     <div class="col-md-12 row-centered"><b>{{userpoints - survey.points}} => {{userpoints}}</b></div>
+                    <div class="col-md-12 row-centered">
+                        <br>
+                        <button ng-if="question.question.type_name != 'Titre' && question.question.type_name != 'Texte'" class="btn btn-info" data-toggle="modal" data-target="#myInvadersModal" onclick="launch_phaser_invaders()" style="margin-left:15px;padding:0 6px 2px 4px"><i class="fa fa-gamepad fa-lg"></i> &nbsp; Gagne encore plus de points!</button><br>
+                    </div>
                 </div>
 
                 <hr>
@@ -164,3 +177,4 @@
 
 <script src="js/scroll.js"></script>
 <script src="js/phaser/invaders.js"></script>
+<script src="js/phaser/starstruck.js"></script>
