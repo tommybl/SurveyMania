@@ -61,6 +61,9 @@ angular.element(document.body).scope().launch_phaser_starstruck = function (surv
         player.animations.add('turn', [4], 20, true);
         player.animations.add('right', [5, 6, 7, 8], 10, true);
         
+        stateText = game.add.text(game.world.centerX,game.world.centerY,' ', { font: '84px Arial', fill: '#fff' });
+        stateText.anchor.setTo(0.5, 0.5);
+        stateText.visible = false;
         game.add.text(10, 10, survey_question, { font: '28px Arial', fill: '#fff' });
         for (var i = 0; i < survey_options.length; i++) {
             var posx = Math.floor((Math.random() * game.world.width) + 1);
