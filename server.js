@@ -126,7 +126,7 @@ app
         else if (num == '5') return 2;
         else if (num == '7') return 6;
         else if (num == '6') return 3;
-        else if (num == '4') return 7;
+        else if (num == '4') return 3;
     };
 
     pg.connect(conString, function(err, client, done) {
@@ -216,6 +216,7 @@ app
                                                                                 '(' + question_id + ', \'max\', ' + question.max + ')';
                                                             client.query(query, function(err, result) {
                                                                 done();
+                                                                console.log(err);
                                                                 if(err) {console.log("err12"); res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});}
                                                             });
                                                         }
@@ -1822,7 +1823,7 @@ app
                                     done();
                                     if (err) callback("Error running query");
                                     else {
-                                        if (!result.rows.length) callback("Error running query");
+                                        if (!result.rows.length) mainCallback("Error running query");
                                         else {
                                             var question_array = [];
 

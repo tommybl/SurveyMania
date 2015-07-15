@@ -52,7 +52,7 @@
     </div>
 
     <!-- Answer div -->
-    <div id="answer" class="col-md-12 previsuMaster">
+    <div id="answer" class="col-md-12 previsuMasterNone">
         <div class="col-md-6 col-md-offset-3">
             <div class="panel panel-default previsuContainer">
                 <div class="panel-heading">
@@ -137,18 +137,3 @@
 </div>
 
 <script src="js/scroll.js"></script>
-
-<script type="text/javascript">
-    var orig_pos;
-
-    $(function() {
-        orig_pos = $("#answer").offset();
-        $('#answer').css('display', 'none');
-    });
-
-    $(window).scroll(function() {
-        var new_pos = $(window).scrollTop();
-        if (new_pos > orig_pos.top) $("#scrollTop").stop().animate({"top": new_pos - orig_pos.top + 'px'}, {duration: 200} );
-        else $("#scrollTop").stop().animate({"top": '0px'}, {duration: 200} );
-   });
-</script>

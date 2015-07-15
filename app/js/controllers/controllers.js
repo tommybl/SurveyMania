@@ -45,8 +45,8 @@ surveyManiaControllers.controller('GlobalController', ['$scope', '$window', '$lo
 }]);
 
 
-surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$timeout', '$sce', '$http', 
-    function($scope, $routeParams, $timeout, $sce, $http){
+surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$timeout', '$sce', '$http', '$location', 
+    function($scope, $routeParams, $timeout, $sce, $http, $location){
         $scope.list1 = [{'index':'','id':'0','title': 'Titre', 'label': $sce.trustAsHtml('<h1>Titre</h1>'), 'code' : $sce.trustAsHtml('<h1 ng-bind="title">Titre</h1>'), 'show':true, 'icon':'header'},
                         {'index':'','id':'1','title': 'Réponse libre', 'label':$sce.trustAsHtml('<h5>question</h5>'), 'code' : $sce.trustAsHtml('<textarea maxlength="255"></textarea>'), 'show':true, 'icon':'text-height'},
                         {'index':'','id':'2','title': 'Question fermée', 'label':$sce.trustAsHtml('<h5>question</h5>'),'code' : $sce.trustAsHtml('<input type="radio" name="yesno" value="0"> <span class="opt1">Oui</span><br><input type="radio" name="yesno" value="1" checked> <span class="opt2">Non</span>'), 'show':true, 'icon':'toggle-on'},
@@ -116,6 +116,7 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                 console.log(data);
                 if (data.error == undefined) {
                     $scope.verifSuccMess = "Le sondage a bien été enregistré.";
+                    $location.path("/organizationPanel");
                 }
                 else $scope.verifErrMess = data.error + '. ' + data.message;
             })
