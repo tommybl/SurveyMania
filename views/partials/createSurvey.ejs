@@ -54,7 +54,7 @@
       <div class="tab-content">
         <div role="tabpanel" class="tab-pane active" id="upload_tab">
           <div class="ui-widget-content">
-            <ol class="dropzone" data-drop="true" ng-model='displayedList' jqyoui-droppable="{multiple:true}" id="list4">
+            <ol class="dropzone" data-drop="true" ng-model='displayedList' jqyoui-droppable="{multiple:true}" id="list4" style="padding-bottom:50px;">
               <li class="drop_item" ng-repeat="itemlol in displayedList" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" ng-model="displayedList" jqyoui-draggable="{index: {{$index+(currentListNumber*100)}},animate:false}">
                 <!-- Champ pour modifier la question -->
                 <input ng-hide="itemlol.show" type="text" class="answer_field" ng-model="answer"/>

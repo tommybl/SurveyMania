@@ -709,6 +709,11 @@ blockquote {
     padding-top: 50px;
 }
 
+#surveyAnswer .previsuMasterNone {
+    display: none;
+    padding-top: 50px;
+}
+
 #surveyAnswer .section_link_label {
     margin-left: 15px;
 }
@@ -716,4 +721,13 @@ blockquote {
 .fa-print:hover, .fa-check:hover
 {
   cursor: pointer;
+}
+
+#scrollTop
+{
+  position: fixed;
+  bottom: 50px;
+  right: 50px;
+  width: 60px;
+  height: 60px;
 }
