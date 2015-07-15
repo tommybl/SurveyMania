@@ -82,6 +82,8 @@
 			<p>Et gagne des points et des récompenses</p>
 			<p>L'entreprise quant à elle peut voir les statistiques détaillées des sondages</p>
 		</div>
+		<canvas id="cvs1" width="250" height="125" style="margin-left: 100px; border: 2px solid;"></canvas>
+		<canvas id="cvs2" width="250" height="125" style="margin-left: 100px; border: 2px solid;"></canvas>
 	</div>
 </section>
 <script>
@@ -89,4 +91,116 @@
         new WOW().init();
     });
 </script>
-    
+
+
+<script>
+    window.onload = function ()
+    {
+        var canvas1 = document.getElementById("cvs1");
+        var canvas2 = document.getElementById("cvs2");
+        var context1 = canvas1.getContext('2d');
+        var context2 = canvas2.getContext('2d');
+        var imageXY  = {x: 5, y: 5};
+
+        function getMousePos(canvas, evt) {
+	        var rect = canvas.getBoundingClientRect();
+	        return [ evt.clientX - rect.left, evt.clientY - rect.top];
+      	}
+
+        /**
+        * This draws the image to the canvas
+        */
+        function Draw ()
+        {
+            //Clear both canvas first
+            canvas1.width = canvas1.width
+            canvas2.width = canvas2.width
+            
+            //Draw a red rectangle around the image
+            if (state && state.dragging) {
+                state.canvas.getContext('2d').strokeStyle = 'red';
+                state.canvas.getContext('2d').strokeRect(imageXY.x - 2.5,
+                                                         imageXY.y - 2.5,
+                                                         state.image.width + 5,
+                                                         state.image.height + 5);
+            }
+            
+            // Now draw the image
+            state.canvas.getContext('2d').drawImage(state.image, imageXY.x, imageXY.y);
+        }
+
+
+
+
+        canvas2.onclick =
+        canvas1.onclick = function (e)
+        {
+            
+            if (state && state.dragging) {
+                state.dragging = false;
+                Draw();
+                return;
+            }
+
+
+
+
+
+            var mouseXY = getMousePos(e.target, e);
+
+            state.canvas    = e.target;
+            
+            if (   mouseXY[0] > imageXY.x
+                && mouseXY[0] < (imageXY.x + state.image.width)
+                && mouseXY[1] > imageXY.y
+                && mouseXY[1] < (imageXY.y + state.image.height)) {
+
+                state.dragging       = true;
+                state.originalMouseX = mouseXY[0];
+                state.originalMouseY = mouseXY[1];
+                state.offsetX         = mouseXY[0] - imageXY.x;
+                state.offsetY         = mouseXY[1] - imageXY.y;
+
+            }
+        }
+
+        canvas1.onmousemove =
+        canvas2.onmousemove = function (e)
+        {
+
+            if (state.dragging) {
+            
+                state.canvas = e.target;
+                
+                var mouseXY = getMousePos(e.target, e);
+                
+                // Work how far the mouse has moved since the mousedon event was triggered
+                var diffX = mouseXY[0] - state.originalMouseX;
+                var diffY = mouseXY[1] - state.originalMouseY;
+
+                imageXY.x = state.originalMouseX + diffX - state.offsetX;
+                imageXY.y = state.originalMouseY + diffY - state.offsetY;
+                
+                Draw();
+                
+                e.stopPropagation();
+            }
+        }
+
+        /**
+        * Load the image on canvas1 initially and set the state up with some defaults
+        */
+        state = {}
+        state.dragging     = false;
+        state.canvas       = document.getElementById("cvs1");
+        state.image        =  new Image();
+        state.image.src    = 'http://www.rgraph.net/images/logo.png';
+        state.offsetX      = 0;
+        state.offsetY      = 0;
+
+        state.image.onload = function ()
+        {
+            Draw();
+        }
+    }
+</script>
