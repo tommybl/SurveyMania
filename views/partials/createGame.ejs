@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+
+<div>
+	<canvas id="cvs1" width="250" height="600" style="margin-left: 100px; border: 1px solid;"></canvas>
+	<canvas id="cvs2" width="800" height="600" style="margin-left: 100px; border: 1px solid;"></canvas>
+</div>
+
+<script>
+    window.onload = function ()
+    {
+        var canvas1 = document.getElementById("cvs1");
+        var canvas2 = document.getElementById("cvs2");
+
+        function getMousePos(canvas, evt) {
+	        var rect = canvas.getBoundingClientRect();
+	        return [ evt.clientX - rect.left, evt.clientY - rect.top];
+      	}
+
+        function Draw (can, pl)
+        {
+            if (state && state.dragging) {
+                can.getContext('2d').strokeStyle = 'rgb(245, 201, 100)';
+                can.getContext('2d').strokeRect(pl.imageX - 2.5, pl.imageY - 2.5, pl.img.width, pl.img.height);
+            }
+            can.getContext('2d').drawImage(pl.img, pl.imageX, pl.imageY);
+        }
+
+        canvas1.onclick = function (e)
+        {
+            if (state && state.dragging) {
+                state.dragging = false;
+                Draw(canvas2, state.selectedPlateform);
+            }
+
+            var mouseXY = getMousePos(e.target, e);
+            state.AvailablePlateforms.forEach(function(pl) {
+                if (mouseXY[0] > pl.imageX && mouseXY[0] < (pl.imageX + pl.img.width) && mouseXY[1] > pl.imageY && mouseXY[1] < (pl.imageY + pl.img.height)) {
+                    var newPl = {img: new Image(), imageX: 10, imageY: 10, offsetX: 0, offsetY: 0};
+                    newPl.img.src = pl.img.src;
+                    state.plateforms.push(newPl);
+                    Draw(canvas2, newPl);
+                }
+            });
+        }
+
+        canvas2.onclick = function (e)
+        {
+            if (state && state.dragging) {
+                state.dragging = false;
+                Draw(canvas2, state.selectedPlateform);
+                return;
+            }
+
+            var mouseXY = getMousePos(e.target, e);
+
+            state.plateforms.forEach(function(pl) {
+                if (mouseXY[0] > pl.imageX && mouseXY[0] < (pl.imageX + pl.img.width) && mouseXY[1] > pl.imageY && mouseXY[1] < (pl.imageY + pl.img.height)) {
+                    state.selectedPlateform = pl;
+                    state.dragging = true;
+                    state.originalMouseX = mouseXY[0];
+                    state.originalMouseY = mouseXY[1];
+                    state.selectedPlateform.offsetX = mouseXY[0] - state.selectedPlateform.imageX;
+                    state.selectedPlateform.offsetY = mouseXY[1] - state.selectedPlateform.imageY;
+                }
+            });
+        }
+
+        canvas2.onmousemove = function (e)
+        {
+            if (state.dragging) {
+                state.canvas = e.target;
+                var mouseXY = getMousePos(e.target, e);
+                var diffX = mouseXY[0] - state.originalMouseX;
+                var diffY = mouseXY[1] - state.originalMouseY;
+                state.selectedPlateform.imageX = state.originalMouseX + diffX - state.selectedPlateform.offsetX;
+                state.selectedPlateform.imageY = state.originalMouseY + diffY - state.selectedPlateform.offsetY;
+                Draw(canvas2, state.selectedPlateform);
+                e.stopPropagation();
+            }
+        }
+
+        state = {}
+        state.dragging              = false;
+        state.AvailablePlateforms   = [
+                                        {img: new Image(), imageX: 10, imageY: 10, offsetX: 0, offsetY: 0},
+                                        {img: new Image(), imageX: 10, imageY: 137, offsetX: 0, offsetY: 0},
+                                        {img: new Image(), imageX: 10, imageY: 254, offsetX: 0, offsetY: 0},
+                                        {img: new Image(), imageX: 10, imageY: 356, offsetX: 0, offsetY: 0}
+                                      ];
+        state.AvailablePlateforms[0].img.src = "../img/game/arrivee.png";
+        state.AvailablePlateforms[1].img.src = "../img/game/nuage.png";
+        state.AvailablePlateforms[2].img.src = "../img/game/plateforme2.png";
+        state.AvailablePlateforms[3].img.src = "../img/game/plateforme3.png";
+
+        state.AvailablePlateforms.forEach(function(pl) {
+            pl.img.onload = function ()
+            {
+                Draw(canvas1, pl);
+            }
+        });
+
+        state.plateforms = [];
+    }
+</script>

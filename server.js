@@ -306,6 +306,12 @@ app
     });
 })
 
+.get('/app/createGame', function (req, res) {
+    if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.redirect('/401-unauthorized');
+    res.setHeader("Content-Type", "text/html");
+    res.render('partials/createGame');
+})
+
 .post('/app/account/admin/publish/survey', function (req, res) {
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
     if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
