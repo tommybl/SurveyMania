@@ -181,32 +181,30 @@ function launch_phaser_editor (plateforms) {
         game.platforms = game.add.physicsGroup();
 
         plateforms.forEach(function(pl) {
-            alert(pl.img.src);
             if (pl.img.src.includes('img/game/arrivee.png')) {
                 var newPlat = game.platforms.create(pl.imageX, pl.imageY, 'pl1');
-                game.physics.enable(newPlat);
+                newPlat.body.velocity.x = 0;
             }
             if (pl.img.src.includes('img/game/nuage.png')) {
                 var newPlat = game.platforms.create(pl.imageX, pl.imageY, 'pl2');
-                game.physics.enable(newPlat);
+                newPlat.body.velocity.x = 100;
             }
             if (pl.img.src.includes('img/game/plateforme2.png')) {
                 var newPlat = game.platforms.create(pl.imageX, pl.imageY, 'pl3');
-                game.physics.enable(newPlat);
+                newPlat.body.velocity.x = 0;
             }
             if (pl.img.src.includes('img/game/plateforme3.png')) {
                 var newPlat = game.platforms.create(pl.imageX, pl.imageY, 'pl4');
-                game.physics.enable(newPlat);
+                newPlat.body.velocity.x = 0;
             }
         });
 
         game.platforms.setAll('body.allowGravity', false);
         game.platforms.setAll('body.immovable', true);
-        game.platforms.setAll('body.velocity.x', 0);
 
         game.physics.arcade.gravity.y = 800;
 
-        player = game.add.sprite(32, 32, 'dude');
+        player = game.add.sprite(32, 550, 'dude');
         game.physics.enable(player, Phaser.Physics.ARCADE);
 
         player.body.bounce.y = 0;
@@ -223,10 +221,16 @@ function launch_phaser_editor (plateforms) {
         jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     }
 
+    function wrapPlatform (platform) {
+        if (platform.body.velocity.x > 0 && platform.x >= 800)
+        {
+            platform.x = -160;
+        }
+    }
+
     function update() {
-
         game.physics.arcade.collide(player, layer);
-
+        game.platforms.forEach(wrapPlatform);
         player.body.velocity.x = 0;
 
         if (cursors.left.isDown)
