@@ -184,15 +184,19 @@ function launch_phaser_editor (plateforms) {
             alert(pl.img.src);
             if (pl.img.src.includes('img/game/arrivee.png')) {
                 var newPlat = game.platforms.create(pl.imageX, pl.imageY, 'pl1');
+                game.physics.enable(newPlat);
             }
             if (pl.img.src.includes('img/game/nuage.png')) {
                 var newPlat = game.platforms.create(pl.imageX, pl.imageY, 'pl2');
+                game.physics.enable(newPlat);
             }
             if (pl.img.src.includes('img/game/plateforme2.png')) {
                 var newPlat = game.platforms.create(pl.imageX, pl.imageY, 'pl3');
+                game.physics.enable(newPlat);
             }
             if (pl.img.src.includes('img/game/plateforme3.png')) {
                 var newPlat = game.platforms.create(pl.imageX, pl.imageY, 'pl4');
+                game.physics.enable(newPlat);
             }
         });
 
@@ -205,7 +209,7 @@ function launch_phaser_editor (plateforms) {
         player = game.add.sprite(32, 32, 'dude');
         game.physics.enable(player, Phaser.Physics.ARCADE);
 
-        player.body.bounce.y = 0.2;
+        player.body.bounce.y = 0;
         player.body.collideWorldBounds = true;
         player.body.setSize(20, 32, 5, 16);
 
@@ -264,27 +268,22 @@ function launch_phaser_editor (plateforms) {
             }
         }
         
-        if (jumpButton.isDown && player.body.onFloor() && game.time.now > jumpTimer)
+        //  Run collision
+        this.physics.arcade.collide(player, game.platforms, null, null, game);
+        var standing = player.body.blocked.down || player.body.touching.down;
+
+        if (jumpButton.isDown && standing && game.time.now > jumpTimer)
         {
             player.body.velocity.y = -500;
             jumpTimer = game.time.now + 750;
         }
-        
-        //  Run collision
-        this.physics.arcade.collide(player, game.platforms, null, null, game);
     }
 
     function render () {
 
-        // game.debug.text(game.time.physicsElapsed, 32, 32);
-        // game.debug.body(player);
-        // game.debug.bodyInfo(player, 16, 24);
-
     }
     
     function collisionHandler () {
-
         
-
     }
 }
