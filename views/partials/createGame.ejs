@@ -9,10 +9,11 @@
 </div>
 
 <div style="margin-top: 50px;">
+
 	<canvas id="cvs1" width="250" height="600" style="margin-left: 100px; border: 1px solid;"></canvas>
 	<canvas id="cvs2" width="800" height="600" style="margin-left: 100px; border: 1px solid;"></canvas>
     <br/>
-    <button class="btn btn-success" data-toggle="modal" data-target="#myStarstruckModal" onclick="launch_phaser_editor(state.plateforms)" style="margin-left:100px;padding:0 6px 2px 4px"><i class="fa fa-gamepad fa-lg"></i></button>
+    <button class="btn btn-success" data-toggle="modal" data-target="#myStarstruckModal" onclick="launch_phaser_editor(state.plateforms)" style="margin-left:1225px; padding:0 6px 2px 4px"><i class="fa fa-gamepad fa-lg"></i></button>
 </div>
 
 <script>
@@ -38,9 +39,11 @@
         function DrawAllScene()
         {
             canvas2.width = canvas2.width;
+            canvas2.getContext('2d').drawImage(backg, 0, 0);
             state.plateforms.forEach(function(pl) {
                 Draw(canvas2, pl)
             });
+            canvas2.getContext('2d').drawImage(player, 0, 0, 32, 48, 32, 550, 32, 48);
         }
 
         canvas1.onclick = function (e)
@@ -100,8 +103,8 @@
         state = {}
         state.dragging              = false;
         state.AvailablePlateforms   = [
-                                        {img: new Image(), imageX: 10, imageY: 10, offsetX: 0, offsetY: 0},
-                                        {img: new Image(), imageX: 10, imageY: 137, offsetX: 0, offsetY: 0},
+                                        {img: new Image(), imageX: 54, imageY: 10, offsetX: 0, offsetY: 0},
+                                        {img: new Image(), imageX: 61, imageY: 137, offsetX: 0, offsetY: 0},
                                         {img: new Image(), imageX: 10, imageY: 254, offsetX: 0, offsetY: 0},
                                         {img: new Image(), imageX: 10, imageY: 356, offsetX: 0, offsetY: 0}
                                       ];
@@ -118,6 +121,20 @@
         });
 
         state.plateforms = [];
+
+        var backg = new Image();
+        backg.src = '../img/game/fond.png';
+        backg.onload = function ()
+        {
+            canvas2.getContext('2d').drawImage(backg, 0, 0);
+        }
+
+        var player = new Image();
+        player.src = '../js/phaser/assets/games/starstruck/dude.png';
+        player.onload = function ()
+        {
+            canvas2.getContext('2d').drawImage(player, 0, 0, 32, 48, 32, 550, 32, 48);
+        }
     }
 </script>
 <script src="js/phaser/starstruck.js"></script>
