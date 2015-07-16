@@ -1,8 +1,18 @@
 <!DOCTYPE html>
 
-<div>
+<div class="modal fade" id="myStarstruckModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabe2">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div id="phaser-starstruck" style="width: 800px; height: 600px; margin: auto; margin-top: 6%"></div>
+        </div>
+    </div>
+</div>
+
+<div style="margin-top: 50px;">
 	<canvas id="cvs1" width="250" height="600" style="margin-left: 100px; border: 1px solid;"></canvas>
 	<canvas id="cvs2" width="800" height="600" style="margin-left: 100px; border: 1px solid;"></canvas>
+    <br/>
+    <button class="btn btn-success" data-toggle="modal" data-target="#myStarstruckModal" onclick="launch_phaser_editor(state.plateforms)" style="margin-left:100px;padding:0 6px 2px 4px"><i class="fa fa-gamepad fa-lg"></i></button>
 </div>
 
 <script>
@@ -110,3 +120,4 @@
         state.plateforms = [];
     }
 </script>
+<script src="js/phaser/starstruck.js"></script>
