@@ -219,6 +219,8 @@ angular.element(document.body).scope().launch_phaser_starstruck = function (surv
         //alert("collision");
         $('#' + question_div + ' input:nth(' + (_answer.z - 1) + ')').attr('checked',true);
         if ($.inArray(_answer.z, answers_hit) == -1) {
+            game.add.tween(_answer).to( { alpha: 0 }, 1000, Phaser.Easing.Linear.None, true, 0, 1000, true);
+            setTimeout(function(){ _answer.kill(); }, 1000);
             for (var i = 0; i < 3; i++) {
                 var bad_pos = true;
                 var posx = Math.floor((Math.random() * game.world.width) + 1);
