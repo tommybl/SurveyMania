@@ -18,18 +18,26 @@
 
         function Draw (can, pl)
         {
-            if (state && state.dragging) {
+            if (state && state.dragging && pl == state.selectedPlateform) {
                 can.getContext('2d').strokeStyle = 'rgb(245, 201, 100)';
-                can.getContext('2d').strokeRect(pl.imageX - 2.5, pl.imageY - 2.5, pl.img.width, pl.img.height);
+                can.getContext('2d').strokeRect(pl.imageX, pl.imageY, pl.img.width, pl.img.height);
             }
             can.getContext('2d').drawImage(pl.img, pl.imageX, pl.imageY);
+        }
+
+        function DrawAllScene()
+        {
+            canvas2.width = canvas2.width;
+            state.plateforms.forEach(function(pl) {
+                Draw(canvas2, pl)
+            });
         }
 
         canvas1.onclick = function (e)
         {
             if (state && state.dragging) {
                 state.dragging = false;
-                Draw(canvas2, state.selectedPlateform);
+                DrawAllScene();
             }
 
             var mouseXY = getMousePos(e.target, e);
@@ -47,7 +55,7 @@
         {
             if (state && state.dragging) {
                 state.dragging = false;
-                Draw(canvas2, state.selectedPlateform);
+                DrawAllScene();
                 return;
             }
 
@@ -74,7 +82,7 @@
                 var diffY = mouseXY[1] - state.originalMouseY;
                 state.selectedPlateform.imageX = state.originalMouseX + diffX - state.selectedPlateform.offsetX;
                 state.selectedPlateform.imageY = state.originalMouseY + diffY - state.selectedPlateform.offsetY;
-                Draw(canvas2, state.selectedPlateform);
+                DrawAllScene();
                 e.stopPropagation();
             }
         }
@@ -87,10 +95,10 @@
                                         {img: new Image(), imageX: 10, imageY: 254, offsetX: 0, offsetY: 0},
                                         {img: new Image(), imageX: 10, imageY: 356, offsetX: 0, offsetY: 0}
                                       ];
-        state.AvailablePlateforms[0].img.src = "../img/game/arrivee.png";
-        state.AvailablePlateforms[1].img.src = "../img/game/nuage.png";
-        state.AvailablePlateforms[2].img.src = "../img/game/plateforme2.png";
-        state.AvailablePlateforms[3].img.src = "../img/game/plateforme3.png";
+        state.AvailablePlateforms[0].img.src = '../img/game/arrivee.png';
+        state.AvailablePlateforms[1].img.src = '../img/game/nuage.png';
+        state.AvailablePlateforms[2].img.src = '../img/game/plateforme2.png';
+        state.AvailablePlateforms[3].img.src = '../img/game/plateforme3.png';
 
         state.AvailablePlateforms.forEach(function(pl) {
             pl.img.onload = function ()
