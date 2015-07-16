@@ -74,7 +74,7 @@
 
                     <!-- Question description -->
                     <label ng-if="question.question.type_name != 'Titre' && question.question.type_name != 'Texte'">{{question.question.description}}</label>
-                    <button ng-if="question.question.type_name != 'Titre' && question.question.type_name != 'Texte'" class="btn btn-success" data-toggle="modal" data-target="#myStarstruckModal" ng-click="launch_phaser_starstruck(question.question.description, question.options)" style="margin-left:15px;padding:0 6px 2px 4px"><i class="fa fa-gamepad fa-lg"></i></button>
+                    <button ng-if="question.question.type_name != 'Titre' && question.question.type_name != 'Texte'" class="btn btn-success" data-toggle="modal" data-target="#myStarstruckModal" ng-click="launch_phaser_starstruck(question.question.description, question.options, 'question'+question.question.question_order+'master')" style="margin-left:15px;padding:0 6px 2px 4px"><i class="fa fa-gamepad fa-lg"></i></button>
 
                     <!-- Free texting question (maxlength) -->
                     <textarea ng-if="question.question.type_name == 'Ouverte'" ng-keyup="remainingCharacter(question.question.question_order)" class="form-control answerOpen" id="question{{question.question.question_order}}" rows="3" maxlength="{{question.parammax}}"></textarea>
