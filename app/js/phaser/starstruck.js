@@ -44,6 +44,8 @@ angular.element(document.body).scope().launch_phaser_starstruck = function (surv
     var answers_hit = [];
     var game_coins;
     var coins_hit = [];
+    var coin_hit_text;
+    var answer_hit_text;
 
     function create() {
 
@@ -88,6 +90,7 @@ angular.element(document.body).scope().launch_phaser_starstruck = function (surv
         game.add.text(10, 10, survey_question, { font: '28px Arial', fill: '#fff' });
         score_text = game.add.text(650, 10, 'Score: ' + score, { font: '28px Arial', fill: '#fff'});
         score_text.fixedToCamera = true;
+
         /*for (var i = 0; i < survey_options.length; i++) {
             var posx = Math.floor((Math.random() * game.world.width) + 1);
             var posy = Math.floor((Math.random() * game.world.height) + 1);
@@ -220,7 +223,11 @@ angular.element(document.body).scope().launch_phaser_starstruck = function (surv
         $('#' + question_div + ' input:nth(' + (_answer.z - 1) + ')').attr('checked',true);
         if ($.inArray(_answer.z, answers_hit) == -1) {
             game.add.tween(_answer).to( { alpha: 0 }, 1000, Phaser.Easing.Linear.None, true, 0, 1000, true);
-            setTimeout(function(){ _answer.kill(); }, 1000);
+            answer_hit_text = game.add.text(_answer.x, _answer.y, 'Selected !', { font: 'bold 24px Arial', fill: '#5765ec'});
+            game.add.tween(answer_hit_text).to( { alpha: 0 }, 2000, Phaser.Easing.Linear.None, true, 0, 1000, true);
+            game.add.tween(answer_hit_text).to( { x: answer_hit_text.x + 100, y: answer_hit_text.y - 100}, 2000, Phaser.Easing.Linear.Out, true);
+            setTimeout(function(){ _answer.kill();}, 1000);
+            setTimeout(function(){ answer_hit_text.kill();}, 2000);
             for (var i = 0; i < 3; i++) {
                 var bad_pos = true;
                 var posx = Math.floor((Math.random() * game.world.width) + 1);
@@ -265,6 +272,10 @@ angular.element(document.body).scope().launch_phaser_starstruck = function (surv
             coins_hit.push(_coin.z);
             setTimeout(function(){ _coin.kill(); }, 350);
             game.add.tween(_coin).to( { alpha: 0 }, 400, Phaser.Easing.Linear.None, true, 0, 1000, true);
+            coin_hit_text = game.add.text(_coin.x, _coin.y, '+10 !', { font: 'bold 24px Arial', fill: '#309443'});
+            game.add.tween(coin_hit_text).to( { alpha: 0 }, 2000, Phaser.Easing.Linear.None, true, 0, 1000, true);
+            game.add.tween(coin_hit_text).to( { x: coin_hit_text.x + 100, y: coin_hit_text.y - 100}, 2000, Phaser.Easing.Linear.Out, true);
+            setTimeout(function(){ coin_hit_text.kill();}, 1000);
         }
     }
 
