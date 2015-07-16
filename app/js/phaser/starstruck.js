@@ -165,8 +165,8 @@ angular.element(document.body).scope().launch_phaser_starstruck = function (surv
 
         player.body.velocity.x = 0;
         enemy.body.velocity.x = 0;
-        enemy.animations.play('right');
-        enemy.body.velocity.x = 150;
+        //enemy.animations.play('right');
+        //enemy.body.velocity.x = 150;
 
         if (cursors.left.isDown)
         {
