@@ -33,6 +33,7 @@ angular.element(document.body).scope().launch_phaser_starstruck = function (surv
     var tileset;
     var layer;
     var player;
+    var enemy;
     var facing = 'left';
     var jumpTimer = 0;
     var cursors;
@@ -83,6 +84,17 @@ angular.element(document.body).scope().launch_phaser_starstruck = function (surv
         player.animations.add('left', [0, 1, 2, 3], 10, true);
         player.animations.add('turn', [4], 20, true);
         player.animations.add('right', [5, 6, 7, 8], 10, true);
+
+        enemy = game.add.sprite(400, 32, 'droid');
+        game.physics.enable(enemy, Phaser.Physics.ARCADE);
+
+        enemy.body.bounce.y = 0.2;
+        enemy.body.collideWorldBounds = true;
+        //enemy.body.setSize(20, 32, 5, 16);
+
+        enemy.animations.add('left', [0, 1, 2, 3], 10, true);
+        enemy.animations.add('turn', [4], 20, true);
+        enemy.animations.add('right', [5, 6, 7, 8], 10, true);
         
         stateText = game.add.text(game.world.centerX,game.world.centerY,' ', { font: '84px Arial', fill: '#fff' });
         stateText.anchor.setTo(0.5, 0.5);
@@ -149,8 +161,12 @@ angular.element(document.body).scope().launch_phaser_starstruck = function (surv
         //console.log("update");
 
         game.physics.arcade.collide(player, layer);
+        game.physics.arcade.collide(enemy, layer);
 
         player.body.velocity.x = 0;
+        enemy.body.velocity.x = 0;
+        enemy.animations.play('right');
+        enemy.body.velocity.x = 150;
 
         if (cursors.left.isDown)
         {
