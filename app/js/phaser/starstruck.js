@@ -26,7 +26,7 @@ angular.element(document.body).scope().launch_phaser_starstruck = function (surv
         game.load.image('starBig', 'js/phaser/assets/games/starstruck/star2.png');
         game.load.image('background', 'js/phaser/assets/games/starstruck/background2.png');
         game.load.image('coin', 'js/phaser/assets/games/starstruck/coin.png');
-
+        game.load.spritesheet('kaboom', 'js/phaser/assets/games/starstruck/explode.png', 128, 128);
     }
 
     var map;
@@ -34,6 +34,8 @@ angular.element(document.body).scope().launch_phaser_starstruck = function (surv
     var layer;
     var player;
     var enemy;
+    var enemy1;
+    var enemy2;
     var facing = 'left';
     var jumpTimer = 0;
     var cursors;
@@ -47,6 +49,7 @@ angular.element(document.body).scope().launch_phaser_starstruck = function (surv
     var coins_hit = [];
     var coin_hit_text;
     var answer_hit_text;
+    var explosions;
 
     function create() {
 
@@ -85,16 +88,29 @@ angular.element(document.body).scope().launch_phaser_starstruck = function (surv
         player.animations.add('turn', [4], 20, true);
         player.animations.add('right', [5, 6, 7, 8], 10, true);
 
-        enemy = game.add.sprite(400, 32, 'droid');
-        game.physics.enable(enemy, Phaser.Physics.ARCADE);
 
-        enemy.body.bounce.y = 0.2;
-        enemy.body.collideWorldBounds = true;
-        //enemy.body.setSize(20, 32, 5, 16);
+        game_enemies = game.add.group();
+        game_enemies.enableBody = true;
+        game_enemies.physicsBodyType = Phaser.Physics.ARCADE;
 
-        enemy.animations.add('left', [0, 1, 2, 3], 10, true);
-        enemy.animations.add('turn', [4], 20, true);
-        enemy.animations.add('right', [5, 6, 7, 8], 10, true);
+        enemy1 = game.add.sprite(380, 32, 'droid');
+        game.physics.enable(enemy1, Phaser.Physics.ARCADE);
+        enemy1.body.bounce.y = 0.2;
+        enemy1.body.collideWorldBounds = true;
+        setTimeout(function(){ game.add.tween(enemy1).to( { x: enemy1.x + 100 }, 2000, Phaser.Easing.Linear.None, true, 0, 1000, true);}, 2000);
+        game_enemies.add(enemy1);
+
+        enemy2 = game.add.sprite(200, 32, 'droid');
+        game.physics.enable(enemy2, Phaser.Physics.ARCADE);
+        enemy2.body.bounce.y = 0.2;
+        enemy2.body.collideWorldBounds = true;
+        setTimeout(function(){ game.add.tween(enemy2).to( { x: enemy2.x + 150 }, 3000, Phaser.Easing.Linear.None, true, 0, 1000, true);}, 2000);
+        game_enemies.add(enemy2);
+
+        //  An explosion pool
+        explosions = game.add.group();
+        explosions.createMultiple(30, 'kaboom');
+        explosions.forEach(setupInvader, this);
         
         stateText = game.add.text(game.world.centerX,game.world.centerY,' ', { font: '84px Arial', fill: '#fff' });
         stateText.anchor.setTo(0.5, 0.5);
@@ -156,15 +172,24 @@ angular.element(document.body).scope().launch_phaser_starstruck = function (surv
 
     }
 
+    function setupInvader (invader) {
+
+        invader.anchor.x = 0.5;
+        invader.anchor.y = 0.5;
+        invader.animations.add('kaboom');
+
+    }
+
     function update() {
 
         //console.log("update");
 
         game.physics.arcade.collide(player, layer);
-        game.physics.arcade.collide(enemy, layer);
+        game.physics.arcade.collide(game_enemies, layer);
 
         player.body.velocity.x = 0;
-        enemy.body.velocity.x = 0;
+        enemy1.body.velocity.x = 0;
+        enemy2.body.velocity.x = 0;
         //enemy.animations.play('right');
         //enemy.body.velocity.x = 150;
 
@@ -218,6 +243,7 @@ angular.element(document.body).scope().launch_phaser_starstruck = function (surv
 
         game.physics.arcade.collide(player, survey_answers, playerHitAnswer, null, this);
         game.physics.arcade.collide(player, game_coins, playerHitCoin, null, this);
+        game.physics.arcade.collide(player, game_enemies, playerHitEnemy, null, this);
         //game.physics.arcade.collide(survey_answers, layer, answerHitLayer, null, this);
     }
 
@@ -293,6 +319,16 @@ angular.element(document.body).scope().launch_phaser_starstruck = function (surv
             game.add.tween(coin_hit_text).to( { x: coin_hit_text.x + 100, y: coin_hit_text.y - 100}, 2000, Phaser.Easing.Linear.Out, true);
             setTimeout(function(){ coin_hit_text.kill();}, 1000);
         }
+    }
+
+    function playerHitEnemy (_player, _enemy) {
+        var explosion = explosions.getFirstExists(false);
+        explosion.reset(_enemy.body.x, _enemy.body.y);
+        explosion.play('kaboom', 30, false, true);
+        var over_text = game.add.text(150, 300, 'GAME OVER', { font: 'bold 80px Arial', fill: '#000', stroke: '#fff', strokeThickness: 20});
+        over_text.fixedToCamera = true;
+        _player.kill();
+        _enemy.kill();
     }
 
     /*function answerHitLayer (_answer, _layer) {
