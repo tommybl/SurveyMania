@@ -75,7 +75,7 @@ angular.element(document.body).scope().launch_phaser_starstruck = function (surv
         console.log(map);
         console.log(layer);
 
-        game.physics.arcade.gravity.y = 250;
+        game.physics.arcade.gravity.y = 800;
 
         player = game.add.sprite(32, 32, 'dude');
         game.physics.enable(player, Phaser.Physics.ARCADE);
@@ -234,7 +234,7 @@ angular.element(document.body).scope().launch_phaser_starstruck = function (surv
         
         if (jumpButton.isDown && player.body.onFloor() && game.time.now > jumpTimer)
         {
-            player.body.velocity.y = -250;
+            player.body.velocity.y = -475;
             jumpTimer = game.time.now + 750;
         }
         
