@@ -1525,11 +1525,11 @@ surveyManiaControllers.controller('PrevisualisationController', ['$scope', '$htt
                     $scope.sectionQuestionArray = undefined;
                 })
                 .error(function (data, status, header, config) {
-                    $location.path("/app/createSurvey");
+                    $location.path("/createSurvey");
                 });
         })
         .error(function (data, status, header, config) {
-            $location.path("/app/createSurvey");
+            $location.path("/createSurvey");
         });
 
     $scope.displaySection = function (index) {
@@ -1564,6 +1564,57 @@ surveyManiaControllers.controller('PrevisualisationController', ['$scope', '$htt
     $scope.remainingCharacter = function (id) {
         var elem = $('#question' + id);
         if (elem.attr('maxlength') != undefined && elem.attr('maxlength') != "") document.getElementById('question' + id + 'remaining').innerHTML = elem.attr('maxlength') - elem[0].value.length + ' caractères restants';
+    }
+}]);
+
+surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$window', '$sce', '$location', function($scope, $http, $window, $sce, $location) {
+    $scope.url = $window.location.hash.split('/');
+    $scope.surveyid = $scope.url[$scope.url.length - 1];
+    $scope.survey;
+    $scope.surveyEstimatedTime;
+    $scope.sections;
+    $scope.sectionQuestionArray;
+    $scope.selectedSectionNumber = "default";
+    $scope.selectedSection = null;
+    $scope.selectedQuestionNumber = "default";
+    
+    $http.post('/app/survey/getSurvey', {survey: $scope.surveyid, prev: true})
+        .success(function (data, status, header, config) {
+            $scope.survey = data.survey;
+            $scope.surveyEstimatedTime = data.time;
+            $http.post('/app/previsualisation/getSections', {surveyid: $scope.surveyid})
+                .success(function (data, status, header, config) {
+                    $scope.sections = data.sections;
+
+                    for (var h = 0; h < $scope.sections.length; ++h) {
+                        $scope.sectionQuestionArray = $scope.sections[h].question_array;
+                        for (var i = 0; i < $scope.sectionQuestionArray.length; ++i) {
+                            for (var j = 0; j < $scope.sectionQuestionArray[i].parameters.length; ++j)
+                                if ($scope.sectionQuestionArray[i].parameters[j].value_num != null)
+                                    eval('$scope.sectionQuestionArray[i].param' + $scope.sectionQuestionArray[i].parameters[j].name  + ' = ' + $scope.sectionQuestionArray[i].parameters[j].value_num);
+                                else
+                                    eval('$scope.sectionQuestionArray[i].param' + $scope.sectionQuestionArray[i].parameters[j].name  + ' = ' + $scope.sectionQuestionArray[i].parameters[j].value_text);
+                        }
+                    }
+                    $scope.sectionQuestionArray = undefined;
+                })
+                .error(function (data, status, header, config) {
+                    $location.path("/createSurvey");
+                });
+        })
+        .error(function (data, status, header, config) {
+            $location.path("/createSurvey");
+        });
+
+    $scope.selectSection = function () {
+        if ($scope.selectedSectionNumber != "default") {
+            $scope.selectedSection = $scope.sections[$scope.selectedSectionNumber - 1];
+            $scope.selectedQuestionNumber = $scope.selectedSection.question_array[0];
+            document.getElementById('questionSelection').style.display = "initial";
+        } else {
+            $scope.selectedSection = null;
+            document.getElementById('questionSelection').style.display = "none";
+        }
     }
 }]);
 
@@ -1651,6 +1702,11 @@ surveyManiaControllers.controller('OrganizationPanel', ['$scope', '$http', '$win
             .error(function (data, status, header, config) {
 
             });
+    }
+
+    $scope.redirectToSurvey = function($id)
+    {
+        $location.path("#/results/" + $id);        
     }
 
     $scope.categoryNameCheck = function () {$scope.isValidCategoryName = (/^.{2,25}$/.test($scope.newCategory.name));}

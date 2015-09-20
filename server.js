@@ -1935,6 +1935,57 @@ app
     }
 })
 
+.get('/app/results/:surveyid', function (req, res) {
+    if (req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.redirect('/401-unauthorized');
+    else {
+        pg.connect(conString, function(err, client, done) {
+            if (err) res.redirect('/404-notfound');
+            else {
+                var user = req.user;
+                var surveyid = escapeHtml(req.params.surveyid);
+                var query = 'SELECT * FROM surveymania.survey_headers WHERE id = ' + surveyid + ' AND organization_id = ' + user.organization;
+
+                client.query(query, function(err, result) {
+                    done();
+                    if (err) res.redirect('/404-notfound');
+                    else {
+                        if (!result.rows.length) res.redirect('/401-unauthorized');
+                        else {
+                            res.setHeader("Content-Type", "text/html");
+                            res.render('partials/results');
+                        }
+                    }
+                });
+            }
+        });
+    }
+})
+
+/*.post('/app/results/doQuery', function (req, res) {
+    if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
+    else {
+        var user = req.user;
+        var surveyid = escapeHtml(req.body.surveyid);
+
+        pg.connect(conString, function(err, client, done) {
+            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+            else {
+                var query = 'SELECT FROM surveymania.survey_headers WHERE id = ' + surveyid + ' AND organization_id = ' + user.organization;
+                client.query(query, function(err, result) {
+                    done();
+                    if (err) res.redirect('/404-notfound');
+                    else {
+                        if (!result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                        else {
+                            // Faire ici la query de recherche de resultats (manque la forme...)
+                        }
+                    }
+                });
+            }
+        });
+    }
+})*/
+
 .get('/app/organizationPanel', function (req, res) {
     if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.redirect('/401-unauthorized');
     else {
