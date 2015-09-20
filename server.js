@@ -2066,7 +2066,7 @@ app
     }
 })
 
-/*.post('/app/results/doQuery', function (req, res) {
+.post('/app/results/doQuery', function (req, res) {
     if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
     else {
         var user = req.user;
@@ -2075,21 +2075,29 @@ app
         pg.connect(conString, function(err, client, done) {
             if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
             else {
-                var query = 'SELECT FROM surveymania.survey_headers WHERE id = ' + surveyid + ' AND organization_id = ' + user.organization;
+                var query = 'SELECT id FROM surveymania.survey_headers WHERE id = ' + surveyid + ' AND organization_id = ' + user.organization;
                 client.query(query, function(err, result) {
                     done();
                     if (err) res.redirect('/404-notfound');
                     else {
                         if (!result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                         else {
-                            // Faire ici la query de recherche de resultats (manque la forme...)
+                            var query = 'SELECT a.id, a.question_id, a.user_id, a.option_choice_id, a.answer_num, a.answer_text'
+                                + ' FROM surveymania.answers AS a'
+                                + ' WHERE question_id = ' + req.body.questionid;
+
+                            client.query(query, function(err, result) {
+                                done();
+                                if (err) res.redirect('/404-notfound');
+                                else res.status(200).json({code: 200, message: "OK", answers : result.rows});
+                            });
                         }
                     }
                 });
             }
         });
     }
-})*/
+})
 
 .get('/app/organizationPanel', function (req, res) {
     if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.redirect('/401-unauthorized');

@@ -6,8 +6,7 @@
         <option ng-repeat="sec in sections" value="{{sec.section.section_order}}">{{sec.section.title}}</option>
     </select>
 
-    <select id="questionSelection" ng-options="que.question.description for que in selectedSection.question_array track by que.question.question_order" ng-model="selectedQuestionNumber" style="display:none">
-
+    <select id="questionSelection" ng-options="que.question.description for que in selectedSection.question_array track by que.question.question_order" ng-model="selectedQuestion"  ng-change="selectQuestion()" style="display:none">
     </select>
 </div>
 

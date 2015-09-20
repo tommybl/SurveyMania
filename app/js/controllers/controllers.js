@@ -1576,7 +1576,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
     $scope.sectionQuestionArray;
     $scope.selectedSectionNumber = "default";
     $scope.selectedSection = null;
-    $scope.selectedQuestionNumber = "default";
+    $scope.selectedQuestion;
     
     $http.post('/app/survey/getSurvey', {survey: $scope.surveyid, prev: true})
         .success(function (data, status, header, config) {
@@ -1614,6 +1614,15 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
         } else {
             $scope.selectedSection = null;
             document.getElementById('questionSelection').style.display = "none";
+        }
+    }
+
+    $scope.selectQuestion = function () {
+        if ($scope.selectedQuestion != null) {
+            $http.post('/app/results/doQuery', {surveyid: $scope.surveyid, questionid: $scope.selectedQuestion.question.id})
+                .success(function (data, status, header, config) {
+                    console.log(data);
+                });
         }
     }
 }]);
