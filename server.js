@@ -1552,7 +1552,7 @@ app
                                         /* Get les questions de la section et leur type */
                                         var query = 'SELECT it.type_name, q.id, q.description, q.question_order, q.multiple_answers'
                                             + ' FROM surveymania.questions q INNER JOIN surveymania.input_types it ON q.input_type_id = it.id'
-                                            + ' WHERE q.survey_section_id = ' + selected.id;
+                                            + ' WHERE q.survey_section_id = ' + selected.id
                                             + ' ORDER BY q.question_order ASC';
 
                                         client.query(query, function(err, result) {
@@ -1769,6 +1769,31 @@ app
     }
 })
 
+.post('/app/survey/addComment', function (req, res) {
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    if (req.user.usertypenumber != 1) res.status(500).json({code: 500});
+    else {
+        pg.connect(conString, function(err, client, done) {
+            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+            else {
+                var user = req.user;
+                var surveyid = req.body.survey;
+                var comment = req.body.comment;
+                var dateNow = moment().format("YYYY-MM-DD HH:mm:ss");
+
+                var query = 'INSERT INTO surveymania.survey_comments (header_id, user_id, comment, posted) VALUES'
+                    + ' (' + surveyid + ', ' + user.id + ', \'' + escapeHtml(comment) + '\', \'' + escapeHtml(dateNow) + '\')';
+
+                client.query(query, function(err, result) {
+                    done();
+                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                    else res.status(200).json({code: 200, message: "OK"});
+                });
+            }
+        });
+    }
+})
+
 .get('/app/previsualisation/:surveyid', function (req, res) {
     if (req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.redirect('/401-unauthorized');
     else {
@@ -1822,7 +1847,7 @@ app
 
                                 var query = 'SELECT it.type_name, q.id, q.description, q.question_order, q.multiple_answers'
                                     + ' FROM surveymania.questions q INNER JOIN surveymania.input_types it ON q.input_type_id = it.id'
-                                    + ' WHERE q.survey_section_id = ' + section.section.id;
+                                    + ' WHERE q.survey_section_id = ' + section.section.id
                                     + ' ORDER BY q.question_order ASC';
 
                                 client.query(query, function(err, result) {
@@ -1910,31 +1935,6 @@ app
     }
 })
 
-.post('/app/survey/addComment', function (req, res) {
-    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
-    if (req.user.usertypenumber != 1) res.status(500).json({code: 500});
-    else {
-        pg.connect(conString, function(err, client, done) {
-            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
-            else {
-                var user = req.user;
-                var surveyid = req.body.survey;
-                var comment = req.body.comment;
-                var dateNow = moment().format("YYYY-MM-DD HH:mm:ss");
-
-                var query = 'INSERT INTO surveymania.survey_comments (header_id, user_id, comment, posted) VALUES'
-                    + ' (' + surveyid + ', ' + user.id + ', \'' + escapeHtml(comment) + '\', \'' + escapeHtml(dateNow) + '\')';
-
-                client.query(query, function(err, result) {
-                    done();
-                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
-                    else res.status(200).json({code: 200, message: "OK"});
-                });
-            }
-        });
-    }
-})
-
 .get('/app/results/:surveyid', function (req, res) {
     if (req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.redirect('/401-unauthorized');
     else {
@@ -1953,6 +1953,111 @@ app
                         else {
                             res.setHeader("Content-Type", "text/html");
                             res.render('partials/results');
+                        }
+                    }
+                });
+            }
+        });
+    }
+})
+
+.post('/app/results/getQuestions', function (req, res) {
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    if (req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
+    else {
+        var surveyid = req.body.surveyid;
+        pg.connect(conString, function(err, client, done) {
+            if (err) res.status(500).json({code: 500});
+            else {
+                var query = 'SELECT id, title, subtitle, required, section_order'
+                    + ' FROM surveymania.survey_sections'
+                    + ' WHERE header_id = ' + surveyid
+                    + ' ORDER BY section_order ASC';
+                client.query(query, function(err, result) {
+                    done();
+                    if (err) res.status(500).json({code: 500});
+                    else {
+                        if (!result.rows.length) res.status(500).json({code: 500});
+                        else {
+                            var sectionList = result.rows;
+                            var section_array = [];
+
+                            var queue = async.queue(function (s, mainCallback) {
+                                var section = {};
+                                section.section = s;
+
+                                var query = 'SELECT it.type_name, q.id, q.description, q.question_order, q.multiple_answers'
+                                    + ' FROM surveymania.questions q INNER JOIN surveymania.input_types it ON q.input_type_id = it.id'
+                                    + ' WHERE q.survey_section_id = ' + section.section.id
+                                    + ' AND it.type_name != \'Titre\''
+                                    + ' AND it.type_name != \'Texte\''
+                                    + ' AND it.type_name != \'Anti-robot\''
+                                    + ' ORDER BY q.question_order ASC';
+
+                                client.query(query, function(err, result) {
+                                    done();
+                                    if (err) callback("Error running query");
+                                    else {
+                                        if (!result.rows.length) mainCallback("Error running query");
+                                        else {
+                                            var question_array = [];
+
+                                            async.eachSeries(result.rows,
+                                                function (q, callback) {
+                                                    var question = {};
+                                                    question.question = q;
+
+                                                    var query = 'SELECT qp.name, qp.value_num, qp.value_text'
+                                                        + ' FROM surveymania.question_params qp'
+                                                        + ' WHERE qp.question_id = ' + question.question.id;
+
+                                                    client.query(query, function(err, result) {
+                                                        done();
+                                                        if (err) callback("Error running query");
+                                                        else {
+                                                            question.parameters = result.rows;
+
+                                                            var query = 'SELECT oc.id, oc.choice_name, oc.option_order, oc.linked_section_id, ss.title'
+                                                                + ' FROM surveymania.option_choices oc LEFT JOIN surveymania.survey_sections ss ON oc.linked_section_id = ss.id'
+                                                                + ' WHERE oc.question_id = ' + question.question.id
+                                                                + ' ORDER BY oc.option_order ASC';
+
+                                                            client.query(query, function(err, result) {
+                                                                done();
+                                                                if (err) callback("Error running query");
+                                                                else {
+                                                                    question.options = result.rows;
+                                                                    question_array.push(question);
+                                                                    callback();
+                                                                }
+                                                            });
+                                                        }
+                                                    });
+                                                },
+
+                                                function (err) {
+                                                    section.question_array = question_array;
+                                                    section_array.push(section);
+                                                    mainCallback(err);
+                                                }
+                                            );
+                                        }
+                                    }
+                                });
+                            }, 1);
+
+                            queue.drain = function() {
+                                res.status(200).json({code: 200, message: "OK", sections: section_array});
+                            }
+
+                            for (var i = 0; i < sectionList.length; ++i) {
+                                queue.push(sectionList[i], function (err) {
+                                    if (err) {
+                                        queue.kill();
+                                        res.status(500).json({code: 500});
+                                    }
+                                });
+                            }
                         }
                     }
                 });

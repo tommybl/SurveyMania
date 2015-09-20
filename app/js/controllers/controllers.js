@@ -1582,7 +1582,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
         .success(function (data, status, header, config) {
             $scope.survey = data.survey;
             $scope.surveyEstimatedTime = data.time;
-            $http.post('/app/previsualisation/getSections', {surveyid: $scope.surveyid})
+            $http.post('/app/results/getQuestions', {surveyid: $scope.surveyid})
                 .success(function (data, status, header, config) {
                     $scope.sections = data.sections;
 
@@ -1706,7 +1706,7 @@ surveyManiaControllers.controller('OrganizationPanel', ['$scope', '$http', '$win
 
     $scope.redirectToSurvey = function($id)
     {
-        $location.path("#/results/" + $id);        
+        $location.path("/results/" + $id);        
     }
 
     $scope.categoryNameCheck = function () {$scope.isValidCategoryName = (/^.{2,25}$/.test($scope.newCategory.name));}
