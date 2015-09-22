@@ -1571,6 +1571,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
     $scope.surveyid = $scope.url[$scope.url.length - 1];
     $scope.chartsWidth = 800;
     $scope.chartsHeight = 600;
+    $scope.grdata = null;
     $scope.survey;
     $scope.surveyEstimatedTime;
     $scope.sections;
@@ -1625,64 +1626,116 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
         if ($scope.selectedQuestion != null) {
             $http.post('/app/results/doQuery', {surveyid: $scope.surveyid, questionid: $scope.selectedQuestion.question.id})
                 .success(function (data, status, header, config) {
-                    $scope.drawChart(data);
+                    $scope.grdata = data;
+                    $scope.drawChart();
                 });
         } else {
-            $scope.drawChart(null);
+            $scope.grdata = null;
+            $scope.drawChart();
         }
     }
 
-    $scope.drawChart = function (data) {
-        if (data != null) {
+    $scope.drawChart = function () {
+        if ($scope.grdata != null) {
             if ($scope.selectedQuestion.question.type_name == "QCM") {
                 document.getElementById('modelSelection').style.display = "initial";
 
                 var d = [];
-                for (var i = 0; i < data.answers.length; ++i) {
+                for (var i = 0; i < $scope.grdata.answers.length; ++i) {
                     if (d.length == 0) {
-                        d.push({opt: data.answers[i].choice_name, nb: 1});
+                        d.push({opt: $scope.grdata.answers[i].choice_name, nb: 1});
                     } else {
                         for (var j = 0; j < d.length; ++j) {
-                            if (d[j].opt == data.answers[i].choice_name) {
+                            if (d[j].opt == $scope.grdata.answers[i].choice_name) {
                                 d[j].nb++;
                                 break;
                             } else if (j == d.length - 1) {
-                                d.push({opt: data.answers[i].choice_name, nb: 1});
+                                d.push({opt: $scope.grdata.answers[i].choice_name, nb: 1});
                                 break;
                             }
                         }
                     }
                 }
 
-                var table = new google.visualization.DataTable();
-                table.addColumn('string', 'Topping');
-                table.addColumn('number', 'Slices');
-                var rows = [];
-                for (var i = 0; i < d.length; ++i) {
-                    table.addRow([d[i].opt, d[i].nb]);
-                }
+                console.log($scope.selectedModel);
+                if ($scope.selectedModel == "Camembert") {
+                    var table = new google.visualization.DataTable();
+                    table.addColumn('string', 'Topping');
+                    table.addColumn('number', 'Slices');
+                    for (var i = 0; i < d.length; ++i) {
+                        table.addRow([d[i].opt, d[i].nb]);
+                    }
 
-                var options = {'title': $scope.selectedQuestion.question.description,
-                                  'width': $scope.chartsWidth,
-                                  'height': $scope.chartsHeight
-                              };
+                    var options = {'title': $scope.selectedQuestion.question.description,
+                                      'width': $scope.chartsWidth,
+                                      'height': $scope.chartsHeight
+                                  };
 
-                var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
-                chart.draw(table, options);
+                    var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+                    chart.draw(table, options);
+                } else if ($scope.selectedModel == "Donut") {
+                    var table = new google.visualization.DataTable();
+                    table.addColumn('string', 'Topping');
+                    table.addColumn('number', 'Slices');
+                    for (var i = 0; i < d.length; ++i) {
+                        table.addRow([d[i].opt, d[i].nb]);
+                    }
+
+                    var options = {'title': $scope.selectedQuestion.question.description,
+                                      'width': $scope.chartsWidth,
+                                      'height': $scope.chartsHeight,
+                                      'pieHole': 0.4,
+                                  };
+
+                    var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+                    chart.draw(table, options);
+                } else if ($scope.selectedModel == "Histogramme") {
+                    var table = new google.visualization.DataTable();
+                    table.addColumn('string');
+                    table.addColumn('number');
+                    for (var i = 0; i < d.length; ++i) {
+                        table.addRow([d[i].opt, d[i].nb]);
+                    }
+
+                    var options = {'title': $scope.selectedQuestion.question.description,
+                                      'width': $scope.chartsWidth,
+                                      'height': $scope.chartsHeight,
+                                      'legend': 'none',
+                                  };
+
+                    var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+                    chart.draw(table, options);
+                } else if ($scope.selectedModel == "Tableau") {
+                    var table = new google.visualization.DataTable();
+                    table.addColumn('string', 'Réponse');
+                    table.addColumn('number', 'Nombre');
+                    for (var i = 0; i < d.length; ++i) {
+                        table.addRow([d[i].opt, d[i].nb]);
+                    }
+
+                    var options = {'title': $scope.selectedQuestion.question.description,
+                                      //'width': '100%',
+                                      //'height': '100%',
+                                      'showRowNumber': true
+                                  };
+
+                    var chart = new google.visualization.Table(document.getElementById('chart_div'));
+                    chart.draw(table, options);
+                }                
             } else if ($scope.selectedQuestion.question.type_name == "Numérique" || $scope.selectedQuestion.question.type_name == "Slider") {
                 document.getElementById('modelSelection').style.display = "none";
 
                 var d = [];
-                for (var i = 0; i < data.answers.length; ++i) {
+                for (var i = 0; i < $scope.grdata.answers.length; ++i) {
                     if (d.length == 0) {
-                        d.push({opt: data.answers[i].answer_num, nb: 1});
+                        d.push({opt: $scope.grdata.answers[i].answer_num, nb: 1});
                     } else {
                         for (var j = 0; j < d.length; ++j) {
-                            if (d[j].opt == data.answers[i].answer_num) {
+                            if (d[j].opt == $scope.grdata.answers[i].answer_num) {
                                 d[j].nb++;
                                 break;
                             } else if (j == d.length - 1) {
-                                d.push({opt: data.answers[i].answer_num, nb: 1});
+                                d.push({opt: $scope.grdata.answers[i].answer_num, nb: 1});
                                 break;
                             }
                         }

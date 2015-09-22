@@ -9,11 +9,11 @@
     <select id="questionSelection" ng-options="que.question.description for que in selectedSection.question_array track by que.question.question_order" ng-model="selectedQuestion" ng-change="selectQuestion()" style="display:none">
     </select>
 
-    <select id="modelSelection" ng-model="selectedModel" ng-change="selectModel()" style="display:none">
+    <select id="modelSelection" ng-model="selectedModel" ng-change="drawChart()" style="display:none">
     	<option value="Camembert" selected>Camembert</option>
     	<option value="Donut">Donut</option>
     	<option value="Histogramme">Histogramme</option>
-    	<option value="Bar">Bar</option>
+    	<option value="Tableau">Tableau</option>
     </select>
 
     <div id="chart_div"></div>
