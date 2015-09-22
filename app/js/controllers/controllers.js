@@ -1569,6 +1569,8 @@ surveyManiaControllers.controller('PrevisualisationController', ['$scope', '$htt
 surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$window', '$sce', '$location', function($scope, $http, $window, $sce, $location) {
     $scope.url = $window.location.hash.split('/');
     $scope.surveyid = $scope.url[$scope.url.length - 1];
+    $scope.chartsWidth = 800;
+    $scope.chartsHeight = 600;
     $scope.survey;
     $scope.surveyEstimatedTime;
     $scope.sections;
@@ -1576,6 +1578,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
     $scope.selectedSectionNumber = "default";
     $scope.selectedSection = null;
     $scope.selectedQuestion;
+    $scope.selectedModel = "Camembert";
     
     $http.post('/app/survey/getSurvey', {survey: $scope.surveyid, prev: true})
         .success(function (data, status, header, config) {
@@ -1610,11 +1613,12 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
             $scope.selectedSection = $scope.sections[$scope.selectedSectionNumber - 1];
             $scope.selectedQuestion = $scope.selectedSection.question_array[0];
             document.getElementById('questionSelection').style.display = "initial";
-            $scope.selectQuestion();
         } else {
             $scope.selectedSection = null;
+            $scope.selectedQuestion = null;
             document.getElementById('questionSelection').style.display = "none";
         }
+        $scope.selectQuestion();
     }
 
     $scope.selectQuestion = function () {
@@ -1623,43 +1627,97 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                 .success(function (data, status, header, config) {
                     $scope.drawChart(data);
                 });
+        } else {
+            $scope.drawChart(null);
         }
     }
 
     $scope.drawChart = function (data) {
-        if ($scope.selectedQuestion.question.type_name == "QCM") {
-            var d = [];
-            for (var i = 0; i < data.answers.length; ++i) {
-                if (d.length == 0) {
-                    d.push({opt: data.answers[i].choice_name, nb: 1});
-                } else {
-                    for (var j = 0; j < d.length; ++j) {
-                        if (d[j].opt == data.answers[i].choice_name) {
-                            d[j].nb++;
-                            break;
-                        } else if (j == d.length - 1) {
-                            d.push({opt: data.answers[i].choice_name, nb: 1});
-                            break;
+        if (data != null) {
+            if ($scope.selectedQuestion.question.type_name == "QCM") {
+                document.getElementById('modelSelection').style.display = "initial";
+
+                var d = [];
+                for (var i = 0; i < data.answers.length; ++i) {
+                    if (d.length == 0) {
+                        d.push({opt: data.answers[i].choice_name, nb: 1});
+                    } else {
+                        for (var j = 0; j < d.length; ++j) {
+                            if (d[j].opt == data.answers[i].choice_name) {
+                                d[j].nb++;
+                                break;
+                            } else if (j == d.length - 1) {
+                                d.push({opt: data.answers[i].choice_name, nb: 1});
+                                break;
+                            }
                         }
                     }
                 }
+
+                var table = new google.visualization.DataTable();
+                table.addColumn('string', 'Topping');
+                table.addColumn('number', 'Slices');
+                var rows = [];
+                for (var i = 0; i < d.length; ++i) {
+                    table.addRow([d[i].opt, d[i].nb]);
+                }
+
+                var options = {'title': $scope.selectedQuestion.question.description,
+                                  'width': $scope.chartsWidth,
+                                  'height': $scope.chartsHeight
+                              };
+
+                var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+                chart.draw(table, options);
+            } else if ($scope.selectedQuestion.question.type_name == "Numérique" || $scope.selectedQuestion.question.type_name == "Slider") {
+                document.getElementById('modelSelection').style.display = "none";
+
+                var d = [];
+                for (var i = 0; i < data.answers.length; ++i) {
+                    if (d.length == 0) {
+                        d.push({opt: data.answers[i].answer_num, nb: 1});
+                    } else {
+                        for (var j = 0; j < d.length; ++j) {
+                            if (d[j].opt == data.answers[i].answer_num) {
+                                d[j].nb++;
+                                break;
+                            } else if (j == d.length - 1) {
+                                d.push({opt: data.answers[i].answer_num, nb: 1});
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                
+                var table = new google.visualization.DataTable();
+                table.addColumn('number');
+                table.addColumn('number');
+
+                for (var i = 0; i < d.length; ++i) {
+                    table.addRow([d[i].opt, d[i].nb]);
+                }
+
+                console.log(table);
+
+                var options = {
+                  title: $scope.selectedQuestion.question.description,
+                  hAxis: {title: 'Valeur'},
+                  vAxis: {title: 'Nombre'},
+                  legend: 'none',
+                  width: $scope.chartsWidth,
+                  height: $scope.chartsHeight
+                };
+
+                var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
+                chart.draw(table, options);
+            } else if ($scope.selectedQuestion.question.type_name == "Ouverte") {
+                document.getElementById('modelSelection').style.display = "none";
+                document.getElementById('chart_div').innerHTML = 'A implémenter';
             }
-
-            var table = new google.visualization.DataTable();
-            table.addColumn('string', 'Topping');
-            table.addColumn('number', 'Slices');
-            var rows = [];
-            for (var i = 0; i < d.length; ++i) {
-                table.addRows([[d[i].opt, d[i].nb]]);
-            }
-
-            var options = {'title':$scope.selectedQuestion.question.description,
-                              'width':400,
-                              'height':300
-                          };
-
-            var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
-            chart.draw(table, options);
+        } else {
+            document.getElementById('chart_div').innerHTML = '';
+            document.getElementById('modelSelection').style.display = "none";
         }
     }
 }]);

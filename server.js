@@ -2084,7 +2084,7 @@ app
                         else {
                             var query = 'SELECT a.id, a.question_id, a.user_id, a.option_choice_id, oc.choice_name, a.answer_num, a.answer_text'
                                 + ' FROM surveymania.answers AS a'
-                                + ' INNER JOIN surveymania.option_choices AS oc ON a.option_choice_id = oc.id'
+                                + ' LEFT OUTER JOIN surveymania.option_choices AS oc ON a.option_choice_id = oc.id'
                                 + ' WHERE a.question_id = ' + req.body.questionid;
 
                             client.query(query, function(err, result) {
