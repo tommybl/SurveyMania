@@ -44,7 +44,6 @@ surveyManiaControllers.controller('GlobalController', ['$scope', '$window', '$lo
     };
 }]);
 
-
 surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$timeout', '$sce', '$http', '$location', 
     function($scope, $routeParams, $timeout, $sce, $http, $location){
         $scope.list1 = [{'index':'','id':'0','title': 'Titre', 'label': $sce.trustAsHtml('<h1>Titre</h1>'), 'code' : $sce.trustAsHtml('<h1 ng-bind="title">Titre</h1>'), 'show':true, 'icon':'header'},
@@ -1609,8 +1608,9 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
     $scope.selectSection = function () {
         if ($scope.selectedSectionNumber != "default") {
             $scope.selectedSection = $scope.sections[$scope.selectedSectionNumber - 1];
-            $scope.selectedQuestionNumber = $scope.selectedSection.question_array[0];
+            $scope.selectedQuestion = $scope.selectedSection.question_array[0];
             document.getElementById('questionSelection').style.display = "initial";
+            $scope.selectQuestion();
         } else {
             $scope.selectedSection = null;
             document.getElementById('questionSelection').style.display = "none";
@@ -1621,8 +1621,45 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
         if ($scope.selectedQuestion != null) {
             $http.post('/app/results/doQuery', {surveyid: $scope.surveyid, questionid: $scope.selectedQuestion.question.id})
                 .success(function (data, status, header, config) {
-                    console.log(data);
+                    $scope.drawChart(data);
                 });
+        }
+    }
+
+    $scope.drawChart = function (data) {
+        if ($scope.selectedQuestion.question.type_name == "QCM") {
+            var d = [];
+            for (var i = 0; i < data.answers.length; ++i) {
+                if (d.length == 0) {
+                    d.push({opt: data.answers[i].choice_name, nb: 1});
+                } else {
+                    for (var j = 0; j < d.length; ++j) {
+                        if (d[j].opt == data.answers[i].choice_name) {
+                            d[j].nb++;
+                            break;
+                        } else if (j == d.length - 1) {
+                            d.push({opt: data.answers[i].choice_name, nb: 1});
+                            break;
+                        }
+                    }
+                }
+            }
+
+            var table = new google.visualization.DataTable();
+            table.addColumn('string', 'Topping');
+            table.addColumn('number', 'Slices');
+            var rows = [];
+            for (var i = 0; i < d.length; ++i) {
+                table.addRows([[d[i].opt, d[i].nb]]);
+            }
+
+            var options = {'title':$scope.selectedQuestion.question.description,
+                              'width':400,
+                              'height':300
+                          };
+
+            var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+            chart.draw(table, options);
         }
     }
 }]);

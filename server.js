@@ -2082,9 +2082,10 @@ app
                     else {
                         if (!result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                         else {
-                            var query = 'SELECT a.id, a.question_id, a.user_id, a.option_choice_id, a.answer_num, a.answer_text'
+                            var query = 'SELECT a.id, a.question_id, a.user_id, a.option_choice_id, oc.choice_name, a.answer_num, a.answer_text'
                                 + ' FROM surveymania.answers AS a'
-                                + ' WHERE question_id = ' + req.body.questionid;
+                                + ' INNER JOIN surveymania.option_choices AS oc ON a.option_choice_id = oc.id'
+                                + ' WHERE a.question_id = ' + req.body.questionid;
 
                             client.query(query, function(err, result) {
                                 done();

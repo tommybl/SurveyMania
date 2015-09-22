@@ -8,6 +8,8 @@
 
     <select id="questionSelection" ng-options="que.question.description for que in selectedSection.question_array track by que.question.question_order" ng-model="selectedQuestion"  ng-change="selectQuestion()" style="display:none">
     </select>
+
+    <div id="chart_div"></div>
 </div>
 
 <script src="js/scroll.js"></script>
