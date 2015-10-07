@@ -1608,6 +1608,26 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                     $scope.selectedSection = $scope.sections[0];
                     $scope.parameterSelectedSection = $scope.sections[0];
                     $scope.parameterSections = jQuery.extend(true, [], $scope.sections);
+
+                    for (var i = 0; i < $scope.parameterSections.length; ++i) {
+                        if ($scope.parameterSections[i].section.section_order != "default") {
+                            for (var j = 0; j < $scope.parameterSections[i].question_array.length; ++j) {
+                                if ($scope.parameterSections[i].question_array[j].question.type_name != "QCM" && $scope.parameterSections[i].question_array[j].question.question_order != "default" ) {
+                                    $scope.parameterSections[i].question_array = $scope.parameterSections[i].question_array.filter(function (el) {
+                                        return el.question.id !== $scope.parameterSections[i].question_array[j].question.id;
+                                    });
+                                    j--;
+                                }
+                            }
+
+                            if ($scope.parameterSections[i].question_array.length <= 1) {
+                                $scope.parameterSections = $scope.parameterSections.filter(function (el) {
+                                    return el.section.id !== $scope.parameterSections[i].section.id;
+                                });
+                                i--;
+                            }
+                        }
+                    }
                 })
                 .error(function (data, status, header, config) {
                     $location.path("/createSurvey");
