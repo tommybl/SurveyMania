@@ -16,27 +16,31 @@
     <div style="border: 1px solid #C0C0C0; margin-top: 20px; padding: 10px 10px 10px 10px">
         <h3>Choisissez des paramètres</h3>
 
-        <div id="{{param.id}}" ng-repeat="param in parameters">
-            {{param.section.section.title}} : {{param.question.question.description}}
-
-            <span ng-if="!param.question.question.multiple_answers" ng-repeat="option in param.question.options" style="margin-left: 5px;">
-                <label style="font-weight: normal";>
-                    | <input type="radio" name="param{{param.question.question.question_order}}" value="{{option.id}}">
-                    {{option.choice_name}}
-                </label>
-            </span>
-
-            <span ng-if="param.question.question.multiple_answers" ng-repeat="option in param.question.options" style="margin-left: 5px;">
-                <label style="font-weight: normal";>
-                    | <input type="checkbox" name="param{{param.question.question.question_order}}" value="{{option.id}}">
-                    {{option.choice_name}}
-                </label>
-            </span>
-
-            | <button class="btn btn-danger" style="margin-left: 15px;" ng-click="removeParameter(param)">Supprimer</button>
+        <div class="table-responsive">
+            <table class="table table-hover table-condensed">
+                <tbody>
+                    <tr ng-repeat="param in parameters">
+                        <td>{{param.section.section.title}}</td>
+                        <td>{{param.question.question.description}}</td>
+                        <td>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td ng-repeat="option in param.question.options">
+                                            <label style="font-weight: normal; margin-left: 20px;">
+                                                <input type="checkbox" name="param{{param.question.question.question_order}}" value="{{option.id}}" onchange="angular.element(this).scope().updateChartData();">
+                                                {{option.choice_name}}
+                                            </label>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                        <td><button class="btn btn-danger" style="margin-left: 15px;" ng-click="removeParameter(param)">Supprimer</button></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-
-        <br/>
 
         <button id="addParameterButton" class="btn btn-primary" ng-click="showAddParameter()">Ajouter un paramètre</button>
         <div id="addParameterDiv" style="display: none;">

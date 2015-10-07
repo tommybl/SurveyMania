@@ -2071,6 +2071,8 @@ app
     else {
         var user = req.user;
         var surveyid = escapeHtml(req.body.surveyid);
+        var question_id = req.body.questionid;
+        var parameters = req.body.parameters;
 
         pg.connect(conString, function(err, client, done) {
             if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
@@ -2082,10 +2084,31 @@ app
                     else {
                         if (!result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                         else {
-                            var query = 'SELECT a.id, a.question_id, a.user_id, a.option_choice_id, oc.choice_name, a.answer_num, a.answer_text'
+                            var query = 'SELECT DISTINCT a.id, a.question_id, a.user_id, a.option_choice_id, oc.choice_name, a.answer_num, a.answer_text'
                                 + ' FROM surveymania.answers AS a'
                                 + ' LEFT OUTER JOIN surveymania.option_choices AS oc ON a.option_choice_id = oc.id'
-                                + ' WHERE a.question_id = ' + req.body.questionid;
+                                + ' WHERE a.question_id = ' + question_id;
+
+                            for (var i = 0; i < parameters.length; ++i) {
+                                if (parameters[i].selectedValues.length > 0) {
+                                    query += ' AND a.user_id IN'
+                                        + ' ('
+                                        + ' SELECT a.user_id'
+                                        + ' FROM surveymania.answers AS a'
+                                        + ' WHERE a.question_id = ' + parameters[i].question.question.id
+                                        + ' AND'
+                                        + ' (';
+
+                                    for (var j = 0; j < parameters[i].selectedValues.length; ++j) {
+                                        if (j > 0)
+                                            query += ' OR '
+                                        query += 'option_choice_id = ' + parameters[i].selectedValues[j]
+                                    }
+
+                                    query += ' )'
+                                        + ' )';
+                                }
+                            }
 
                             client.query(query, function(err, result) {
                                 done();

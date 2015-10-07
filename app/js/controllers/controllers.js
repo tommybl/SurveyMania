@@ -1727,13 +1727,17 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
         $scope.updateChartData();
     }
 
-    $scope.updateSelectedValues = function () {
-        // To complete
-    }
-
     $scope.updateChartData = function () {
         if ($scope.selectedQuestion != null && $scope.selectedQuestion.question.question_order != "default") {
-            $http.post('/app/results/doQuery', {surveyid: $scope.surveyid, questionid: $scope.selectedQuestion.question.id})
+            for (var i = 0; i < $scope.parameters.length; ++i) {
+                checked = document.querySelectorAll('input[name="param' + $scope.parameters[i].question.question.question_order + '"]:checked');
+                $scope.parameters[i].selectedValues = [];
+
+                for (var j = 0; j < checked.length; ++j)
+                    $scope.parameters[i].selectedValues.push(checked[j].value);
+            }
+
+            $http.post('/app/results/doQuery', {surveyid: $scope.surveyid, questionid: $scope.selectedQuestion.question.id, parameters: $scope.parameters})
                 .success(function (data, status, header, config) {
                     $scope.grdata = data;
                     $scope.drawChart();
