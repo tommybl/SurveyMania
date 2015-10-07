@@ -1583,6 +1583,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
     $scope.parameterSelectedQuestion = null;
     $scope.selectedModel = "Camembert";
     $scope.parameters = [];
+    $scope.uselessWords = ['', 'de', 'le', 'et', 'en', 'la', 'au', 'des', 'à', 'que', 'un', 'une', 'y', 'les', 'le', 'aux', 'par', 'ce', 'ces', 'cet', 'cette', 'ses', 'son', 'sa', 'ses', 'ça', 'ca', 'dans', 'il', 'est', 'a', 'du', 'afin', 'mais'];
     
     $http.post('/app/survey/getSurvey', {survey: $scope.surveyid, prev: true})
         .success(function (data, status, header, config) {
@@ -1642,10 +1643,10 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
             $scope.selectedQuestion = $scope.selectedSection.question_array[0];
             document.getElementById('questionSelection').style.display = "initial";
         } else {
-            $scope.parameterSelectedQuestion = null;
+            $scope.selectedQuestion = null;
             document.getElementById('questionSelection').style.display = "none";
         }
-        $scope.updateChartData();
+        $scope.selectQuestion();
     }
 
     $scope.selectQuestion = function() {
@@ -1694,14 +1695,9 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                     return el.section.id !== $scope.parameterSelectedSection.section.id;
                 });
                 $scope.parameterSelectedSection = $scope.parameterSections[0];
-                $scope.parameterSelectSection();
             }
             
-            if ($scope.parameterSelectedSection.section.section_order != "default")
-                $scope.parameterSelectedQuestion = $scope.parameterSelectedSection.question_array[0];
-            else
-                $scope.parameterSelectedQuestion = null;
-
+            $scope.parameterSelectSection();
             $scope.hideAddParameter();
             $scope.updateChartData();
         }
@@ -1875,7 +1871,56 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                 var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
                 chart.draw(table, options);
             } else if ($scope.selectedQuestion.question.type_name == "Ouverte") {
-                document.getElementById('chart_div').innerHTML = 'A implémenter';
+                var d = [];
+                for (var i = 0; i < $scope.grdata.answers.length; ++i) {
+                    var words = $scope.grdata.answers[i].answer_text.replace(/([ .,;()"«»!:]+)/g, ' ').split(' ');
+
+                    for (var j = 0; j < words.length; ++j) {
+                        if (d.length == 0) {
+                            d.push({opt: words[j], nb: 1});
+                        } else {
+                            for (var k = 0; k < d.length; ++k) {
+                                if (d[k].opt == words[j]) {
+                                    d[k].nb++;
+                                    break;
+                                } else if (k == d.length - 1) {
+                                    d.push({opt: words[j], nb: 1});
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                d = d.filter(function (el) {
+                    for (var i = 0; i < $scope.uselessWords.length; ++i) {
+                        if (el.opt.toUpperCase() == $scope.uselessWords[i].toUpperCase())
+                            return false;
+                    }
+                    return true;
+                });
+
+                d.sort(function(a, b) {
+                    return b.nb - a.nb
+                });
+
+                var table = new google.visualization.DataTable();
+                table.addColumn('string', 'Réponse');
+                table.addColumn('number', 'Nombre');
+                for (var i = 0; i < d.length; ++i) {
+                    table.addRow([d[i].opt, d[i].nb]);
+                }
+
+                var options = {'title': $scope.selectedQuestion.question.description,
+                                  //'width': '100%',
+                                  //'height': '100%',
+                                  'showRowNumber': true
+                              };
+
+                var chart = new google.visualization.Table(document.getElementById('chart_div'));
+                chart.draw(table, options);
+
+                //document.getElementById('chart_div').innerHTML = 'A implémenter';
             }
         } else {
             document.getElementById('chart_div').innerHTML = '';
