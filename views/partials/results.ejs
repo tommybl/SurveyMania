@@ -1,22 +1,39 @@
 <!DOCTYPE html>
 
 <div id="surveyResults" ng-controller="ResultsController" class="col-md-12">
-    <select id="sectionSelection" ng-model="selectedSectionNumber" ng-change="selectSection()">
-        <option value="default" selected>Choisissez une section...</option>
-        <option ng-repeat="sec in sections" value="{{sec.section.section_order}}">{{sec.section.title}}</option>
-    </select>
+    <div style="border: 1px solid #C0C0C0; margin-top: 15px; padding: 10px 10px 10px 10px">
+        <h3>Choisissez la question</h3>
+        <select id="modelSelection" ng-model="selectedModel" ng-change="drawChart()" style="display: none;">
+            <option value="Camembert" selected>Camembert</option>
+            <option value="Donut">Donut</option>
+            <option value="Histogramme">Histogramme</option>
+            <option value="Tableau">Tableau</option>
+        </select>
+    </div>
 
-    <select id="questionSelection" ng-options="que.question.description for que in selectedSection.question_array track by que.question.question_order" ng-model="selectedQuestion" ng-change="selectQuestion()" style="display:none">
-    </select>
+    <div style="border: 1px solid #C0C0C0; margin-top: 20px; padding: 10px 10px 10px 10px">
+        <h3>Choisissez des paramètres</h3>
 
-    <select id="modelSelection" ng-model="selectedModel" ng-change="drawChart()" style="display:none">
-    	<option value="Camembert" selected>Camembert</option>
-    	<option value="Donut">Donut</option>
-    	<option value="Histogramme">Histogramme</option>
-    	<option value="Tableau">Tableau</option>
-    </select>
+        <div id="{{param.id}}" ng-repeat="param in parameters">
+            {{param.section.section.title}} : {{param.question.question.description}}
+            <button class="btn btn-danger" ng-click="removeParameter(param)">Supprimer</button>
+        </div>
 
-    <div id="chart_div"></div>
+        <br/>
+
+        <button id="addParameterButton" class="btn btn-primary" ng-click="showAddParameter()">Ajouter un paramètre</button>
+        <div id="addParameterDiv" style="display: none;">
+            <select id="parameterSectionSelection" ng-options="sec.section.title for sec in parameterSections track by sec.section.section_order" ng-model="parameterSelectedSection" ng-change="parameterSelectSection()"></select>
+            <select id="parameterQuestionSelection" ng-options="que.question.description for que in parameterSelectedSection.question_array track by que.question.question_order" ng-model="parameterSelectedQuestion" style="display: none;"></select>
+            <button class="btn btn-success" ng-click="addParameter()">Ajouter</button>
+            <button class="btn btn-danger" ng-click="hideAddParameter()">Annuler</button>
+        </div>
+    </div>        
+
+    <div style="border: 1px solid #C0C0C0; margin-top: 20px; padding: 5px 5px 5px 5px">
+        <h3>Résultat</h3>
+        <div id="chart_div"></div>
+    </h3>
 </div>
 
 <script src="js/scroll.js"></script>

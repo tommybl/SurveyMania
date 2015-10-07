@@ -1575,11 +1575,14 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
     $scope.survey;
     $scope.surveyEstimatedTime;
     $scope.sections;
+    $scope.parameterSections;
     $scope.sectionQuestionArray;
-    $scope.selectedSectionNumber = "default";
     $scope.selectedSection = null;
-    $scope.selectedQuestion;
+    $scope.parameterSelectedSection = null;
+    $scope.selectedQuestion = null;
+    $scope.parameterSelectedQuestion = null;
     $scope.selectedModel = "Camembert";
+    $scope.parameters = [];
     
     $http.post('/app/survey/getSurvey', {survey: $scope.surveyid, prev: true})
         .success(function (data, status, header, config) {
@@ -1598,8 +1601,13 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                                 else
                                     eval('$scope.sectionQuestionArray[i].param' + $scope.sectionQuestionArray[i].parameters[j].name  + ' = ' + $scope.sectionQuestionArray[i].parameters[j].value_text);
                         }
+                        $scope.sectionQuestionArray.unshift({question: {description: "Choisissez une question...", question_order:"default"}});
                     }
                     $scope.sectionQuestionArray = undefined;
+                    $scope.sections.unshift({section: {title: "Choisissez une section...", section_order: "default"}});
+                    $scope.selectedSection = $scope.sections[0];
+                    $scope.parameterSelectedSection = $scope.sections[0];
+                    $scope.parameterSections = jQuery.extend(true, [], $scope.sections);
                 })
                 .error(function (data, status, header, config) {
                     $location.path("/createSurvey");
@@ -1609,20 +1617,70 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
             $location.path("/createSurvey");
         });
 
-    $scope.selectSection = function () {
-        if ($scope.selectedSectionNumber != "default") {
-            $scope.selectedSection = $scope.sections[$scope.selectedSectionNumber - 1];
-            $scope.selectedQuestion = $scope.selectedSection.question_array[0];
-            document.getElementById('questionSelection').style.display = "initial";
+    $scope.parameterSelectSection = function () {
+        if ($scope.parameterSelectedSection.section.section_order != "default") {
+            $scope.parameterSelectedQuestion = $scope.parameterSelectedSection.question_array[0];
+            document.getElementById('parameterQuestionSelection').style.display = "initial";
         } else {
-            $scope.selectedSection = null;
-            $scope.selectedQuestion = null;
-            document.getElementById('questionSelection').style.display = "none";
+            $scope.parameterSelectedQuestion = null;
+            document.getElementById('parameterQuestionSelection').style.display = "none";
         }
-        $scope.selectQuestion();
     }
 
-    $scope.selectQuestion = function () {
+    $scope.showAddParameter = function () {
+        document.getElementById("addParameterButton").style.display = "none";
+        document.getElementById("addParameterDiv").style.display = "initial";
+    }
+
+    $scope.hideAddParameter = function () {
+        document.getElementById("addParameterButton").style.display = "initial";
+        document.getElementById("addParameterDiv").style.display = "none";
+    }
+
+    $scope.addParameter = function () {
+        if ($scope.parameterSelectedSection != null && $scope.parameterSelectedSection.section.section_order != "default" && $scope.parameterSelectedQuestion != null && $scope.parameterSelectedQuestion.question.question_order != "default") {
+            $scope.parameters.push({section: $scope.parameterSelectedSection, question: $scope.parameterSelectedQuestion});
+            $scope.parameterSelectedSection.question_array = $scope.parameterSelectedSection.question_array.filter(function (el) {
+                return el.question.id !== $scope.parameterSelectedQuestion.question.id;
+            });
+
+            if ($scope.parameterSelectedSection.question_array.length <= 1) {
+                $scope.parameterSections = $scope.parameterSections.filter(function (el) {
+                    return el.section.id !== $scope.parameterSelectedSection.section.id;
+                });
+                $scope.parameterSelectedSection = $scope.parameterSections[0];
+                $scope.parameterSelectSection();
+            }
+            
+            if ($scope.parameterSelectedSection.section.section_order != "default")
+                $scope.parameterSelectedQuestion = $scope.parameterSelectedSection.question_array[0];
+            else
+                $scope.parameterSelectedQuestion = null;
+
+            $scope.hideAddParameter();
+        }
+    }
+
+    $scope.removeParameter = function (param) {
+        $scope.parameters = $scope.parameters.filter(function (el) {
+            return el !== param;
+        });
+
+        var done = false;
+        for (var i = 0; i < $scope.parameterSections.length; i++) {
+            if ($scope.parameterSections[i].section.section_order == param.section.section.section_order) {
+                $scope.parameterSections[i].question_array.push(param.question);
+                done = true;
+            }
+        }
+
+        if (!done) {
+            $scope.parameterSections.push(param.section);
+            param.section.question_array.push(param.question);
+        }
+    }
+
+    /*$scope.doQuery = function () {
         if ($scope.selectedQuestion != null) {
             $http.post('/app/results/doQuery', {surveyid: $scope.surveyid, questionid: $scope.selectedQuestion.question.id})
                 .success(function (data, status, header, config) {
@@ -1772,7 +1830,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
             document.getElementById('chart_div').innerHTML = '';
             document.getElementById('modelSelection').style.display = "none";
         }
-    }
+    }*/
 }]);
 
 surveyManiaControllers.controller('Ranking', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
