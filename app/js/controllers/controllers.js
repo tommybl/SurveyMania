@@ -1617,14 +1617,29 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
             $location.path("/createSurvey");
         });
 
-    $scope.parameterSelectSection = function () {
-        if ($scope.parameterSelectedSection.section.section_order != "default") {
-            $scope.parameterSelectedQuestion = $scope.parameterSelectedSection.question_array[0];
-            document.getElementById('parameterQuestionSelection').style.display = "initial";
+    $scope.selectSection = function () {
+        if ($scope.selectedSection != null && $scope.selectedSection.section.section_order != "default") {
+            $scope.selectedQuestion = $scope.selectedSection.question_array[0];
+            document.getElementById('questionSelection').style.display = "initial";
         } else {
             $scope.parameterSelectedQuestion = null;
-            document.getElementById('parameterQuestionSelection').style.display = "none";
+            document.getElementById('questionSelection').style.display = "none";
         }
+        $scope.updateChartData();
+    }
+
+    $scope.selectQuestion = function() {
+        if ($scope.selectedQuestion != null && $scope.selectedQuestion.question.question_order != "default") {
+            if ($scope.selectedQuestion.question.type_name == "QCM")
+                document.getElementById('modelSelection').style.display = "initial";
+            else if ($scope.selectedQuestion.question.type_name == "Numérique" || $scope.selectedQuestion.question.type_name == "Slider")
+                document.getElementById('modelSelection').style.display = "none";
+            else if ($scope.selectedQuestion.question.type_name == "Ouverte")
+                document.getElementById('modelSelection').style.display = "none";
+        } else {
+            document.getElementById('modelSelection').style.display = "none";
+        }
+        $scope.updateChartData();
     }
 
     $scope.showAddParameter = function () {
@@ -1635,6 +1650,16 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
     $scope.hideAddParameter = function () {
         document.getElementById("addParameterButton").style.display = "initial";
         document.getElementById("addParameterDiv").style.display = "none";
+    }
+
+    $scope.parameterSelectSection = function () {
+        if ($scope.parameterSelectedSection.section.section_order != "default") {
+            $scope.parameterSelectedQuestion = $scope.parameterSelectedSection.question_array[0];
+            document.getElementById('parameterQuestionSelection').style.display = "initial";
+        } else {
+            $scope.parameterSelectedQuestion = null;
+            document.getElementById('parameterQuestionSelection').style.display = "none";
+        }
     }
 
     $scope.addParameter = function () {
@@ -1658,6 +1683,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                 $scope.parameterSelectedQuestion = null;
 
             $scope.hideAddParameter();
+            $scope.updateChartData();
         }
     }
 
@@ -1678,13 +1704,18 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
             $scope.parameterSections.push(param.section);
             param.section.question_array.push(param.question);
         }
+        $scope.updateChartData();
     }
 
-    /*$scope.doQuery = function () {
-        if ($scope.selectedQuestion != null) {
+    $scope.updateChartData = function () {
+        if ($scope.selectedQuestion != null && $scope.selectedQuestion.question.question_order != "default") {
             $http.post('/app/results/doQuery', {surveyid: $scope.surveyid, questionid: $scope.selectedQuestion.question.id})
                 .success(function (data, status, header, config) {
                     $scope.grdata = data;
+                    $scope.drawChart();
+                })
+                .error(function (data, status, headers, config) {
+                    $scope.grdata = null;
                     $scope.drawChart();
                 });
         } else {
@@ -1696,8 +1727,6 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
     $scope.drawChart = function () {
         if ($scope.grdata != null) {
             if ($scope.selectedQuestion.question.type_name == "QCM") {
-                document.getElementById('modelSelection').style.display = "initial";
-
                 var d = [];
                 for (var i = 0; i < $scope.grdata.answers.length; ++i) {
                     if (d.length == 0) {
@@ -1715,7 +1744,6 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                     }
                 }
 
-                console.log($scope.selectedModel);
                 if ($scope.selectedModel == "Camembert") {
                     var table = new google.visualization.DataTable();
                     table.addColumn('string', 'Topping');
@@ -1781,8 +1809,6 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                     chart.draw(table, options);
                 }                
             } else if ($scope.selectedQuestion.question.type_name == "Numérique" || $scope.selectedQuestion.question.type_name == "Slider") {
-                document.getElementById('modelSelection').style.display = "none";
-
                 var d = [];
                 for (var i = 0; i < $scope.grdata.answers.length; ++i) {
                     if (d.length == 0) {
@@ -1809,8 +1835,6 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                     table.addRow([d[i].opt, d[i].nb]);
                 }
 
-                console.log(table);
-
                 var options = {
                   title: $scope.selectedQuestion.question.description,
                   hAxis: {title: 'Valeur'},
@@ -1823,14 +1847,12 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                 var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
                 chart.draw(table, options);
             } else if ($scope.selectedQuestion.question.type_name == "Ouverte") {
-                document.getElementById('modelSelection').style.display = "none";
                 document.getElementById('chart_div').innerHTML = 'A implémenter';
             }
         } else {
             document.getElementById('chart_div').innerHTML = '';
-            document.getElementById('modelSelection').style.display = "none";
         }
-    }*/
+    }
 }]);
 
 surveyManiaControllers.controller('Ranking', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
@@ -1838,7 +1860,6 @@ surveyManiaControllers.controller('Ranking', ['$scope', '$http', '$window', '$lo
     else $scope.api_rank_route = '/ranking/get/users';
     $http.get($scope.api_rank_route)
         .success(function (data, status, headers, config) {
-            console.log(data);
             if (data.error == undefined) {
                 $scope.ranking_users = data.users;
                 if (data.user != undefined) $scope.rank_user_id = data.user;

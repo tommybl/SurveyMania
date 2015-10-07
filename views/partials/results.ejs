@@ -3,6 +3,8 @@
 <div id="surveyResults" ng-controller="ResultsController" class="col-md-12">
     <div style="border: 1px solid #C0C0C0; margin-top: 15px; padding: 10px 10px 10px 10px">
         <h3>Choisissez la question</h3>
+        <select id="sectionSelection" ng-options="sec.section.title for sec in sections track by sec.section.section_order" ng-model="selectedSection" ng-change="selectSection()"></select>
+        <select id="questionSelection" ng-options="que.question.description for que in selectedSection.question_array track by que.question.question_order" ng-model="selectedQuestion" ng-change="selectQuestion()" style="display: none;"></select>
         <select id="modelSelection" ng-model="selectedModel" ng-change="drawChart()" style="display: none;">
             <option value="Camembert" selected>Camembert</option>
             <option value="Donut">Donut</option>
@@ -31,7 +33,7 @@
     </div>        
 
     <div style="border: 1px solid #C0C0C0; margin-top: 20px; padding: 5px 5px 5px 5px">
-        <h3>Résultat</h3>
+        <h3>Aperçu</h3>
         <div id="chart_div"></div>
     </h3>
 </div>
