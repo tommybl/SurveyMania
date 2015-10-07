@@ -18,7 +18,22 @@
 
         <div id="{{param.id}}" ng-repeat="param in parameters">
             {{param.section.section.title}} : {{param.question.question.description}}
-            <button class="btn btn-danger" ng-click="removeParameter(param)">Supprimer</button>
+
+            <span ng-if="!param.question.question.multiple_answers" ng-repeat="option in param.question.options" style="margin-left: 5px;">
+                <label style="font-weight: normal";>
+                    | <input type="radio" name="param{{param.question.question.question_order}}" value="{{option.id}}">
+                    {{option.choice_name}}
+                </label>
+            </span>
+
+            <span ng-if="param.question.question.multiple_answers" ng-repeat="option in param.question.options" style="margin-left: 5px;">
+                <label style="font-weight: normal";>
+                    | <input type="checkbox" name="param{{param.question.question.question_order}}" value="{{option.id}}">
+                    {{option.choice_name}}
+                </label>
+            </span>
+
+            | <button class="btn btn-danger" style="margin-left: 15px;" ng-click="removeParameter(param)">Supprimer</button>
         </div>
 
         <br/>
@@ -30,12 +45,12 @@
             <button class="btn btn-success" ng-click="addParameter()">Ajouter</button>
             <button class="btn btn-danger" ng-click="hideAddParameter()">Annuler</button>
         </div>
-    </div>        
+    </div>
 
     <div style="border: 1px solid #C0C0C0; margin-top: 20px; padding: 5px 5px 5px 5px">
         <h3>Aperçu</h3>
         <div id="chart_div"></div>
-    </h3>
+    </div>
 </div>
 
 <script src="js/scroll.js"></script>

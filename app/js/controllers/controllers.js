@@ -1684,7 +1684,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
 
     $scope.addParameter = function () {
         if ($scope.parameterSelectedSection != null && $scope.parameterSelectedSection.section.section_order != "default" && $scope.parameterSelectedQuestion != null && $scope.parameterSelectedQuestion.question.question_order != "default") {
-            $scope.parameters.push({section: $scope.parameterSelectedSection, question: $scope.parameterSelectedQuestion});
+            $scope.parameters.push({section: $scope.parameterSelectedSection, question: $scope.parameterSelectedQuestion, selectedValues: []});
             $scope.parameterSelectedSection.question_array = $scope.parameterSelectedSection.question_array.filter(function (el) {
                 return el.question.id !== $scope.parameterSelectedQuestion.question.id;
             });
@@ -1725,6 +1725,10 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
             param.section.question_array.push(param.question);
         }
         $scope.updateChartData();
+    }
+
+    $scope.updateSelectedValues = function () {
+        // To complete
     }
 
     $scope.updateChartData = function () {
