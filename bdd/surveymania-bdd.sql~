@@ -79,7 +79,7 @@ CREATE TABLE  surveymania.survey_headers (
   publied BOOLEAN NOT NULL,
   publication_date TIMESTAMP NULL DEFAULT NULL,
   stopped BOOLEAN NOT NULL DEFAULT false,
-  stopped_date TIMESTAMP NULL DEFAULT NULL,
+  stopped_data TIMESTAMP NULL DEFAULT NULL,
   PRIMARY KEY (id),
   CONSTRAINT fk_organization_id
     FOREIGN KEY (organization_id)

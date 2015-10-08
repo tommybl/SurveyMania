@@ -3,11 +3,13 @@
 <div id="surveyResults" ng-controller="ResultsController" class="col-md-8 col-md-offset-2">
     <div style="border: 1px solid #C0C0C0; margin-top: 15px; padding: 10px 10px 10px 10px; background-color: cornsilk">
         <h3>Statistiques du sondage</h3>
-        <div><b>Nom du sondage : </b>undefined</div>
-        <div><b>Informations relatives au sondage : </b>undefined</div>
-        <div><b>Instruction supplémentaire : </b>undefined</div>
-        <div><b>Par : </b>undefined</div>
-        <div><b>Points : </b>undefined</div>
+        <div><b>Nom du sondage : </b>{{survey.header_name}}</div>
+        <div><b>Informations relatives au sondage : </b>{{survey.info}}</div>
+        <div><b>Instruction supplémentaire : </b>{{survey.instructions}}</div>
+        <div><b>Publié le : </b>{{survey.publication_date}}</div>
+        <div><b>Stoppé le : </b>{{survey.stopped_date}} ({{survey.surveytime.days}} jours)</div>
+        <div><b>Créé par : </b>{{survey.name}}</div>
+        <div><b>Points : </b>{{survey.points}}</div>
         <br/>
         <div><b>Nombre de section : </b>undefined</div>
         <div><b>Nombre de question : </b>undefined</div>
@@ -19,7 +21,7 @@
         <div><b>Nombre de section par client : </b>undefined</div>
         <div><b>Nombre de question par client : </b>undefined</div>
         <div><b>Nombre de points distribués : </b>undefined</div>
-
+        <br/>
         <button id="showComments" class="btn btn-primary" style="margin-left: 15px;" ng-click="initCommentsCloud()">Afficher les commentaires</button>
         <div id ="master_comments_chart_div" style="display: none;">
             <button class="btn btn-primary" style="margin-left: 15px;" onclick="document.getElementById('showComments').style.display = 'initial'; document.getElementById('master_comments_chart_div').style.display = 'none';">Ne plus afficher</button><br/>

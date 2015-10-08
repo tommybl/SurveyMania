@@ -1425,7 +1425,7 @@ app
                     var prev = req.body.prev;
                     if (!prev) res.status(500).json({code: 500});
                     else {
-                        var query = 'SELECT sh.name AS header_name, sh.instructions, sh.info, sh.points, st.theme_name, o.name'
+                        var query = 'SELECT sh.name AS header_name, sh.instructions, sh.info, sh.points, st.theme_name, o.name, to_char(sh.publication_date, \'le DD/MM/YYYY à HH24:MI:SS\') AS publication_date, to_char(sh.stopped_date, \'le DD/MM/YYYY à HH24:MI:SS\') AS stopped_date, (sh.stopped_date - sh.publication_date) AS surveyTime'
                             + ' FROM surveymania.survey_headers sh INNER JOIN surveymania.survey_themes st ON sh.theme_id = st.id INNER JOIN surveymania.organizations o ON sh.organization_id = o.id'
                             + ' WHERE sh.id = ' + surveyid + ' AND sh.organization_id = ' + user.organization;
                         client.query(query, function(err, result) {
