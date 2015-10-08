@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 <div id="surveyResults" ng-controller="ResultsController" class="col-md-12">
-    <div style="border: 1px solid #C0C0C0; margin-top: 15px; padding: 10px 10px 10px 10px">
+    <div style="border: 1px solid #C0C0C0; margin-top: 15px; padding: 10px 10px 10px 10px; background-color: cornsilk">
         <h3>Choisissez la question</h3>
         <select id="sectionSelection" ng-options="sec.section.title for sec in sections track by sec.section.section_order" ng-model="selectedSection" ng-change="selectSection()"></select>
         <select id="questionSelection" ng-options="que.question.description for que in selectedSection.question_array track by que.question.question_order" ng-model="selectedQuestion" ng-change="selectQuestion()" style="display: none;"></select>
@@ -13,7 +13,7 @@
         </select>
     </div>
 
-    <div style="border: 1px solid #C0C0C0; margin-top: 20px; padding: 10px 10px 10px 10px">
+    <div style="border: 1px solid #C0C0C0; margin-top: 20px; padding: 10px 10px 10px 10px; background-color: cornsilk">
         <h3>Choisissez des paramètres</h3>
 
         <div class="table-responsive">
@@ -51,7 +51,7 @@
         </div>
     </div>
 
-    <div style="border: 1px solid #C0C0C0; margin-top: 20px; padding: 5px 5px 5px 5px">
+    <div style="border: 1px solid #C0C0C0; margin-top: 20px; padding: 5px 5px 5px 5px; background-color: cornsilk">
         <h3>Aperçu</h3>
         <div id="master_chart_div">
             <div id="chart_div"></div>

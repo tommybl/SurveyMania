@@ -1906,9 +1906,8 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                 var table = new google.visualization.DataTable();
                 table.addColumn('string', 'Tag');
                 table.addColumn('number', 'Weight');
-                for (var i = 0; i < d.length && i < 20; ++i) {
+                for (var i = 0; i < d.length && i < 40; ++i)
                     table.addRow([d[i].opt, d[i].nb]);
-                }
 
                 var options = {text_color: '#000000',
                                   width: $scope.chartsWidth,
