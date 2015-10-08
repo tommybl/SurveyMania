@@ -1458,6 +1458,146 @@ app
     }
 })
 
+.post('/app/survey/getSurveyDetailledInfos', function (req, res) {
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    if (req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
+    else {
+        var surveyid = req.body.survey;
+        var user = req.user;
+
+        pg.connect(conString, function(err, client, done) {
+            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+            else {
+                var query = 'SELECT sh.name AS header_name'
+                    + ' FROM surveymania.survey_headers sh'
+                    + ' WHERE sh.id = ' + surveyid + ' AND sh.organization_id = ' + user.organization;
+                client.query(query, function(err, result) {
+                    done();
+                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                    else {
+                        if (!result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Le sondage n'existe pas"});
+                        else {
+                            var query = 'SELECT COUNT(*) AS nb'
+                                + ' FROM surveymania.questions q INNER JOIN surveymania.survey_sections ss ON q.survey_section_id = ss.id'
+                                + ' WHERE ss.header_id = ' + surveyid;
+
+                            client.query(query, function(err, result) {
+                                done();
+                                if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                else {
+                                    if (!result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Aucun résultat"});
+                                    else {
+                                        var nbQuestions = result.rows[0].nb;
+
+                                        var query = 'SELECT COUNT(*) AS nb'
+                                            + ' FROM surveymania.user_surveys us'
+                                            + ' WHERE us.survey_header_id = ' + surveyid;
+
+                                        client.query(query, function(err, result) {
+                                            done();
+                                            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                            else {
+                                                if (!result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Aucun résultat"});
+                                                else {
+                                                    var nbScans = result.rows[0].nb;
+
+                                                    var query = 'SELECT COUNT(*) AS nb'
+                                                        + ' FROM surveymania.user_survey_sections uss INNER JOIN surveymania.survey_sections ss ON uss.section_id = ss.id'
+                                                        + ' WHERE ss.header_id = ' + surveyid
+                                                        + ' AND uss.completed IS NOT NULL';
+
+                                                    client.query(query, function(err, result) {
+                                                        done();
+                                                        if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                                        else {
+                                                            if (!result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Aucun résultat"});
+                                                            else {
+                                                                var nbSectionCompleted = result.rows[0].nb;
+
+                                                                var query = 'SELECT COUNT(DISTINCT uss.user_id) AS nb'
+                                                                    + ' FROM surveymania.user_survey_sections uss INNER JOIN surveymania.survey_sections ss ON uss.section_id = ss.id'
+                                                                    + ' WHERE ss.header_id = ' + surveyid
+                                                                    + ' AND uss.completed IS NOT NULL';
+
+                                                                client.query(query, function(err, result) {
+                                                                    done();
+                                                                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                                                    else {
+                                                                        if (!result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Aucun résultat"});
+                                                                        else {
+                                                                            var nbAnswers = result.rows[0].nb;
+
+                                                                            var query = 'SELECT COUNT(us.user_id) AS nb'
+                                                                                + ' FROM surveymania.user_surveys us'
+                                                                                + ' WHERE us.survey_header_id = ' + surveyid
+                                                                                + ' AND us.completed IS NOT NULL';
+
+                                                                            client.query(query, function(err, result) {
+                                                                                done();
+                                                                                if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                                                                else {
+                                                                                    if (!result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Aucun résultat"});
+                                                                                    else {
+                                                                                        var nbCompleteAnswers = result.rows[0].nb;
+
+                                                                                        var query = 'SELECT COUNT(*) AS nb'
+                                                                                            + ' FROM ('
+                                                                                            + ' SELECT a.user_id, q.id'
+                                                                                            + ' FROM surveymania.answers a INNER JOIN surveymania.questions q ON a.question_id = q.id'
+                                                                                            + ' INNER JOIN surveymania.survey_sections ss ON q.survey_section_id = ss.id'
+                                                                                            + ' WHERE ss.header_id = ' + surveyid
+                                                                                            + ' GROUP BY a.user_id, q.id) t';
+
+                                                                                        client.query(query, function(err, result) {
+                                                                                            done();
+                                                                                            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                                                                            else {
+                                                                                                if (!result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Aucun résultat"});
+                                                                                                else {
+                                                                                                    var nbQuestionAnswered = result.rows[0].nb;
+
+                                                                                                    var query = 'SELECT SUM(duration) / COUNT(DISTINCT uss.user_id) AS nb'
+                                                                                                        + ' FROM surveymania.user_survey_sections uss INNER JOIN surveymania.survey_sections ss ON uss.section_id = ss.id'
+                                                                                                        + ' WHERE ss.header_id = ' + surveyid
+                                                                                                        + ' AND uss.completed IS NOT NULL';
+
+                                                                                                    client.query(query, function(err, result) {
+                                                                                                        done();
+                                                                                                        if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                                                                                        else {
+                                                                                                            if (!result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Aucun résultat"});
+                                                                                                            else {
+                                                                                                                var averageAnswerTime = result.rows[0].nb;
+                                                                                                                res.status(200).json({code: 200, nbQuestions: nbQuestions, nbScans: nbScans, nbSectionCompleted: nbSectionCompleted, nbAnswers: nbAnswers, nbCompleteAnswers: nbCompleteAnswers, nbQuestionAnswered: nbQuestionAnswered, averageAnswerTime: averageAnswerTime});
+                                                                                                            }
+                                                                                                        }
+                                                                                                    });
+                                                                                                }
+                                                                                            }
+                                                                                        });
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                        }
+                                                                    }
+                                                                });
+                                                            }
+                                                        }
+                                                    });
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    }
+})
+
 .post('/app/survey/getNextSurveyUserSection', function (req, res) {
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
     if (req.user.usertypenumber != 1) res.status(500).json({code: 500});

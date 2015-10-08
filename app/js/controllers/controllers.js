@@ -1571,6 +1571,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
     $scope.url = $window.location.hash.split('/');
     $scope.surveyid = $scope.url[$scope.url.length - 1];
     $scope.survey;
+    $scope.detailledInformations;
     $scope.surveyEstimatedTime;
     $scope.comments = null;
 
@@ -1593,6 +1594,15 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
         .success(function (data, status, header, config) {
             $scope.survey = data.survey;
             $scope.surveyEstimatedTime = data.time;
+
+            $http.post('/app/survey/getSurveyDetailledInfos', {survey: $scope.surveyid, prev: true})
+                .success(function (data, status, header, config) {
+                    $scope.detailledInformations = data;
+                    console.log($scope.detailledInformations);
+                })
+                .error(function (data, status, header, config) {
+                    $location.path("/createSurvey");
+                });
 
             $http.post('/app/results/getQuestions', {surveyid: $scope.surveyid})
                 .success(function (data, status, header, config) {

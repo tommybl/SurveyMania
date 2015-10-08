@@ -6,21 +6,23 @@
         <div><b>Nom du sondage : </b>{{survey.header_name}}</div>
         <div><b>Informations relatives au sondage : </b>{{survey.info}}</div>
         <div><b>Instruction supplémentaire : </b>{{survey.instructions}}</div>
+        <div><b>Temps de réponse éstimé : </b>{{surveyEstimatedTime}} minutes</div>
         <div><b>Publié le : </b>{{survey.publication_date}}</div>
         <div><b>Stoppé le : </b>{{survey.stopped_date}} ({{survey.surveytime.days}} jours)</div>
         <div><b>Créé par : </b>{{survey.name}}</div>
         <div><b>Points : </b>{{survey.points}}</div>
         <br/>
-        <div><b>Nombre de section : </b>undefined</div>
-        <div><b>Nombre de question : </b>undefined</div>
-        <div><b>Nombre de clients : </b>undefined</div>
-        <div><b>Temps de réponse éstimé : </b>undefined</div>
-        <div><b>Temps de réponse moyen : </b>undefined</div>
-        <div><b>Nombre de section remplies : </b>undefined</div>
-        <div><b>Nombre de question répondues : </b>undefined</div>
-        <div><b>Nombre de section par client : </b>undefined</div>
-        <div><b>Nombre de question par client : </b>undefined</div>
-        <div><b>Nombre de points distribués : </b>undefined</div>
+        <div><b>Sections : </b>{{sections.length}}</div>
+        <div><b>Questions : </b>{{detailledInformations.nbQuestions}}</div>
+        <div><b>Scans : </b>{{detailledInformations.nbScans}} fois</div>
+        <div><b>Réponses : </b>{{detailledInformations.nbAnswers}}</div>
+        <div><b>Réponses complètes : </b>{{detailledInformations.nbCompleteAnswers}}</div>
+        <div><b>Temps de réponse moyen : </b>{{detailledInformations.averageAnswerTime}}</div>
+        <div><b>Sections remplies : </b>{{detailledInformations.nbSectionCompleted}}</div>
+        <div><b>Questions répondues : </b>{{detailledInformations.nbQuestionAnswered}}</div>
+        <div><b>Sections par client : </b>{{detailledInformations.nbSectionCompleted / detailledInformations.nbAnswers}}</div>
+        <div><b>Questions par client : </b>{{detailledInformations.nbQuestionAnswered / detailledInformations.nbAnswers}}</div>
+        <div><b>Points distribués : </b>{{detailledInformations.nbCompleteAnswers * survey.points}}</div>
         <br/>
         <button id="showComments" class="btn btn-primary" style="margin-left: 15px;" ng-click="initCommentsCloud()">Afficher les commentaires</button>
         <div id ="master_comments_chart_div" style="display: none;">
