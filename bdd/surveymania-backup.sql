@@ -56,7 +56,16 @@ INSERT INTO survey_headers (organization_id, category_id, theme_id, name, instru
 (3, 3, 1, 'Crunch', 'Remplir les questions', 'Chocolat ... :D', 350, false, NULL);
 
 INSERT INTO user_surveys (user_id, survey_header_id, completed) VALUES
-(7, 5, NULL);
+(1, 4, NULL),
+(2, 4, NULL),
+(3, 4, NULL),
+(4, 4, NULL),
+(5, 4, NULL),
+(6, 4, '2015-10-08 18:11:36'),
+(7, 4, '2015-10-08 18:11:36'),
+(7, 5, NULL),
+(8, 4, '2015-10-08 18:11:36'),
+(9, 4, NULL);
 
 INSERT INTO input_types (id, type_name) VALUES
 (1, 'Ouverte'), (2, 'Numérique'), (3, 'QCM'), (4, 'Slider'), (5, 'Titre'), (6, 'Texte'), (7, 'Anti-robot');
@@ -73,8 +82,23 @@ INSERT INTO survey_sections (header_id, title, subtitle, required, section_order
 (4, 'Les steaks de marque Pouce', NULL, false, 4),
 (5, 'La bière au quotidien', NULL, true, 1);
 
-INSERT INTO surveymania.user_survey_sections (user_id, section_id) VALUES
-(7, 6);
+INSERT INTO surveymania.user_survey_sections (user_id, section_id, completed, duration) VALUES
+(1, 1, '2015-10-08 18:11:36', 10256),
+(1, 2, '2015-10-08 18:11:36', 3134),
+(1, 4, '2015-10-08 18:11:36', 7531),
+(6, 1, '2015-10-08 18:11:36', 4561),
+(6, 2, '2015-10-08 18:11:36', 7412),
+(6, 3, '2015-10-08 18:11:36', 2898),
+(6, 4, '2015-10-08 18:11:36', 6521),
+(7, 1, '2015-10-08 18:11:36', 8456),
+(7, 2, '2015-10-08 18:11:36', 3246),
+(7, 3, '2015-10-08 18:11:36', 9645),
+(7, 4, '2015-10-08 18:11:36', 13854),
+(8, 1, '2015-10-08 18:11:36', 19457),
+(8, 2, '2015-10-08 18:11:36', 15458),
+(8, 3, '2015-10-08 18:11:36', 26545),
+(8, 4, '2015-10-08 18:11:36', 7531),
+(7, 6, NULL, 0);
 
 INSERT INTO questions (survey_section_id, input_type_id, description, question_order, multiple_answers) VALUES
 (1, 3, 'Quelle est votre situation familiale ?', 3, false),
