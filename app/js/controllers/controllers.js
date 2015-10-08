@@ -1583,7 +1583,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
     $scope.parameterSelectedQuestion = null;
     $scope.selectedModel = "Camembert";
     $scope.parameters = [];
-    $scope.uselessWords = ['', 'de', 'le', 'et', 'en', 'la', 'au', 'des', 'à', 'que', 'un', 'une', 'y', 'les', 'le', 'aux', 'par', 'ce', 'ces', 'cet', 'cette', 'ses', 'son', 'sa', 'ses', 'ça', 'ca', 'dans', 'il', 'est', 'a', 'du', 'afin', 'mais'];
+    $scope.uselessWords = ['', 'de', 'le', 'et', 'en', 'la', 'au', 'des', 'à', 'que', 'un', 'une', 'y', 'les', 'le', 'aux', 'par', 'ce', 'ces', 'cet', 'cette', 'ses', 'son', 'sa', 'ses', 'ça', 'ca', 'dans', 'il', 'est', 'a', 'du', 'afin', 'mais', 'd\'un', 'qu\'un'];
     
     $http.post('/app/survey/getSurvey', {survey: $scope.surveyid, prev: true})
         .success(function (data, status, header, config) {
@@ -1749,6 +1749,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
     }
 
     $scope.drawChart = function () {
+        document.getElementById('master_chart_div').innerHTML = '<div id="chart_div"></div>';
         if ($scope.grdata != null) {
             if ($scope.selectedQuestion.question.type_name == "QCM") {
                 var d = [];
@@ -1824,8 +1825,6 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                     }
 
                     var options = {'title': $scope.selectedQuestion.question.description,
-                                      //'width': '100%',
-                                      //'height': '100%',
                                       'showRowNumber': true
                                   };
 
@@ -1905,25 +1904,20 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                 });
 
                 var table = new google.visualization.DataTable();
-                table.addColumn('string', 'Réponse');
-                table.addColumn('number', 'Nombre');
-                for (var i = 0; i < d.length; ++i) {
+                table.addColumn('string', 'Tag');
+                table.addColumn('number', 'Weight');
+                for (var i = 0; i < d.length && i < 20; ++i) {
                     table.addRow([d[i].opt, d[i].nb]);
                 }
 
-                var options = {'title': $scope.selectedQuestion.question.description,
-                                  //'width': '100%',
-                                  //'height': '100%',
-                                  'showRowNumber': true
+                var options = {text_color: '#000000',
+                                  width: $scope.chartsWidth,
+                                  height: $scope.chartsHeight
                               };
 
-                var chart = new google.visualization.Table(document.getElementById('chart_div'));
+                var chart = new gviz_word_cumulus.WordCumulus(document.getElementById('chart_div'));
                 chart.draw(table, options);
-
-                //document.getElementById('chart_div').innerHTML = 'A implémenter';
             }
-        } else {
-            document.getElementById('chart_div').innerHTML = '';
         }
     }
 }]);
@@ -1939,9 +1933,7 @@ surveyManiaControllers.controller('Ranking', ['$scope', '$http', '$window', '$lo
 
                 for (var i = 0; i < $scope.ranking_users.length; i++) {
                     var tmp_rank = i + 1;
-                    /*if (tmp_rank == 1) tmp_rank = tmp_rank + ' &nbsp; <i class="fa fa-trophy fa-lg" style="color: gold"></i>';
-                    else if (tmp_rank == 2) tmp_rank = tmp_rank + ' &nbsp; <i class="fa fa-trophy fa-lg" style="color: silver"></i>';
-                    else if (tmp_rank == 3) tmp_rank = tmp_rank + ' &nbsp; <i class="fa fa-trophy fa-lg" style="color: Peru"></i>';*/
+
                     if (tmp_rank == 1) {
                         var rank_row = '<tr class="odd gradeX"><td class="center ranking-top-1">' + tmp_rank + '</td><td class="center">' + $scope.ranking_users[i]['name'] + ' ' + $scope.ranking_users[i]['lastname'] + '</td><td class="center">' + $scope.ranking_users[i]['points'] + '</td></tr>';
                     }
