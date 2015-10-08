@@ -1567,13 +1567,17 @@ surveyManiaControllers.controller('PrevisualisationController', ['$scope', '$htt
 }]);
 
 surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$window', '$sce', '$location', function($scope, $http, $window, $sce, $location) {
+    /* General stats vars */
     $scope.url = $window.location.hash.split('/');
     $scope.surveyid = $scope.url[$scope.url.length - 1];
+    $scope.survey;
+    $scope.surveyEstimatedTime;
+    $scope.comments = null;
+
+    /* Charts vars */
     $scope.chartsWidth = 800;
     $scope.chartsHeight = 600;
     $scope.grdata = null;
-    $scope.survey;
-    $scope.surveyEstimatedTime;
     $scope.sections;
     $scope.parameterSections;
     $scope.sectionQuestionArray;
@@ -1589,6 +1593,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
         .success(function (data, status, header, config) {
             $scope.survey = data.survey;
             $scope.surveyEstimatedTime = data.time;
+
             $http.post('/app/results/getQuestions', {surveyid: $scope.surveyid})
                 .success(function (data, status, header, config) {
                     $scope.sections = data.sections;
@@ -1633,10 +1638,73 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                 .error(function (data, status, header, config) {
                     $location.path("/createSurvey");
                 });
+
+
+            $http.post('/app/survey/getComments', {survey: $scope.surveyid})
+                .success(function (data, status, header, config) {
+                    $scope.comments = data.comments;
+                    comments_chart_div
+                })
+                .error(function (data, status, header, config) {
+
+                });
         })
         .error(function (data, status, header, config) {
             $location.path("/createSurvey");
         });
+
+    $scope.initCommentsCloud = function () {
+        document.getElementById('showComments').style.display = 'none';
+        document.getElementById('master_comments_chart_div').style.display = 'initial';
+
+        var d = [];
+        for (var i = 0; i < $scope.comments.length; ++i) {
+            var words = $scope.comments[i].comment.replace(/([ .,;()"«»!?:]+)/g, ' ').split(' ');
+
+            for (var j = 0; j < words.length; ++j) {
+                if (d.length == 0) {
+                    d.push({opt: words[j], nb: 1});
+                } else {
+                    for (var k = 0; k < d.length; ++k) {
+                        if (d[k].opt == words[j]) {
+                            d[k].nb++;
+                            break;
+                        } else if (k == d.length - 1) {
+                            d.push({opt: words[j], nb: 1});
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        d = d.filter(function (el) {
+            for (var i = 0; i < $scope.uselessWords.length; ++i) {
+                if (el.opt.toUpperCase() == $scope.uselessWords[i].toUpperCase())
+                    return false;
+            }
+            return true;
+        });
+
+        d.sort(function(a, b) {
+            return b.nb - a.nb
+        });
+
+        var table = new google.visualization.DataTable();
+        table.addColumn('string', 'Tag');
+        table.addColumn('number', 'Weight');
+        for (var i = 0; i < d.length && i < 40; ++i)
+            table.addRow([d[i].opt, d[i].nb]);
+
+        var options = {
+                        text_color: '#000000',
+                        width: $scope.chartsWidth,
+                        height: $scope.chartsHeight
+                      };
+
+        var chart = new gviz_word_cumulus.WordCumulus(document.getElementById('comments_chart_div'));
+        chart.draw(table, options);
+    }
 
     $scope.selectSection = function () {
         if ($scope.selectedSection != null && $scope.selectedSection.section.section_order != "default") {
@@ -1777,7 +1845,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                         table.addRow([d[i].opt, d[i].nb]);
                     }
 
-                    var options = {'title': $scope.selectedQuestion.question.description,
+                    var options = {'title': $scope.selectedQuestion.question.description + ' (' + $scope.grdata.answers.length + ' réponses)',
                                       'width': $scope.chartsWidth,
                                       'height': $scope.chartsHeight
                                   };
@@ -1792,7 +1860,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                         table.addRow([d[i].opt, d[i].nb]);
                     }
 
-                    var options = {'title': $scope.selectedQuestion.question.description,
+                    var options = {'title': $scope.selectedQuestion.question.description + ' (' + $scope.grdata.answers.length + ' réponses)',
                                       'width': $scope.chartsWidth,
                                       'height': $scope.chartsHeight,
                                       'pieHole': 0.4,
@@ -1808,7 +1876,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                         table.addRow([d[i].opt, d[i].nb]);
                     }
 
-                    var options = {'title': $scope.selectedQuestion.question.description,
+                    var options = {'title': $scope.selectedQuestion.question.description + ' (' + $scope.grdata.answers.length + ' réponses)',
                                       'width': $scope.chartsWidth,
                                       'height': $scope.chartsHeight,
                                       'legend': 'none',
@@ -1824,7 +1892,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                         table.addRow([d[i].opt, d[i].nb]);
                     }
 
-                    var options = {'title': $scope.selectedQuestion.question.description,
+                    var options = {'title': $scope.selectedQuestion.question.description + ' (' + $scope.grdata.answers.length + ' réponses)',
                                       'showRowNumber': true
                                   };
 
@@ -1859,7 +1927,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                 }
 
                 var options = {
-                  title: $scope.selectedQuestion.question.description,
+                  title: $scope.selectedQuestion.question.description + ' (' + $scope.grdata.answers.length + ' réponses)',
                   hAxis: {title: 'Valeur'},
                   vAxis: {title: 'Nombre'},
                   legend: 'none',
@@ -1872,7 +1940,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
             } else if ($scope.selectedQuestion.question.type_name == "Ouverte") {
                 var d = [];
                 for (var i = 0; i < $scope.grdata.answers.length; ++i) {
-                    var words = $scope.grdata.answers[i].answer_text.replace(/([ .,;()"«»!:]+)/g, ' ').split(' ');
+                    var words = $scope.grdata.answers[i].answer_text.replace(/([ .,;()"«»!?:]+)/g, ' ').split(' ');
 
                     for (var j = 0; j < words.length; ++j) {
                         if (d.length == 0) {
@@ -1909,9 +1977,11 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                 for (var i = 0; i < d.length && i < 40; ++i)
                     table.addRow([d[i].opt, d[i].nb]);
 
-                var options = {text_color: '#000000',
-                                  width: $scope.chartsWidth,
-                                  height: $scope.chartsHeight
+                var options = {
+                                title: $scope.selectedQuestion.question.description + ' (' + $scope.grdata.answers.length + ' réponses)',
+                                text_color: '#000000',
+                                width: $scope.chartsWidth,
+                                height: $scope.chartsHeight
                               };
 
                 var chart = new gviz_word_cumulus.WordCumulus(document.getElementById('chart_div'));

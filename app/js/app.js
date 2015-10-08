@@ -52,7 +52,7 @@ surveyManiaApp.config(['$routeProvider',
         when('/results/:surveyid', {
             templateUrl: function(params){ return '/app/results/' + params.surveyid; },
             controller: '',
-            navigationPart: 'results'
+            navigationPart: 'organizationPanel'
         }).
         when('/organizationPanel', {
             templateUrl: '/app/organizationPanel',

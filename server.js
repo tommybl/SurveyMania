@@ -1747,7 +1747,7 @@ app
 
 .post('/app/survey/getComments', function (req, res) {
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
-    if (req.user.usertypenumber != 1) res.status(500).json({code: 500});
+    if (req.user.usertypenumber != 1 && req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
     else {
         pg.connect(conString, function(err, client, done) {
             if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});

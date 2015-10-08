@@ -1,6 +1,20 @@
 <!DOCTYPE html>
 
-<div id="surveyResults" ng-controller="ResultsController" class="col-md-12">
+<div id="surveyResults" ng-controller="ResultsController" class="col-md-8 col-md-offset-2">
+    <div style="border: 1px solid #C0C0C0; margin-top: 15px; padding: 10px 10px 10px 10px; background-color: cornsilk">
+        <h3>Statistiques du sondage</h3>
+        Nombre de question : 
+        Temps de réponse éstimé : 
+        Temps de réponse moyen : 
+
+
+        <button id="showComments" class="btn btn-primary" style="margin-left: 15px;" ng-click="initCommentsCloud()">Afficher les commentaires</button>
+        <div id ="master_comments_chart_div" style="display: none;">
+            <button class="btn btn-primary" style="margin-left: 15px;" onclick="document.getElementById('showComments').style.display = 'initial'; document.getElementById('master_comments_chart_div').style.display = 'none';">Ne plus afficher</button><br/>
+            <div id="comments_chart_div"></div>
+        </div>
+    </div>
+
     <div style="border: 1px solid #C0C0C0; margin-top: 15px; padding: 10px 10px 10px 10px; background-color: cornsilk">
         <h3>Choisissez la question</h3>
         <select id="sectionSelection" ng-options="sec.section.title for sec in sections track by sec.section.section_order" ng-model="selectedSection" ng-change="selectSection()"></select>
