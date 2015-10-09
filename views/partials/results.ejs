@@ -24,7 +24,7 @@
         <div><b>Questions par client : </b>{{detailledInformations.nbQuestionAnswered / detailledInformations.nbAnswers}}</div>
         <div><b>Points distribués : </b>{{detailledInformations.nbCompleteAnswers * survey.points}}</div>
         <br/>
-        <button id="showComments" class="btn btn-primary" style="margin-left: 15px;" ng-click="initCommentsCloud()">Afficher les commentaires</button>
+        <button id="showComments" class="btn btn-primary" style="margin-left: 15px;" onclick="document.getElementById('showComments').style.display = 'none'; document.getElementById('master_comments_chart_div').style.display = 'initial';">Afficher les commentaires</button>
         <div id ="master_comments_chart_div" style="display: none;">
             <button class="btn btn-primary" style="margin-left: 15px;" onclick="document.getElementById('showComments').style.display = 'initial'; document.getElementById('master_comments_chart_div').style.display = 'none';">Ne plus afficher</button><br/>
             <div id="comments_chart_div"></div>
@@ -81,10 +81,11 @@
         </div>
     </div>
 
-    <div style="border: 1px solid #C0C0C0; margin-top: 20px; padding: 5px 5px 5px 5px; background-color: cornsilk">
+    <div style="border: 1px solid #C0C0C0; margin-top: 20px; margin-bottom: 20px; padding: 5px 5px 5px 5px; background-color: cornsilk">
         <h3>Aperçu</h3>
         <div id="master_chart_div">
             <div id="chart_div"></div>
+            <div id="toolbar_div"></div>
         </div>
     </div>
 </div>

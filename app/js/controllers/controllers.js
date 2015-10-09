@@ -1598,7 +1598,6 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
             $http.post('/app/survey/getSurveyDetailledInfos', {survey: $scope.surveyid, prev: true})
                 .success(function (data, status, header, config) {
                     $scope.detailledInformations = data;
-                    console.log($scope.detailledInformations);
                 })
                 .error(function (data, status, header, config) {
                     $location.path("/createSurvey");
@@ -1653,7 +1652,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
             $http.post('/app/survey/getComments', {survey: $scope.surveyid})
                 .success(function (data, status, header, config) {
                     $scope.comments = data.comments;
-                    comments_chart_div
+                    $scope.initCommentsCloud();
                 })
                 .error(function (data, status, header, config) {
 
@@ -1664,9 +1663,6 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
         });
 
     $scope.initCommentsCloud = function () {
-        document.getElementById('showComments').style.display = 'none';
-        document.getElementById('master_comments_chart_div').style.display = 'initial';
-
         var d = [];
         for (var i = 0; i < $scope.comments.length; ++i) {
             var words = $scope.comments[i].comment.replace(/([ .,;()"«»!?:]+)/g, ' ').split(' ');
@@ -1827,7 +1823,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
     }
 
     $scope.drawChart = function () {
-        document.getElementById('master_chart_div').innerHTML = '<div id="chart_div"></div>';
+        document.getElementById('master_chart_div').innerHTML = '<div id="chart_div"></div><div id="toolbar_div"></div>';
         if ($scope.grdata != null) {
             if ($scope.selectedQuestion.question.type_name == "QCM") {
                 var d = [];
@@ -1855,13 +1851,16 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                         table.addRow([d[i].opt, d[i].nb]);
                     }
 
-                    var options = {'title': $scope.selectedQuestion.question.description + ' (' + $scope.grdata.answers.length + ' réponses)',
-                                      'width': $scope.chartsWidth,
-                                      'height': $scope.chartsHeight
-                                  };
+                    var options = {
+                        'title': $scope.selectedQuestion.question.description + ' (' + $scope.grdata.answers.length + ' réponses)',
+                        'width': $scope.chartsWidth,
+                        'height': $scope.chartsHeight,
+                        'backgroundColor': { fill:'transparent' }
+                    };
 
                     var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
                     chart.draw(table, options);
+                    $scope.drawToolbar(options.title, d, $scope.parameters);
                 } else if ($scope.selectedModel == "Donut") {
                     var table = new google.visualization.DataTable();
                     table.addColumn('string', 'Topping');
@@ -1870,14 +1869,17 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                         table.addRow([d[i].opt, d[i].nb]);
                     }
 
-                    var options = {'title': $scope.selectedQuestion.question.description + ' (' + $scope.grdata.answers.length + ' réponses)',
-                                      'width': $scope.chartsWidth,
-                                      'height': $scope.chartsHeight,
-                                      'pieHole': 0.4,
-                                  };
+                    var options = {
+                        'title': $scope.selectedQuestion.question.description + ' (' + $scope.grdata.answers.length + ' réponses)',
+                        'width': $scope.chartsWidth,
+                        'height': $scope.chartsHeight,
+                        'pieHole': 0.4,
+                        'backgroundColor': { fill:'transparent' }
+                    };
 
                     var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
                     chart.draw(table, options);
+                    $scope.drawToolbar(options.title, d, $scope.parameters);
                 } else if ($scope.selectedModel == "Histogramme") {
                     var table = new google.visualization.DataTable();
                     table.addColumn('string');
@@ -1886,14 +1888,17 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                         table.addRow([d[i].opt, d[i].nb]);
                     }
 
-                    var options = {'title': $scope.selectedQuestion.question.description + ' (' + $scope.grdata.answers.length + ' réponses)',
-                                      'width': $scope.chartsWidth,
-                                      'height': $scope.chartsHeight,
-                                      'legend': 'none',
-                                  };
+                    var options = {
+                        'title': $scope.selectedQuestion.question.description + ' (' + $scope.grdata.answers.length + ' réponses)',
+                        'width': $scope.chartsWidth,
+                        'height': $scope.chartsHeight,
+                        'legend': 'none',
+                        'backgroundColor': { fill:'transparent' }
+                    };
 
                     var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
                     chart.draw(table, options);
+                    $scope.drawToolbar(options.title, d, $scope.parameters);
                 } else if ($scope.selectedModel == "Tableau") {
                     var table = new google.visualization.DataTable();
                     table.addColumn('string', 'Réponse');
@@ -1902,12 +1907,14 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                         table.addRow([d[i].opt, d[i].nb]);
                     }
 
-                    var options = {'title': $scope.selectedQuestion.question.description + ' (' + $scope.grdata.answers.length + ' réponses)',
-                                      'showRowNumber': true
-                                  };
+                    var options = {
+                        'title': $scope.selectedQuestion.question.description + ' (' + $scope.grdata.answers.length + ' réponses)',
+                        'showRowNumber': true
+                    };
 
                     var chart = new google.visualization.Table(document.getElementById('chart_div'));
                     chart.draw(table, options);
+                    $scope.drawToolbar(options.title, d, $scope.parameters);
                 }                
             } else if ($scope.selectedQuestion.question.type_name == "Numérique" || $scope.selectedQuestion.question.type_name == "Slider") {
                 var d = [];
@@ -1937,16 +1944,18 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                 }
 
                 var options = {
-                  title: $scope.selectedQuestion.question.description + ' (' + $scope.grdata.answers.length + ' réponses)',
-                  hAxis: {title: 'Valeur'},
-                  vAxis: {title: 'Nombre'},
-                  legend: 'none',
-                  width: $scope.chartsWidth,
-                  height: $scope.chartsHeight
+                    'title': $scope.selectedQuestion.question.description + ' (' + $scope.grdata.answers.length + ' réponses)',
+                    'hAxis': {title: 'Valeur'},
+                    'vAxis': {title: 'Nombre'},
+                    'legend': 'none',
+                    'width': $scope.chartsWidth,
+                    'height': $scope.chartsHeight,
+                    'backgroundColor': { fill:'transparent' }
                 };
 
                 var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
                 chart.draw(table, options);
+                $scope.drawToolbar(options.title, d, $scope.parameters);
             } else if ($scope.selectedQuestion.question.type_name == "Ouverte") {
                 var d = [];
                 for (var i = 0; i < $scope.grdata.answers.length; ++i) {
@@ -1988,16 +1997,43 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                     table.addRow([d[i].opt, d[i].nb]);
 
                 var options = {
-                                title: $scope.selectedQuestion.question.description + ' (' + $scope.grdata.answers.length + ' réponses)',
-                                text_color: '#000000',
-                                width: $scope.chartsWidth,
-                                height: $scope.chartsHeight
-                              };
+                    'title': $scope.selectedQuestion.question.description + ' (' + $scope.grdata.answers.length + ' réponses)',
+                    'text_color': '#000000',
+                    'width': $scope.chartsWidth,
+                    'height': $scope.chartsHeight
+                };
 
                 var chart = new gviz_word_cumulus.WordCumulus(document.getElementById('chart_div'));
                 chart.draw(table, options);
+                $scope.drawToolbar(options.title, d, $scope.parameters);
             }
         }
+    }
+
+    $scope.drawToolbar = function (title, table, parameters) {
+        if (table.length > 0) {
+            var csvData = title.replace(/ /g, '%20') + '%0A%0A';
+            for (var i = 0; i < parameters.length; ++i) {
+                if (parameters[i].selectedValues.length > 0) {
+                    csvData += parameters[i].question.question.description.replace(/ /g, '%20') + '%20%3A%20';
+                    for (var j = 0; j < parameters[i].selectedValues.length; ++j) {
+                        if (j > 0)
+                            csvData += '%20%2F%20';
+                        csvData += parameters[i].selectedValues[j].replace(/ /g, '%20');
+                    }
+                    csvData += '%0A';
+                }
+            }
+
+            csvData += '%0A%0A';
+            csvData += 'Name%2CWeight%0A';
+            for (var i = 0; i < table.length; ++i)
+                csvData += table[i].opt.replace(/ /g, '%20') + '%2C' + table[i].nb + '%0A';
+
+            document.getElementById('toolbar_div').innerHTML = '<a style="color: black" download="data.csv" href="data:text/csv;charset=utf-8, ' + csvData + '">Télécharger au format CSV</a>';
+       } else {
+            document.getElementById('toolbar_div').innerHTML = '';
+       }
     }
 }]);
 
