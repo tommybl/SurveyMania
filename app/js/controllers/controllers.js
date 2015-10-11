@@ -1643,6 +1643,8 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
             $http.post('/app/survey/getSurveyDetailledInfos', {survey: $scope.surveyid, prev: true})
                 .success(function (data, status, header, config) {
                     $scope.detailledInformations = data;
+                    $scope.detailledInformations.averageAnswerTimeMinutes = Math.round(($scope.detailledInformations.averageAnswerTime / 1000) / 60);
+                    $scope.detailledInformations.averageAnswerTimeSeconds = Math.round(($scope.detailledInformations.averageAnswerTime / 1000) - ($scope.detailledInformations.averageAnswerTimeMinutes * 60));
                 })
                 .error(function (data, status, header, config) {
                     $location.path("/createSurvey");

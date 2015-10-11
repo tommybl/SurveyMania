@@ -338,6 +338,33 @@ app
     }
 })
 
+/*.post('/app/account/admin/stop/survey', function (req, res) {
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
+    else {
+        var orgaid = req.user.organization;
+        var surveyid = req.body.surveyid;
+        var dateNow = escapeHtml(moment().format("YYYY-MM-DD HH:mm:ss"));
+
+        pg.connect(conString, function(err, client, done) {
+            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+            else {
+                var query = 'UPDATE surveymania.survey_headers SET publied = TRUE, publication_date = \'' + dateNow + '\''
+                    + ' WHERE organization_id = ' + orgaid + ' AND id = ' + surveyid;
+
+                client.query(query, function(err, result) {
+                    done();
+                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                    else {
+                        res.json({code: 200, message: "OK"});
+                    }
+                });
+            }
+        });
+    }
+})*/
+
+
 .post('/app/account/admin/survey/getCode', function (req, res) {
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
     if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
