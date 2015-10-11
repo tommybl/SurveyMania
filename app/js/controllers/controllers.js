@@ -229,13 +229,17 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
             {
                 for (var j = 0; j < $scope.questionList[i].length; j++)
                 {
-                    if($scope.questionList[i][j].index == $index)
+                    if($scope.questionList[i][j].index == $index && $scope.htmlList[i][j].index == $index)
                     {
                         $scope.questionList[i][j].index = $index;
                         $scope.questionList[i][j].type = 2;
                         $scope.questionList[i][j].title = $title;
                         $scope.questionList[i][j].label1 = $opt1;
                         $scope.questionList[i][j].label2 = $opt2;
+
+                        $scope.htmlList[i][j].index = $index;
+                        $scope.htmlList[i][j].label = $sce.trustAsHtml("<h5>"+$title+"</h5>");
+                        $scope.htmlList[i][j].code = $sce.trustAsHtml('<input type="radio" name="yesno" value="0"> <span class="opt1">'+$opt1+'</span><br><input type="radio" name="yesno" value="1" checked> <span class="opt2">'+$opt2+'</span>');
                         $scope.$apply();
                     }
                 }
@@ -255,6 +259,10 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                         $scope.questionList[i][j].title = $title;
                         $scope.questionList[i][j].min = $min;
                         $scope.questionList[i][j].max = $max;
+
+                        $scope.htmlList[i][j].index = $index;
+                        $scope.htmlList[i][j].label = $sce.trustAsHtml("<h5>"+$title+"</h5>");
+                        $scope.htmlList[i][j].code = $sce.trustAsHtml('<input type="number" min="'+$min+'" max="'+$max+'" name="number" />')
                         $scope.$apply();
                     }
                 }
@@ -276,6 +284,10 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                         $scope.questionList[i][j].min = $min;
                         $scope.questionList[i][j].max = $max;
                         $scope.questionList[i][j].step = $step;
+
+                        $scope.htmlList[i][j].index = $index;
+                        $scope.htmlList[i][j].label = $sce.trustAsHtml("<h5>"+$title+"</h5>");
+                        $scope.htmlList[i][j].code = $sce.trustAsHtml('<input type="range" min="'+$min+'" max="'+$max+'" value="0" step="'+$step+'" />')
                         $scope.$apply();
                     }
                 }
@@ -294,6 +306,9 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                         $scope.questionList[i][j].index = $index;
                         $scope.questionList[i][j].type = $type;
                         $scope.questionList[i][j].title = $title;
+
+                        $scope.htmlList[i][j].index = $index;
+                        $scope.htmlList[i][j].label = $sce.trustAsHtml("<h1>"+$title+"</h1>");
                         $scope.$apply();
                     }
                 }
@@ -311,6 +326,9 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                     {
                         $scope.questionList[i][j].index = $index;
                         $scope.questionList[i][j].text = $text;
+
+                        $scope.htmlList[i][j].index = $index;
+                        $scope.htmlList[i][j].label = $sce.trustAsHtml("<p>"+$title+"</p>");
                         $scope.$apply();
                     }
                 }
@@ -370,6 +388,10 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                         $scope.questionList[i][j].type = $type;
                         $scope.questionList[i][j].title = $title;
                         $scope.questionList[i][j].maxlength = $maxlength;
+
+                        $scope.htmlList[i][j].index = $index;
+                        $scope.htmlList[i][j].label = $sce.trustAsHtml("<h5>"+$title+"</h5>");
+                        $scope.htmlList[i][j].code = $sce.trustAsHtml('<textarea maxlength="'+$maxlength+'"></textarea>')
                         $scope.$apply();
                     }
                 }
