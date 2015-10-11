@@ -378,6 +378,18 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                         $scope.questionList[i][j].title = $title;
                         $scope.questionList[i][j].option = $options;
                         $scope.questionList[i][j].multiple = $multiple;
+
+                        $scope.htmlList[i][j].label = $sce.trustAsHtml("<h5>"+$title+"</h5>");
+                        $content = '<select name="selectform"';
+                            if ($multiple)
+                                $content += 'multiple>'
+                            else
+                                $content +='>';
+                            for (var k = 0; k < $options.length; k++)
+                                $content += '<option pos="'+(k+1)+'" value="'+$options[k].sectionId+'">'+$options[k].title+'</option>';
+                        $content += '</select>';
+                        $scope.htmlList[i][j].code = $sce.trustAsHtml($content);
+                        $scope.$apply();
                         $scope.$apply();
                     }
                 }
