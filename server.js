@@ -338,7 +338,7 @@ app
     }
 })
 
-/*.post('/app/account/admin/stop/survey', function (req, res) {
+.post('/app/account/admin/stop/survey', function (req, res) {
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
     if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
     else {
@@ -349,7 +349,7 @@ app
         pg.connect(conString, function(err, client, done) {
             if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
             else {
-                var query = 'UPDATE surveymania.survey_headers SET publied = TRUE, publication_date = \'' + dateNow + '\''
+                var query = 'UPDATE surveymania.survey_headers SET stopped = TRUE, stopped_date = \'' + dateNow + '\''
                     + ' WHERE organization_id = ' + orgaid + ' AND id = ' + surveyid;
 
                 client.query(query, function(err, result) {
@@ -362,8 +362,7 @@ app
             }
         });
     }
-})*/
-
+})
 
 .post('/app/account/admin/survey/getCode', function (req, res) {
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
@@ -2418,7 +2417,7 @@ app
         pg.connect(conString, function(err, client, done) {
             if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
             else {
-                var query = 'SELECT sh.id AS surveyId, sh.name AS surveyName, sh.points AS points, sh.info AS infos, sh.publied AS publied FROM surveymania.survey_headers sh WHERE sh.organization_id = ' + orgaid;
+                var query = 'SELECT sh.id AS surveyId, sh.name AS surveyName, sh.points AS points, sh.info AS infos, sh.publied AS publied, sh.stopped AS stopped FROM surveymania.survey_headers sh WHERE sh.organization_id = ' + orgaid;
                 client.query(query, function(err, result) {
                     done();
                     if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});

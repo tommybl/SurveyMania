@@ -50,8 +50,8 @@ INSERT INTO organization_categories (organization_id, name, color) VALUES
 INSERT INTO survey_headers (organization_id, category_id, theme_id, name, instructions, info, points, publied, publication_date, stopped, stopped_date) VALUES
 (3, 3, 1, 'Haricots verts', 'Remplir les questions', 'Vous aimez les haricots verts ?', 100, false, NULL, false, NULL),
 (3, 3, 1, 'Haricots rouges', 'Remplir les questions', 'Vous aimez les haricots rouges ?', 50, false, NULL, false, NULL),
-(3, 3, 1, 'Cassoulet', 'Remplir les questions', 'De castelnaudary', 200, true, '2015-03-25 03:11:43', false, NULL),
-(3, 3, 1, 'Steak', 'Remplir les questions', 'Bien saignant', 150, true, '2015-03-25 03:11:43', true, '2015-09-27 15:42:37'),
+(3, 3, 1, 'Cassoulet', 'Remplir les questions', 'De castelnaudary', 200, true, '2015-03-25 03:11:43', true, '2015-09-27 15:42:37'),
+(3, 3, 1, 'Steak', 'Remplir les questions', 'Bien saignant', 150, true, '2015-03-25 03:11:43', false, NULL),
 (3, 3, 1, 'Pack de 6 bières', 'Remplir les questions', 'Avec modération', 100, true, '2015-03-25 03:11:43', false, NULL),
 (3, 3, 1, 'Crunch', 'Remplir les questions', 'Chocolat ... :D', 350, false, NULL, false, NULL);
 

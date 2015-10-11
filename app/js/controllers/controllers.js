@@ -2153,8 +2153,18 @@ surveyManiaControllers.controller('OrganizationPanel', ['$scope', '$http', '$win
     {
         $http.post('/app/account/admin/publish/survey', {surveyid: $id})
             .success(function (data, status, header, config) {
-                console.log("success");
                 elem.publied = true;
+            })
+            .error(function (data, status, header, config) {
+
+            });
+    }
+
+    $scope.stopSurvey = function($id, elem)
+    {
+        $http.post('/app/account/admin/stop/survey', {surveyid: $id})
+            .success(function (data, status, header, config) {
+                elem.stopped = true;
             })
             .error(function (data, status, header, config) {
 
