@@ -2322,6 +2322,67 @@ app
     }
 })
 
+.get('/app/games/get', function (req, res) {
+    if(req.user.usertypenumber != 1 && req.user.usertypenumber != 2) res.status(500).json({code: 500});
+    else {
+        pg.connect(conString, function(err, client, done) {
+            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+            else {
+                var query = 'SELECT games.id AS id_game, * FROM surveymania.games AS games LEFT JOIN surveymania.user_games AS ugames ON games.id = ugames.game_id AND ugames.user_id = ' + req.user.id;
+                client.query(query, function(err, result) {
+                    done();
+                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                    else {
+                        res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+                        res.json({code: 200, games: result.rows});
+                    }
+                });
+            }
+        });
+    }
+})
+
+.get('/app/game/get/:gameid', function (req, res) {
+    if(req.user.usertypenumber != 1 && req.user.usertypenumber != 2) res.status(500).json({code: 500});
+    else {
+        pg.connect(conString, function(err, client, done) {
+            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+            else {
+                var gameid = escapeHtml(req.params.gameid);
+                var query = 'SELECT games.id AS id_game, * FROM surveymania.games AS games LEFT JOIN surveymania.user_games AS ugames ON games.id = ugames.game_id AND ugames.user_id = ' + req.user.id + ' WHERE games.id = ' + gameid;
+                client.query(query, function(err, result) {
+                    done();
+                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                    else {
+                        res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+                        res.json({code: 200, game: result.rows});
+                    }
+                });
+            }
+        });
+    }
+})
+
+.get('/app/user/get/points', function (req, res) {
+    if(req.user.usertypenumber != 1 && req.user.usertypenumber != 2) res.status(500).json({code: 500});
+    else {
+        pg.connect(conString, function(err, client, done) {
+            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+            else {
+                var query = 'SELECT user.id AS user_id, user.points AS user_points FROM surveymania.users WHERE user.id = ' + req.user.id;
+                client.query(query, function(err, result) {
+                    done();
+                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                    else {
+                        res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+                        res.json({code: 200, user: result.rows});
+                    }
+                });
+            }
+        });
+    }
+})
+
 .get('/app/category/get', function (req, res) {
     if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
     else {
