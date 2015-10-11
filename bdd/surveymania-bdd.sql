@@ -435,6 +435,7 @@ CREATE TABLE  surveymania.games (
   image_path VARCHAR(255) NOT NULL,
   description VARCHAR(255) NOT NULL,
   points_req INT NOT NULL,
+  type VARCHAR(45) NOT NULL,
   PRIMARY KEY (id));
 
 
@@ -448,6 +449,8 @@ CREATE TABLE  surveymania.user_games (
   user_id INT NOT NULL,
   game_id INT NOT NULL,
   recieved_dt TIMESTAMP NOT NULL,
+  score INT NOT NULL,
+  points INT NOT NULL,
   PRIMARY KEY (id),
   CONSTRAINT fk_user_id
     FOREIGN KEY (user_id)
