@@ -1496,7 +1496,7 @@ app
             else {
                 var query = 'SELECT sh.name AS header_name'
                     + ' FROM surveymania.survey_headers sh'
-                    + ' WHERE sh.id = ' + surveyid + ' AND sh.organization_id = ' + user.organization;
+                    + ' WHERE sh.id = ' + surveyid + ' AND sh.organization_id = ' + user.organization + ' AND sh.stopped = true';
                 client.query(query, function(err, result) {
                     done();
                     if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});

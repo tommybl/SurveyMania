@@ -1647,7 +1647,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                     $scope.detailledInformations.averageAnswerTimeSeconds = Math.round(($scope.detailledInformations.averageAnswerTime / 1000) - ($scope.detailledInformations.averageAnswerTimeMinutes * 60));
                 })
                 .error(function (data, status, header, config) {
-                    $location.path("/createSurvey");
+                    $location.path("/organizationPanel");
                 });
 
             $http.post('/app/results/getQuestions', {surveyid: $scope.surveyid})
@@ -1692,7 +1692,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                     }
                 })
                 .error(function (data, status, header, config) {
-                    $location.path("/createSurvey");
+                    $location.path("/organizationPanel");
                 });
 
 
@@ -1702,11 +1702,11 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                     $scope.initCommentsCloud();
                 })
                 .error(function (data, status, header, config) {
-
+                    $location.path("/organizationPanel");
                 });
         })
         .error(function (data, status, header, config) {
-            $location.path("/createSurvey");
+            $location.path("/organizationPanel");
         });
 
     $scope.initCommentsCloud = function () {
