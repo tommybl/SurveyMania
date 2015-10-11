@@ -996,8 +996,6 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$rootScope', 
             }
         })
         .error(function (data, status, headers, config) {});
-  
-    // ****************************
 
     var oldUser;
     var oldOrganization;
@@ -1302,6 +1300,11 @@ surveyManiaControllers.controller('MySurveysController', ['$scope', '$http', '$w
                         break;
                     case "ALREADY SCANNED":
                         $scope.resultMessage = "Vous avez déjà scanné ce QRcode";
+                        $scope.dismissButton = "Réessayer";
+                        $scope.validateButton = null;
+                        break;
+                    case "FINISHED":
+                        $scope.resultMessage = "Ce sondage est terminé";
                         $scope.dismissButton = "Réessayer";
                         $scope.validateButton = null;
                         break;
@@ -1643,7 +1646,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
             $http.post('/app/survey/getSurveyDetailledInfos', {survey: $scope.surveyid, prev: true})
                 .success(function (data, status, header, config) {
                     $scope.detailledInformations = data;
-                    $scope.detailledInformations.averageAnswerTimeMinutes = Math.round(($scope.detailledInformations.averageAnswerTime / 1000) / 60);
+                    $scope.detailledInformations.averageAnswerTimeMinutes = Math.floor(($scope.detailledInformations.averageAnswerTime / 1000) / 60);
                     $scope.detailledInformations.averageAnswerTimeSeconds = Math.round(($scope.detailledInformations.averageAnswerTime / 1000) - ($scope.detailledInformations.averageAnswerTimeMinutes * 60));
                 })
                 .error(function (data, status, header, config) {
