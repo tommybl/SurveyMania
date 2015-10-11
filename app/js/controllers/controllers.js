@@ -2057,25 +2057,32 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
 
     $scope.drawToolbar = function (title, table, parameters) {
         if (table.length > 0) {
-            var csvData = title.replace(/ /g, '%20') + '%0A%0A';
+            var csvData = title + '\n\n';
             for (var i = 0; i < parameters.length; ++i) {
                 if (parameters[i].selectedValues.length > 0) {
-                    csvData += parameters[i].question.question.description.replace(/ /g, '%20') + '%20%3A%20';
+                    csvData += parameters[i].question.question.description + ' : ';
                     for (var j = 0; j < parameters[i].selectedValues.length; ++j) {
                         if (j > 0)
-                            csvData += '%20%2F%20';
-                        csvData += parameters[i].selectedValues[j].replace(/ /g, '%20');
+                            csvData += ' \\ ';
+                        var val = '';
+                        for (var k = 0; k < parameters[i].question.options.length; ++k) {
+                            if (parameters[i].question.options[k].id == parameters[i].selectedValues[j]) {
+                                val = parameters[i].question.options[k].choice_name;
+                                break;
+                            }
+                        }
+                        csvData += val;
                     }
-                    csvData += '%0A';
+                    csvData += '\n';
                 }
             }
 
-            csvData += '%0A%0A';
-            csvData += 'Name%2CWeight%0A';
+            csvData += '\n\n';
+            csvData += 'Name,Weight\n';
             for (var i = 0; i < table.length; ++i)
-                csvData += table[i].opt.replace(/ /g, '%20') + '%2C' + table[i].nb + '%0A';
+                csvData += table[i].opt + ',' + table[i].nb + '\n';
 
-            document.getElementById('toolbar_div').innerHTML = '<a style="color: black" download="data.csv" href="data:text/csv;charset=utf-8, ' + csvData + '">Télécharger au format CSV</a>';
+            document.getElementById('toolbar_div').innerHTML = '<a style="color: black" download="data.csv" href="data:text/csv;charset=utf-8,%EF%BB%BF' + encodeURI(csvData) + '">Télécharger au format CSV</a>';
        } else {
             document.getElementById('toolbar_div').innerHTML = '';
        }
