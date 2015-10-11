@@ -374,13 +374,16 @@ CREATE TABLE  surveymania.question_medias (
 
 
 -- -----------------------------------------------------
--- Table surveymania.dashboards
+-- Table surveymania.widget
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS surveymania.dashboards CASCADE;
+DROP TABLE IF EXISTS surveymania.widget CASCADE;
 
-CREATE TABLE  surveymania.dashboards (
+CREATE TABLE  surveymania.widget (
   id SERIAL NOT NULL ,
   survey_id INT NOT NULL,
+  questionType VARCHAR(64) NOT NULL,
+  chartType VARCHAR(64) NOT NULL,
+  request VARCHAR(1024) NOT NULL,
   PRIMARY KEY (id),
   CONSTRAINT fk_survey_id
     FOREIGN KEY (survey_id)
