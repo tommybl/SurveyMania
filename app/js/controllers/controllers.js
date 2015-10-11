@@ -328,7 +328,7 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
                         $scope.questionList[i][j].text = $text;
 
                         $scope.htmlList[i][j].index = $index;
-                        $scope.htmlList[i][j].label = $sce.trustAsHtml("<p>"+$title+"</p>");
+                        $scope.htmlList[i][j].label = $sce.trustAsHtml("<p>"+$text+"</p>");
                         $scope.$apply();
                     }
                 }
