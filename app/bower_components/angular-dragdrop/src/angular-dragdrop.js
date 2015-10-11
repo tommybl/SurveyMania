@@ -225,20 +225,22 @@ var jqyoui = angular.module('ngDragDrop', []).service('ngDragDropService', ['$ti
           //console.dir(dropModelValue);
           //console.log("before: "+dropModelValue.length+"       now: "+dropModelValueTmp.length);
           //console.log("bool: "+mybool);
-          if (mybool)
-          {
+
+          // On va disable le truc c'est un massacre. Plus de possibilité de déplacer un item.
+         //if (mybool)
+          //{
             dragItem.index = dropModelValue.length + ($('#renderPanel').scope().currentListNumber*100);
             console.log("drameeeeeeeeeeeee "+dragItem.index);
             $('#renderPanel').scope().addNewQuestion(dropModelValue.length, dragItem);
             dropModelValue.push(dragItem);
-          }
-          else
+          //}
+          /*else
           {
             dragItem.index = elemToInsert + ($('#renderPanel').scope().currentListNumber*100);
             console.log("coucous "+dragItem.index);
             dropModelValue.splice(elemToInsert, 0, dragItem);
             $('#renderPanel').scope().addNewQuestion(elemToInsert, dragItem);
-          } 
+          } */
         }
         if (dragSettings && dragSettings.placeholder === true) {
           dropModelValue[dropModelValue.length - 1]['jqyoui_pos'] = jqyoui_pos;
