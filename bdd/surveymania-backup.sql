@@ -9,6 +9,16 @@ INSERT INTO achievements (name, image_path, description) VALUES
 ('Coupe 1', 'img/achievements/cup1.png', 'Vous avez gagné la coupe 1.'),
 ('Médaille 1', 'img/achievements/medal1.png', 'Vous avez gagné la médaille 1.');
 
+INSERT INTO games (name, image_path, description, points_req) VALUES 
+('Breakout', 'img/games/breakout.jpg', 'Jeu de casse briques, cassez le plus de briques dans le temps imparti.', 100),
+('Genmatch', 'img/games/genmatch.jpg', 'Jeu de match 3. Faites le plus de combinaisons de 3 ou plus diamants de la même couleur dans le temps imparti.', 200),
+('Invaders', 'img/games/invaders.jpg', 'Jeu de space invaders. Détruisez le plus de vaisseaux ennemis dans le temps imparti.', 500),
+('Matching Pairs', 'img/games/matching-pairs.jpg', 'Jeu de mémoire. Trouvez le plus de paires dans le temps imparti.', 1000),
+('Simon', 'img/games/simon.jpg', 'Jeu de mémoire. Reproduisez la plus grande séquence possible.', 2000),
+('Sliding Puzzle', 'img/games/sliding-puzzle.jpg', 'Jeu de puzzle. Réalisez le puzzle le plus rapidemment possible.', 3000),
+('Starstruck', 'img/games/starstruck.jpg', 'Jeu de plateforme. Récupérez le plus de pièces dans le temps imparti.', 5000),
+('Tanks', 'img/games/tanks.jpg', 'Jeu de guerre. Détruisez le plus de tanks ennemis dans le temps imparti.', 7500);
+
 INSERT INTO organizations (name, description, adress, postal, town, country, telephone, logo_path, current_points, verified, verified_dt) VALUES
 ('EPITA', 'Ecole d''ingénieurs en informatique', '14 rue Voltaire', '94276', 'Kremlin Bicêtre', 'France', '0144080101', 'https://pbs.twimg.com/profile_images/534363526521819136/WLpToBj__bigger.jpeg', 50, false, NULL),
 ('EPF', 'Ecole d''ingénieurs généraliste', '3 rue lakanal', '92330', 'Sceaux', 'France', '0141130151', 'https://pbs.twimg.com/profile_images/891709693/Phi_normal.jpg', 50, false, NULL),
