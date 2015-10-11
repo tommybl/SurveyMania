@@ -2147,12 +2147,12 @@ surveyManiaControllers.controller('OrganizationPanel', ['$scope', '$http', '$win
             $scope.orgaSurveys = data.orgaSurveys;
     });
 
-    $scope.publishSurvey = function($id)
+    $scope.publishSurvey = function($id, elem)
     {
-        var qrcodestr;
         $http.post('/app/account/admin/publish/survey', {surveyid: $id})
             .success(function (data, status, header, config) {
                 console.log("success");
+                elem.publied = true;
             })
             .error(function (data, status, header, config) {
 
