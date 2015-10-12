@@ -168,7 +168,7 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
             }
             else if($item.id == 3) // Slider
             {
-                $scope.questionList[i].push({'index': $index+($scope.currentListNumber*100), 'type':$item.id, 'title':$item.title, 'min':'', 'max':'', 'step':'', 'video':[], 'image':[]});
+                $scope.questionList[i].push({'index': $index+($scope.currentListNumber*100), 'type':$item.id, 'title':$item.title, 'min':'0', 'max':'50', 'step':'5', 'video':[], 'image':[]});
             }
             else if($item.id == 4) // Branchement
             {
@@ -176,7 +176,7 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
             }
             else if($item.id == 5) // Question numérique
             {
-                $scope.questionList[i].push({'index': $index+($scope.currentListNumber*100), 'type':$item.id, 'title':$item.title, 'min':'', 'max':'', 'video':[], 'image':[]});
+                $scope.questionList[i].push({'index': $index+($scope.currentListNumber*100), 'type':$item.id, 'title':$item.title, 'min':'0', 'max':'100', 'video':[], 'image':[]});
             }
             else if($item.id == 6) // Choix multiple
             {
