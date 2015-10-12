@@ -2406,7 +2406,7 @@ app
     }
 })
 
-/*.post('/app/results/deleteWidget', function (req, res) {
+.post('/app/results/deleteWidget', function (req, res) {
     if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
     else {
         var user = req.user;
@@ -2423,14 +2423,19 @@ app
                     else {
                         if (!result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                         else {
-                        
+                            var query = 'DELETE FROM surveymania.widget WHERE id = ' + widget_id;
+                            client.query(query, function(err, result) {
+                                done();
+                                if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                else res.status(200).json({code: 200, message: "OK"});
+                            });
                         }
                     }
                 });
             }
         });
     }
-})*/
+})
 
 .get('/app/organizationPanel', function (req, res) {
     if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.redirect('/401-unauthorized');
