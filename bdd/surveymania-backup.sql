@@ -9,6 +9,16 @@ INSERT INTO achievements (name, image_path, description) VALUES
 ('Coupe 1', 'img/achievements/cup1.png', 'Vous avez gagné la coupe 1.'),
 ('Médaille 1', 'img/achievements/medal1.png', 'Vous avez gagné la médaille 1.');
 
+INSERT INTO games (name, image_path, description, points_req, type) VALUES 
+('Breakout', 'img/games/breakout.jpg', 'Jeu de casse briques, cassez le plus de briques dans le temps imparti.', 100, 'points'),
+('Genmatch', 'img/games/genmatch.jpg', 'Jeu de match 3. Faites le plus de combinaisons de 3 ou plus diamants de la même couleur dans le temps imparti.', 200, 'points'),
+('Invaders', 'img/games/invaders.jpg', 'Jeu de space invaders. Détruisez le plus de vaisseaux ennemis dans le temps imparti.', 500, 'points'),
+('Matching Pairs', 'img/games/matching-pairs.jpg', 'Jeu de mémoire. Trouvez le plus de paires dans le temps imparti.', 1000, 'points'),
+('Simon', 'img/games/simon.jpg', 'Jeu de mémoire. Reproduisez la plus grande séquence possible.', 2000, 'points'),
+('Sliding Puzzle', 'img/games/sliding-puzzle.jpg', 'Jeu de puzzle. Réalisez le puzzle le plus rapidemment possible.', 3000, 'sec'),
+('Starstruck', 'img/games/starstruck.jpg', 'Jeu de plateforme. Récupérez le plus de pièces dans le temps imparti.', 5000, 'point'),
+('Tanks', 'img/games/tanks.jpg', 'Jeu de guerre. Détruisez le plus de tanks ennemis dans le temps imparti.', 7500, 'points');
+
 INSERT INTO organizations (name, description, adress, postal, town, country, telephone, logo_path, current_points, verified, verified_dt) VALUES
 ('EPITA', 'Ecole d''ingénieurs en informatique', '14 rue Voltaire', '94276', 'Kremlin Bicêtre', 'France', '0144080101', 'https://pbs.twimg.com/profile_images/534363526521819136/WLpToBj__bigger.jpeg', 50, false, NULL),
 ('EPF', 'Ecole d''ingénieurs généraliste', '3 rue lakanal', '92330', 'Sceaux', 'France', '0141130151', 'https://pbs.twimg.com/profile_images/891709693/Phi_normal.jpg', 50, false, NULL),
@@ -39,6 +49,10 @@ INSERT INTO user_achievements (user_id, achiev_id, recieved_dt) VALUES
 (7, 3, '2015-03-25 03:11:43'),
 (7, 4, '2015-03-25 03:11:43');
 
+INSERT INTO user_games (user_id, game_id, recieved_dt, score, points) VALUES
+(7, 1, '2015-03-25 14:40:00', 50, 200),
+(7, 2, '2015-03-25 14:40:00', 60, 300);
+
 INSERT INTO survey_themes (theme_name) VALUES
 ('Theme 1');
 
@@ -50,8 +64,8 @@ INSERT INTO organization_categories (organization_id, name, color) VALUES
 INSERT INTO survey_headers (organization_id, category_id, theme_id, name, instructions, info, points, publied, publication_date, stopped, stopped_date) VALUES
 (3, 3, 1, 'Haricots verts', 'Remplir les questions', 'Vous aimez les haricots verts ?', 100, false, NULL, false, NULL),
 (3, 3, 1, 'Haricots rouges', 'Remplir les questions', 'Vous aimez les haricots rouges ?', 50, false, NULL, false, NULL),
-(3, 3, 1, 'Cassoulet', 'Remplir les questions', 'De castelnaudary', 200, true, '2015-03-25 03:11:43', false, NULL),
-(3, 3, 1, 'Steak', 'Remplir les questions', 'Bien saignant', 150, true, '2015-03-25 03:11:43', true, '2015-09-27 15:42:37'),
+(3, 3, 1, 'Cassoulet', 'Remplir les questions', 'De castelnaudary', 200, true, '2015-03-25 03:11:43', true, '2015-09-27 15:42:37'),
+(3, 3, 1, 'Steak', 'Remplir les questions', 'Bien saignant', 150, true, '2015-03-25 03:11:43', false, NULL),
 (3, 3, 1, 'Pack de 6 bières', 'Remplir les questions', 'Avec modération', 100, true, '2015-03-25 03:11:43', false, NULL),
 (3, 3, 1, 'Crunch', 'Remplir les questions', 'Chocolat ... :D', 350, false, NULL, false, NULL);
 
@@ -83,10 +97,10 @@ INSERT INTO survey_sections (header_id, title, subtitle, required, section_order
 (5, 'La bière au quotidien', NULL, true, 1);
 
 INSERT INTO surveymania.user_survey_sections (user_id, section_id, completed, duration) VALUES
-(1, 1, '2015-10-08 18:11:36', 10256),
-(1, 2, '2015-10-08 18:11:36', 3134),
+(1, 1, '2015-10-08 18:11:36', 225384),
+(1, 2, '2015-10-08 18:11:36', 356214),
 (1, 3, NULL, 0),
-(1, 4, '2015-10-08 18:11:36', 7531),
+(1, 4, '2015-10-08 18:11:36', 123456),
 (2, 1, NULL, 0),
 (2, 3, NULL, 0),
 (3, 1, NULL, 0),
@@ -95,18 +109,18 @@ INSERT INTO surveymania.user_survey_sections (user_id, section_id, completed, du
 (4, 3, NULL, 0),
 (5, 1, NULL, 0),
 (5, 3, NULL, 0),
-(6, 1, '2015-10-08 18:11:36', 4561),
-(6, 2, '2015-10-08 18:11:36', 7412),
-(6, 3, '2015-10-08 18:11:36', 2898),
-(6, 4, '2015-10-08 18:11:36', 6521),
-(7, 1, '2015-10-08 18:11:36', 8456),
-(7, 2, '2015-10-08 18:11:36', 3246),
-(7, 3, '2015-10-08 18:11:36', 9645),
-(7, 4, '2015-10-08 18:11:36', 13854),
-(8, 1, '2015-10-08 18:11:36', 19457),
-(8, 2, '2015-10-08 18:11:36', 15458),
-(8, 3, '2015-10-08 18:11:36', 26545),
-(8, 4, '2015-10-08 18:11:36', 7531),
+(6, 1, '2015-10-08 18:11:36', 155412),
+(6, 2, '2015-10-08 18:11:36', 138456),
+(6, 3, '2015-10-08 18:11:36', 158521),
+(6, 4, '2015-10-08 18:11:36', 148965),
+(7, 1, '2015-10-08 18:11:36', 106845),
+(7, 2, '2015-10-08 18:11:36', 120214),
+(7, 3, '2015-10-08 18:11:36', 100356),
+(7, 4, '2015-10-08 18:11:36', 152365),
+(8, 1, '2015-10-08 18:11:36', 103654),
+(8, 2, '2015-10-08 18:11:36', 151125),
+(8, 3, '2015-10-08 18:11:36', 166213),
+(8, 4, '2015-10-08 18:11:36', 115412),
 (9, 1, NULL, 0),
 (9, 3, NULL, 0),
 (7, 6, NULL, 0);

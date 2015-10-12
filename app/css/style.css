@@ -718,7 +718,7 @@ blockquote {
     margin-left: 15px;
 }
 
-.fa-print:hover, .fa-check:hover, .fa-pie-chart:hover
+.fa-print:hover, .fa-check:hover, .fa-close:hover, .fa-pie-chart:hover
 {
   cursor: pointer;
 }

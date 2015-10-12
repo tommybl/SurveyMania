@@ -996,8 +996,6 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$rootScope', 
             }
         })
         .error(function (data, status, headers, config) {});
-  
-    // ****************************
 
     var oldUser;
     var oldOrganization;
@@ -1302,6 +1300,11 @@ surveyManiaControllers.controller('MySurveysController', ['$scope', '$http', '$w
                         break;
                     case "ALREADY SCANNED":
                         $scope.resultMessage = "Vous avez déjà scanné ce QRcode";
+                        $scope.dismissButton = "Réessayer";
+                        $scope.validateButton = null;
+                        break;
+                    case "FINISHED":
+                        $scope.resultMessage = "Ce sondage est terminé";
                         $scope.dismissButton = "Réessayer";
                         $scope.validateButton = null;
                         break;
@@ -1643,9 +1646,11 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
             $http.post('/app/survey/getSurveyDetailledInfos', {survey: $scope.surveyid, prev: true})
                 .success(function (data, status, header, config) {
                     $scope.detailledInformations = data;
+                    $scope.detailledInformations.averageAnswerTimeMinutes = Math.floor(($scope.detailledInformations.averageAnswerTime / 1000) / 60);
+                    $scope.detailledInformations.averageAnswerTimeSeconds = Math.round(($scope.detailledInformations.averageAnswerTime / 1000) - ($scope.detailledInformations.averageAnswerTimeMinutes * 60));
                 })
                 .error(function (data, status, header, config) {
-                    $location.path("/createSurvey");
+                    $location.path("/organizationPanel");
                 });
 
             $http.post('/app/results/getQuestions', {surveyid: $scope.surveyid})
@@ -1690,7 +1695,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                     }
                 })
                 .error(function (data, status, header, config) {
-                    $location.path("/createSurvey");
+                    $location.path("/organizationPanel");
                 });
 
 
@@ -1700,11 +1705,11 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                     $scope.initCommentsCloud();
                 })
                 .error(function (data, status, header, config) {
-
+                    $location.path("/organizationPanel");
                 });
         })
         .error(function (data, status, header, config) {
-            $location.path("/createSurvey");
+            $location.path("/organizationPanel");
         });
 
     $scope.initCommentsCloud = function () {
@@ -2147,12 +2152,22 @@ surveyManiaControllers.controller('OrganizationPanel', ['$scope', '$http', '$win
             $scope.orgaSurveys = data.orgaSurveys;
     });
 
-    $scope.publishSurvey = function($id)
+    $scope.publishSurvey = function($id, elem)
     {
-        var qrcodestr;
         $http.post('/app/account/admin/publish/survey', {surveyid: $id})
             .success(function (data, status, header, config) {
-                console.log("success");
+                elem.publied = true;
+            })
+            .error(function (data, status, header, config) {
+
+            });
+    }
+
+    $scope.stopSurvey = function($id, elem)
+    {
+        $http.post('/app/account/admin/stop/survey', {surveyid: $id})
+            .success(function (data, status, header, config) {
+                elem.stopped = true;
             })
             .error(function (data, status, header, config) {
 

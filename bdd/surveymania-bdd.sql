@@ -374,13 +374,16 @@ CREATE TABLE  surveymania.question_medias (
 
 
 -- -----------------------------------------------------
--- Table surveymania.dashboards
+-- Table surveymania.widget
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS surveymania.dashboards CASCADE;
+DROP TABLE IF EXISTS surveymania.widget CASCADE;
 
-CREATE TABLE  surveymania.dashboards (
+CREATE TABLE  surveymania.widget (
   id SERIAL NOT NULL ,
   survey_id INT NOT NULL,
+  questionType VARCHAR(64) NOT NULL,
+  chartType VARCHAR(64) NOT NULL,
+  request VARCHAR(1024) NOT NULL,
   PRIMARY KEY (id),
   CONSTRAINT fk_survey_id
     FOREIGN KEY (survey_id)
@@ -421,6 +424,45 @@ CREATE TABLE  surveymania.user_achievements (
   CONSTRAINT fk_achiev_id
     FOREIGN KEY (achiev_id)
     REFERENCES surveymania.achievements (id)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+    
+-- -----------------------------------------------------
+-- Table surveymania.games
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS surveymania.games CASCADE;
+
+CREATE TABLE  surveymania.games (
+  id SERIAL NOT NULL ,
+  name VARCHAR(45) NOT NULL,
+  image_path VARCHAR(255) NOT NULL,
+  description VARCHAR(255) NOT NULL,
+  points_req INT NOT NULL,
+  type VARCHAR(45) NOT NULL,
+  PRIMARY KEY (id));
+
+
+-- -----------------------------------------------------
+-- Table surveymania.user_games
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS surveymania.user_games CASCADE;
+
+CREATE TABLE  surveymania.user_games (
+  id SERIAL NOT NULL ,
+  user_id INT NOT NULL,
+  game_id INT NOT NULL,
+  recieved_dt TIMESTAMP NOT NULL,
+  score INT NOT NULL,
+  points INT NOT NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT fk_user_id
+    FOREIGN KEY (user_id)
+    REFERENCES surveymania.users (id)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT fk_game_id
+    FOREIGN KEY (game_id)
+    REFERENCES surveymania.games (id)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);
 
