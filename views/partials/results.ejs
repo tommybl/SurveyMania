@@ -35,7 +35,7 @@
         <h3>Choisissez la question</h3>
         <select id="sectionSelection" ng-options="sec.section.title for sec in sections track by sec.section.section_order" ng-model="selectedSection" ng-change="selectSection()"></select>
         <select id="questionSelection" ng-options="que.question.description for que in selectedSection.question_array track by que.question.question_order" ng-model="selectedQuestion" ng-change="selectQuestion()" style="display: none;"></select>
-        <select id="modelSelection" ng-model="selectedModel" ng-change="drawChart()" style="display: none;">
+        <select id="modelSelection" ng-model="selectedModel" ng-change="updatePreviewChart()" style="display: none;">
             <option value="Camembert" selected>Camembert</option>
             <option value="Donut">Donut</option>
             <option value="Histogramme">Histogramme</option>
@@ -58,7 +58,7 @@
                                     <tr>
                                         <td ng-repeat="option in param.question.options">
                                             <label style="font-weight: normal; margin-left: 20px;">
-                                                <input type="checkbox" name="param{{param.question.question.question_order}}" value="{{option.id}}" onchange="angular.element(this).scope().updateChartData();">
+                                                <input type="checkbox" name="param{{param.question.question.question_order}}" value="{{option.id}}" onchange="angular.element(this).scope().updatePreviewChart();">
                                                 {{option.choice_name}}
                                             </label>
                                         </td>
@@ -81,13 +81,17 @@
         </div>
     </div>
 
-    <div style="border: 1px solid #C0C0C0; margin-top: 20px; margin-bottom: 20px; padding: 5px 5px 5px 5px; background-color: cornsilk;">
+    <div style="border: 1px solid #C0C0C0; margin-top: 20px; margin-bottom: 20px; padding: 5px 5px 5px 5px; height: 750px; background-color: cornsilk;">
         <h3>Aperçu</h3>
-        <div id="master_chart_div">
-            <div id="chart_div"></div>
+        <div id="masterChartPreview">
+            <div id="chartPreview"></div>
         </div>
-        <div id="toolbar_div"></div>
-        <button id="saveWidget" class="btn btn-primary" style="display: none;" ng-click="saveWidget()">Ajouter le widget</button>
+        <div id="csvPreview"></div>
+        <button id="saveWidget" class="btn btn-primary" ng-click="saveWidget()">Ajouter le widget</button>
+    </div>
+
+    <div class="col-md-4" ng-repeat="widget in widgets | orderBy:'cardorder'" category-render="ngRepeatFinished">
+        caca
     </div>
 </div>
 
