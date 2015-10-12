@@ -731,3 +731,50 @@ blockquote {
   width: 60px;
   height: 60px;
 }
+
+#startPage .panel-body
+{
+    background: url("../img/bg_rep.jpg") #000;
+    height: 500px;
+    color: #fff;
+    padding: 0px !important;
+}
+
+.black_overlay{
+  background: rgba(0, 0, 0, 0.7);
+  height:500px;
+  padding:15px;
+}
+
+.survey_time_estimation
+{
+  font-size: 33px;
+  margin-bottom: 20px;
+  display: inline-block;
+}
+
+.btn-absolute-right
+{
+  position: absolute;
+  bottom: 35px;
+  right: 35px;
+}
+
+.header-black
+{
+  background-color: rgba(0,0,0,0.9) !important;
+  color: #fff !important;
+  font-family: 'roboto';
+  font-size: 21px;
+  text-transform: uppercase;;
+}
+
+.survey_points
+{
+  background: url('../img/score_badge.png');
+ background-size: 55px;
+    background-repeat: no-repeat;
+    padding: 18px 20px 20px 10px;
+  display: inline-block;
+  margin-left: 50px;
+}

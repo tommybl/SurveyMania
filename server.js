@@ -207,7 +207,7 @@ app
                                                                                 '(' + question_id + ', \'pas\', ' + question.step + ')';
                                                             client.query(query, function(err, result) {
                                                                 done();
-                                                                if(err) {console.log("err10"); res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});}
+                                                                if(err) {console.log("id :"+question_id+". min :"+question.min+". max : "+question.max+". step :"+question.step);console.log("err10"); res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});}
                                                             });
                                                         }
                                                         else if (question.type == '5') {
