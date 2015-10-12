@@ -1910,7 +1910,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
 
                     var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
                     chart.draw(table, options);
-                    $scope.drawToolbar(options.title, d, $scope.parameters);
+                    $scope.generateCSV(options.title, d, $scope.parameters);
                 } else if ($scope.selectedModel == "Donut") {
                     var table = new google.visualization.DataTable();
                     table.addColumn('string', 'Topping');
@@ -1929,7 +1929,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
 
                     var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
                     chart.draw(table, options);
-                    $scope.drawToolbar(options.title, d, $scope.parameters);
+                    $scope.generateCSV(options.title, d, $scope.parameters);
                 } else if ($scope.selectedModel == "Histogramme") {
                     var table = new google.visualization.DataTable();
                     table.addColumn('string');
@@ -1948,7 +1948,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
 
                     var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
                     chart.draw(table, options);
-                    $scope.drawToolbar(options.title, d, $scope.parameters);
+                    $scope.generateCSV(options.title, d, $scope.parameters);
                 } else if ($scope.selectedModel == "Tableau") {
                     var table = new google.visualization.DataTable();
                     table.addColumn('string', 'Réponse');
@@ -1964,7 +1964,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
 
                     var chart = new google.visualization.Table(document.getElementById('chart_div'));
                     chart.draw(table, options);
-                    $scope.drawToolbar(options.title, d, $scope.parameters);
+                    $scope.generateCSV(options.title, d, $scope.parameters);
                 }                
             } else if ($scope.selectedQuestion.question.type_name == "Numérique" || $scope.selectedQuestion.question.type_name == "Slider") {
                 var d = [];
@@ -2005,7 +2005,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
 
                 var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
                 chart.draw(table, options);
-                $scope.drawToolbar(options.title, d, $scope.parameters);
+                $scope.generateCSV(options.title, d, $scope.parameters);
             } else if ($scope.selectedQuestion.question.type_name == "Ouverte") {
                 var d = [];
                 for (var i = 0; i < $scope.grdata.answers.length; ++i) {
@@ -2055,12 +2055,12 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
 
                 var chart = new gviz_word_cumulus.WordCumulus(document.getElementById('chart_div'));
                 chart.draw(table, options);
-                $scope.drawToolbar(options.title, d, $scope.parameters);
+                $scope.generateCSV(options.title, d, $scope.parameters);
             }
         }
     }
 
-    $scope.drawToolbar = function (title, table, parameters) {
+    $scope.generateCSV = function (title, table, parameters) {
         if (table.length > 0) {
             var csvData = title + '\n\n';
             for (var i = 0; i < parameters.length; ++i) {
@@ -2091,6 +2091,22 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
        } else {
             document.getElementById('toolbar_div').innerHTML = '';
        }
+    }
+
+    $scope.saveWidget = function () {
+        if ($scope.selectedQuestion != null && $scope.selectedQuestion.question.question_order != "default") {
+            var selModel = $scope.selectedModel;
+            if ($scope.selectedQuestion.question.type_name == "Ouverte" || $scope.selectedQuestion.question.type_name == "Numérique" || $scope.selectedQuestion.question.type_name == "Slider")
+                selModel = '';
+
+            $http.post('/app/results/saveWidget', {surveyid: $scope.surveyid, questionid: $scope.selectedQuestion.question.id, parameters: $scope.parameters, chartType: selModel})
+                .success(function (data, status, header, config) {
+                    
+                })
+                .error(function (data, status, headers, config) {
+                    
+                });
+        }
     }
 }]);
 
