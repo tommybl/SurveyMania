@@ -2293,6 +2293,95 @@ app
     }
 })
 
+.post('/app/results/saveWidget', function (req, res) {
+    if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
+    else {
+        var user = req.user;
+        var surveyid = escapeHtml(req.body.surveyid);
+        var question_id = req.body.questionid;
+        var parameters = req.body.parameters;
+        var chartType = req.body.chartType;
+
+        pg.connect(conString, function(err, client, done) {
+            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+            else {
+                var query = 'SELECT id FROM surveymania.survey_headers WHERE id = ' + surveyid + ' AND organization_id = ' + user.organization;
+                client.query(query, function(err, result) {
+                    done();
+                    if (err) res.redirect('/404-notfound');
+                    else {
+                        if (!result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                        else {
+                            var request = 'SELECT DISTINCT a.id, a.question_id, a.user_id, a.option_choice_id, oc.choice_name, a.answer_num, a.answer_text'
+                                + ' FROM surveymania.answers AS a'
+                                + ' LEFT OUTER JOIN surveymania.option_choices AS oc ON a.option_choice_id = oc.id'
+                                + ' WHERE a.question_id = ' + question_id;
+
+                            for (var i = 0; i < parameters.length; ++i) {
+                                if (parameters[i].selectedValues.length > 0) {
+                                    request += ' AND a.user_id IN'
+                                        + ' ('
+                                        + ' SELECT a.user_id'
+                                        + ' FROM surveymania.answers AS a'
+                                        + ' WHERE a.question_id = ' + parameters[i].question.question.id
+                                        + ' AND'
+                                        + ' (';
+
+                                    for (var j = 0; j < parameters[i].selectedValues.length; ++j) {
+                                        if (j > 0)
+                                            request += ' OR '
+                                        request += 'option_choice_id = ' + parameters[i].selectedValues[j]
+                                    }
+
+                                    request += ' )'
+                                        + ' )';
+                                }
+                            }
+
+                            var query = 'INSERT INTO surveymania.widget (survey_id, chartType, request, cardOrder) VALUES'
+                                + ' (' + surveyid + ', \'' + escapeHtml(chartType) + '\', \'' + escapeHtml(request) + '\', 1)';
+
+                            client.query(query, function(err, result) {
+                                done();
+                                if (err) res.redirect('/404-notfound');
+                                else {
+                                    res.status(200).json({code: 200, message: "OK"});
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    }
+})
+
+/*.post('/app/results/deleteWidget', function (req, res) {
+    if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
+    else {
+        var user = req.user;
+        var surveyid = escapeHtml(req.body.surveyid);
+        var widget_id = req.body.widgteid;
+
+        pg.connect(conString, function(err, client, done) {
+            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+            else {
+                var query = 'SELECT id FROM surveymania.survey_headers WHERE id = ' + surveyid + ' AND organization_id = ' + user.organization;
+                client.query(query, function(err, result) {
+                    done();
+                    if (err) res.redirect('/404-notfound');
+                    else {
+                        if (!result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                        else {
+                        
+                        }
+                    }
+                });
+            }
+        });
+    }
+})*/
+
 .get('/app/organizationPanel', function (req, res) {
     if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.redirect('/401-unauthorized');
     else {

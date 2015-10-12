@@ -381,7 +381,6 @@ DROP TABLE IF EXISTS surveymania.widget CASCADE;
 CREATE TABLE  surveymania.widget (
   id SERIAL NOT NULL ,
   survey_id INT NOT NULL,
-  questionType VARCHAR(64) NOT NULL,
   chartType VARCHAR(64) NOT NULL,
   request VARCHAR(1024) NOT NULL,
   cardOrder INT DEFAULT 1,
