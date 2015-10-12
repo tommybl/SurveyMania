@@ -2293,6 +2293,56 @@ app
     }
 })
 
+.post('/app/results/getWidgets', function (req, res) {
+    if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
+    else {
+        var user = req.user;
+        var surveyid = escapeHtml(req.body.surveyid);
+
+        pg.connect(conString, function(err, client, done) {
+            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+            else {
+                var query = 'SELECT id FROM surveymania.survey_headers WHERE id = ' + surveyid + ' AND organization_id = ' + user.organization;
+                client.query(query, function(err, result) {
+                    done();
+                    if (err) res.redirect('/404-notfound');
+                    else {
+                        if (!result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                        else {
+                            var query = 'SELECT * FROM surveymania.widget WHERE survey_id = ' + surveyid;
+                            client.query(query, function(err, result) {
+                                done();
+                                if (err) res.redirect('/404-notfound');
+                                else {
+                                    if (!result.rows.length) res.status(200).json({code: 200, message: "There is no saved widget"});
+                                    else {
+                                        async.eachSeries(result.rows,
+                                            function (widget, callback) {
+                                                client.query(widget.request, function(err, result) {
+                                                    done();
+                                                    if (err) callback("Error running query");
+                                                    else {
+                                                        widget.request = result.rows;
+                                                        callback();
+                                                    }
+                                                });
+                                            },
+
+                                            function (err) {
+                                                res.status(200).json({code: 200, message: "OK", widgets : result.rows});
+                                            }
+                                        );
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    }
+})
+
 .post('/app/results/saveWidget', function (req, res) {
     if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
     else {

@@ -81,13 +81,13 @@
         </div>
     </div>
 
-    <div style="border: 1px solid #C0C0C0; margin-top: 20px; margin-bottom: 20px; padding: 5px 5px 5px 5px; background-color: cornsilk">
+    <div style="border: 1px solid #C0C0C0; margin-top: 20px; margin-bottom: 20px; padding: 5px 5px 5px 5px; background-color: cornsilk;">
         <h3>Aperçu</h3>
         <div id="master_chart_div">
             <div id="chart_div"></div>
-            <div id="toolbar_div"></div>
         </div>
-        <button class="btn btn-primary" ng-click="saveWidget()">Ajouter le widget</button>
+        <div id="toolbar_div"></div>
+        <button id="saveWidget" class="btn btn-primary" style="display: none;" ng-click="saveWidget()">Ajouter le widget</button>
     </div>
 </div>
 

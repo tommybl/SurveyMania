@@ -1622,6 +1622,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
     $scope.detailledInformations;
     $scope.surveyEstimatedTime;
     $scope.comments = null;
+    $scope.widgets = null;
 
     /* Charts vars */
     $scope.chartsWidth = 800;
@@ -1698,6 +1699,14 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                     $location.path("/organizationPanel");
                 });
 
+            $http.post('/app/results/getWidgets', {surveyid: $scope.surveyid})
+                .success(function (data, status, header, config) {
+                    $scope.widgets = data.widgets;
+                    console.log($scope.widgets);
+                })
+                .error(function (data, status, header, config) {
+                    $location.path("/organizationPanel");
+                });
 
             $http.post('/app/survey/getComments', {survey: $scope.surveyid})
                 .success(function (data, status, header, config) {
@@ -1873,8 +1882,13 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
     }
 
     $scope.drawChart = function () {
-        document.getElementById('master_chart_div').innerHTML = '<div id="chart_div"></div><div id="toolbar_div"></div>';
+        document.getElementById('master_chart_div').innerHTML = '<div id="chart_div"></div>';
+        document.getElementById('toolbar_div').innerHTML = '';
+        document.getElementById('saveWidget').style.display = 'none';
+
         if ($scope.grdata != null) {
+            document.getElementById('saveWidget').style.display = 'initial';
+
             if ($scope.selectedQuestion.question.type_name == "QCM") {
                 var d = [];
                 for (var i = 0; i < $scope.grdata.answers.length; ++i) {
