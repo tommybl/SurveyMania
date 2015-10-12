@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 <div id="surveyAnswer" ng-controller="SurveyAnswerController" class="col-md-12">
-	<div class="col-md-6 col-md-offset-3 master">
+	<div class="col-md-8 col-md-offset-2 master">
 		
         <!-- Error div -->
         <div class="alert alert-danger alert-dismissible fade in" role="alert" ng-show="error!=undefined">
@@ -28,19 +28,27 @@
 
         <!-- Start div -->
         <div id="startPage" class="panel panel-default answerContainer">
-            <div class="panel-heading">
+            <div class="panel-heading header-black">
                 <h4>Répondre au sondage "{{survey.header_name}}"</h4>
             </div>
-
             <div class="panel-body">
-                <div><b>Informations relatives au sondage : </b>{{survey.info}}</div>
-        		<div><b>Instruction supplémentaire : </b>{{survey.instructions}}</div>
-        		<div><b>Par : </b>{{survey.name}}</div>
-        		<div><b>Temps maximum estimé : </b>{{surveyEstimatedTime}} minutes</div>
-                <div><b>Progression : </b>{{surveyAnswerProgression}}%</div>
-                <div><b>Points : </b>{{survey.points}}</div>
-                <br/>
-        		<button class="btn btn-primary" ng-click="getNextSection()">Commencer</button>
+                <div class="black_overlay">
+                    <div class="survey_time_estimation"><img src="img/clock.png" style="width:50px;"/> {{surveyEstimatedTime}}" </div>
+                    <div class="survey_points">{{survey.points}}</div>
+                    <div class="c100 p{{surveyAnswerProgression}} surveymaniacolor big">
+                        <span>{{surveyAnswerProgression}}%</span>
+                        <div class="slice">
+                            <div class="bar"></div>
+                            <div class="fill"></div>
+                        </div>
+                    </div>
+                    <div><h3>Informations relatives au sondage : </h3>{{survey.info}}</div>
+            		<div><h3>Instruction supplémentaire : </h3>{{survey.instructions}}</div>
+            		<!--<div><b>Par : </b>{{survey.name}}</div>-->
+                    <br/>
+                    <img src="img/logo-thales.png" style="position:absolute;bottom:15px;left:15px;"/>
+            		<button class="btn btn-primary btn-absolute-right" ng-click="getNextSection()">Commencer >></button>
+                </div>
             </div>
   		</div>
         <!-- Start div end -->
