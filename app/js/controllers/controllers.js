@@ -1625,8 +1625,8 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
     $scope.widgets = null;
 
     /* Charts vars */
-    $scope.chartsWidth = 800;
-    $scope.chartsHeight = 600;
+    $scope.chartsWidth = 400;
+    $scope.chartsHeight = 300;
     $scope.sections;
     $scope.parameterSections;
     $scope.sectionQuestionArray;
@@ -1864,10 +1864,27 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                     $scope.parameters[i].selectedValues.push(checked[j].value);
             }
 
-            $http.post('/app/results/doQuery', {surveyid: $scope.surveyid, questionid: $scope.selectedQuestion.question.id, parameters: $scope.parameters})
+            var formatedParameters = [];
+            for (var i = 0; i < $scope.parameters.length; ++i) {
+                formatedParameters.push({questionid: $scope.parameters[i].question.question.id, description: $scope.parameters[i].question.question.description, selectedValues: []});
+                for (var j = 0; j < $scope.parameters[i].selectedValues.length; ++j) {
+                    formatedParameters[i].selectedValues.push({id: $scope.parameters[i].selectedValues[j]})
+
+                    var val = '';
+                    for (var k = 0; k < $scope.parameters[i].question.options.length; ++k) {
+                        if ($scope.parameters[i].question.options[k].id == $scope.parameters[i].selectedValues[j]) {
+                            val = $scope.parameters[i].question.options[k].choice_name;
+                            break;
+                        }
+                    }
+                    formatedParameters[i].selectedValues[j].choice_name = val;
+                }
+            }
+
+            $http.post('/app/results/doQuery', {surveyid: $scope.surveyid, questionid: $scope.selectedQuestion.question.id, parameters: formatedParameters})
                 .success(function (data, status, header, config) {
                     document.getElementById('masterChartPreview').innerHTML = '<div id="chartPreview"></div>';
-                    $scope.drawChart($scope.selectedQuestion.question, $scope.parameters, data.answers, $scope.selectedModel, 'chartPreview', 'csvPreview');
+                    $scope.drawChart($scope.selectedQuestion.question, formatedParameters, data.answers, $scope.selectedModel, 'chartPreview', 'csvPreview');
                 })
         }
     }
@@ -1880,16 +1897,41 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
 
             $http.post('/app/results/saveWidget', {surveyid: $scope.surveyid, questionid: $scope.selectedQuestion.question.id, parameters: $scope.parameters, chartType: selModel})
                 .success(function (data, status, header, config) {
-                    
-                })
-                .error(function (data, status, headers, config) {
-                    
+                    $http.post('/app/results/getWidgets', {surveyid: $scope.surveyid})
+                        .success(function (data, status, header, config) {
+                            $scope.widgets = data.widgets;
+                        })
+                        .error(function (data, status, header, config) {
+                            $location.path("/organizationPanel");
+                        });
                 });
         }
     }
 
+    $scope.deleteWidget = function (id) {
+        $http.post('/app/results/deleteWidget', {surveyid: $scope.surveyid, widgteid: id})
+            .success(function (data, status, header, config) {
+                $http.post('/app/results/getWidgets', {surveyid: $scope.surveyid})
+                    .success(function (data, status, header, config) {
+                        $scope.widgets = data.widgets;
+                    })
+                    .error(function (data, status, header, config) {
+                        $location.path("/organizationPanel");
+                    });
+            });
+    }
+
+    /* Draw every widget on page load */
     $scope.$on('ngRepeatFinished', function(ngRepeatFinishedEvent) {
-        
+        $scope.widgets.forEach(function(widget, index, array) {
+            console.log(widget);
+            $http.post('/app/results/doQuery', {surveyid: $scope.surveyid, questionid: widget.question_id, parameters: widget.parameters})
+                .success(function (data, status, header, config) {
+                    var chartID = 'chartDiv' + widget.id;
+                    var csvID = 'csvDiv' + widget.id;
+                    $scope.drawChart(widget, widget.parameters, data.answers, widget.charttype, chartID, csvID);
+                });
+        });
     });
 
     /* Generic functions to draw chart everywhere */
@@ -2083,22 +2125,14 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
     $scope.generateCSV = function (title, table, parameters, csvDivID) {
         if (table.length > 0) {
             var csvData = title + '\n\n';
-            
             if (parameters != null) {
                 for (var i = 0; i < parameters.length; ++i) {
                     if (parameters[i].selectedValues.length > 0) {
-                        csvData += parameters[i].question.question.description + ' : ';
+                        csvData += parameters[i].description + ' : ';
                         for (var j = 0; j < parameters[i].selectedValues.length; ++j) {
                             if (j > 0)
                                 csvData += ' \\ ';
-                            var val = '';
-                            for (var k = 0; k < parameters[i].question.options.length; ++k) {
-                                if (parameters[i].question.options[k].id == parameters[i].selectedValues[j]) {
-                                    val = parameters[i].question.options[k].choice_name;
-                                    break;
-                                }
-                            }
-                            csvData += val;
+                            csvData += parameters[i].selectedValues[j].choice_name;
                         }
                         csvData += '\n';
                     }

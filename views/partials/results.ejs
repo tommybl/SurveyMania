@@ -81,7 +81,7 @@
         </div>
     </div>
 
-    <div style="border: 1px solid #C0C0C0; margin-top: 20px; margin-bottom: 20px; padding: 5px 5px 5px 5px; height: 750px; background-color: cornsilk;">
+    <div style="border: 1px solid #C0C0C0; margin-top: 20px; margin-bottom: 20px; padding: 5px 5px 5px 5px; height: 422px; background-color: cornsilk;">
         <h3>Aperçu</h3>
         <div id="masterChartPreview">
             <div id="chartPreview"></div>
@@ -90,8 +90,10 @@
         <button id="saveWidget" class="btn btn-primary" ng-click="saveWidget()">Ajouter le widget</button>
     </div>
 
-    <div class="col-md-4" ng-repeat="widget in widgets | orderBy:'cardorder'" category-render="ngRepeatFinished">
-        caca
+    <div class="col-md-4" style="margin-top: 20px" ng-repeat="widget in widgets | orderBy:'cardorder'" category-render="ngRepeatFinished">
+        <div id="chartDiv{{widget.id}}"></div>
+        <div id="csvDiv{{widget.id}}"></div>
+        <button class="btn btn-danger" ng-click="deleteWidget(widget.id)">Supprimer</button>
     </div>
 </div>
 

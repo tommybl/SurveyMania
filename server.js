@@ -2250,7 +2250,7 @@ app
                 var query = 'SELECT id FROM surveymania.survey_headers WHERE id = ' + surveyid + ' AND organization_id = ' + user.organization;
                 client.query(query, function(err, result) {
                     done();
-                    if (err) res.redirect('/404-notfound');
+                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                     else {
                         if (!result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                         else {
@@ -2265,14 +2265,14 @@ app
                                         + ' ('
                                         + ' SELECT a.user_id'
                                         + ' FROM surveymania.answers AS a'
-                                        + ' WHERE a.question_id = ' + parameters[i].question.question.id
+                                        + ' WHERE a.question_id = ' + parameters[i].questionid
                                         + ' AND'
                                         + ' (';
 
                                     for (var j = 0; j < parameters[i].selectedValues.length; ++j) {
                                         if (j > 0)
-                                            query += ' OR '
-                                        query += 'option_choice_id = ' + parameters[i].selectedValues[j]
+                                            query += ' OR ';
+                                        query += 'option_choice_id = ' + parameters[i].selectedValues[j].id;
                                     }
 
                                     query += ' )'
@@ -2282,7 +2282,7 @@ app
 
                             client.query(query, function(err, result) {
                                 done();
-                                if (err) res.redirect('/404-notfound');
+                                if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                                 else res.status(200).json({code: 200, message: "OK", answers : result.rows});
                             });
                         }
@@ -2303,33 +2303,66 @@ app
             if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
             else {
                 var query = 'SELECT id FROM surveymania.survey_headers WHERE id = ' + surveyid + ' AND organization_id = ' + user.organization;
+
                 client.query(query, function(err, result) {
                     done();
-                    if (err) res.redirect('/404-notfound');
+                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                     else {
                         if (!result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                         else {
-                            var query = 'SELECT * FROM surveymania.widget WHERE survey_id = ' + surveyid;
+                            var query = 'SELECT w.id, w.question_id, w.chartType, w.cardOrder, q.description, it.type_name FROM surveymania.widgets w'
+                                + ' INNER JOIN surveymania.questions q ON w.question_id = q.id INNER JOIN surveymania.survey_sections ss ON q.survey_section_id = ss.id'
+                                + ' INNER JOIN surveymania.input_types it ON q.input_type_id = it.id'
+                                + ' WHERE ss.header_id = ' + surveyid;
+
                             client.query(query, function(err, result) {
                                 done();
-                                if (err) res.redirect('/404-notfound');
+                                if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                                 else {
                                     if (!result.rows.length) res.status(200).json({code: 200, message: "There is no saved widget"});
                                     else {
-                                        async.eachSeries(result.rows,
+                                        var widgets = result.rows;
+
+                                        async.eachSeries(widgets,
                                             function (widget, callback) {
-                                                client.query(widget.request, function(err, result) {
+                                                var query = 'SELECT wp.id AS paramID, q.id AS questionID, q.description FROM surveymania.questions q' 
+                                                    + ' INNER JOIN surveymania.widget_parameters wp ON wp.question_id = q.id'
+                                                    + ' WHERE wp.widget_id = ' + widget.id;
+
+                                                client.query(query, function(err, result) {
                                                     done();
-                                                    if (err) callback("Error running query");
+                                                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                                                     else {
-                                                        widget.request = result.rows;
-                                                        callback();
+                                                        widget.parameters = result.rows;
+                                                        if (!widget.parameters.length)
+                                                            callback();
+                                                        else {
+                                                            async.eachSeries(widget.parameters,
+                                                                function (param, callback2) {
+                                                                    var query = 'SELECT oc.id, oc.choice_name FROM surveymania.option_choices oc INNER JOIN surveymania.widget_parameter_values wpv ON wpv.option_choice_id = oc.id'
+                                                                        + ' WHERE wpv.widget_parameter_id = ' + param.paramid;
+
+                                                                    client.query(query, function(err, result) {
+                                                                        done();
+                                                                        if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                                                        else {
+                                                                            param.selectedValues = result.rows;
+                                                                            callback2();
+                                                                        }
+                                                                    });
+                                                                },
+
+                                                                function (err) {
+                                                                    callback();
+                                                                }
+                                                            );
+                                                        }
                                                     }
                                                 });
                                             },
 
                                             function (err) {
-                                                res.status(200).json({code: 200, message: "OK", widgets : result.rows});
+                                                res.status(200).json({code: 200, message: "OK", widgets : widgets});
                                             }
                                         );
                                     }
@@ -2348,54 +2381,80 @@ app
     else {
         var user = req.user;
         var surveyid = escapeHtml(req.body.surveyid);
-        var question_id = req.body.questionid;
+        var questionid = req.body.questionid;
         var parameters = req.body.parameters;
         var chartType = req.body.chartType;
 
         pg.connect(conString, function(err, client, done) {
             if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
             else {
-                var query = 'SELECT id FROM surveymania.survey_headers WHERE id = ' + surveyid + ' AND organization_id = ' + user.organization;
+                var query = 'SELECT q.id FROM surveymania.questions q INNER JOIN surveymania.survey_sections ss ON q.survey_section_id = ss.id INNER JOIN surveymania.survey_headers sh ON ss.header_id = sh.id'
+                    + ' WHERE sh.id = ' + surveyid + ' AND sh.organization_id = ' + user.organization + ' AND q.id = ' + questionid;
                 client.query(query, function(err, result) {
                     done();
                     if (err) res.redirect('/404-notfound');
                     else {
                         if (!result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                         else {
-                            var request = 'SELECT DISTINCT a.id, a.question_id, a.user_id, a.option_choice_id, oc.choice_name, a.answer_num, a.answer_text'
-                                + ' FROM surveymania.answers AS a'
-                                + ' LEFT OUTER JOIN surveymania.option_choices AS oc ON a.option_choice_id = oc.id'
-                                + ' WHERE a.question_id = ' + question_id;
-
-                            for (var i = 0; i < parameters.length; ++i) {
-                                if (parameters[i].selectedValues.length > 0) {
-                                    request += ' AND a.user_id IN'
-                                        + ' ('
-                                        + ' SELECT a.user_id'
-                                        + ' FROM surveymania.answers AS a'
-                                        + ' WHERE a.question_id = ' + parameters[i].question.question.id
-                                        + ' AND'
-                                        + ' (';
-
-                                    for (var j = 0; j < parameters[i].selectedValues.length; ++j) {
-                                        if (j > 0)
-                                            request += ' OR '
-                                        request += 'option_choice_id = ' + parameters[i].selectedValues[j]
-                                    }
-
-                                    request += ' )'
-                                        + ' )';
-                                }
-                            }
-
-                            var query = 'INSERT INTO surveymania.widget (survey_id, chartType, request, cardOrder) VALUES'
-                                + ' (' + surveyid + ', \'' + escapeHtml(chartType) + '\', \'' + escapeHtml(request) + '\', 1)';
+                            var query = 'INSERT INTO surveymania.widgets (question_id, chartType, cardOrder) VALUES'
+                                + ' (' + questionid + ', \'' + escapeHtml(chartType) + '\', 1) RETURNING id';
 
                             client.query(query, function(err, result) {
                                 done();
-                                if (err) res.redirect('/404-notfound');
+                                if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                                 else {
-                                    res.status(200).json({code: 200, message: "OK"});
+                                    if (!result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                    else {
+                                        var widgetid = result.rows[0].id;
+
+                                        async.eachSeries(parameters,
+                                            function (param, callback) {
+                                                if (!param.selectedValues.length)
+                                                    callback();
+                                                else {
+                                                    var query = 'INSERT INTO surveymania.widget_parameters (widget_id, question_id) VALUES'
+                                                        + ' (' + widgetid + ', ' + param.question.question.id + ') RETURNING id';
+
+                                                    client.query(query, function(err, result) {
+                                                        done();
+                                                        if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                                        else {
+                                                            if (!result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                                            else {
+                                                                var paramid = result.rows[0].id;
+
+                                                                async.eachSeries(param.selectedValues,
+                                                                    function (value, callback2) {
+                                                                        var query = 'INSERT INTO surveymania.widget_parameter_values (widget_parameter_id, option_choice_id) VALUES'
+                                                                            + ' (' + paramid + ', ' + value + ') RETURNING id';
+
+                                                                        client.query(query, function(err, result) {
+                                                                            done();
+                                                                            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                                                            else {
+                                                                                if (!result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                                                                else {
+                                                                                    callback2();
+                                                                                }
+                                                                            }
+                                                                        });
+                                                                    },
+
+                                                                    function (err) {
+                                                                        callback();
+                                                                    }
+                                                                );
+                                                            }
+                                                        }
+                                                    });
+                                                }
+                                            },
+
+                                            function (err) {
+                                                res.status(200).json({code: 200, message: "OK"});
+                                            }
+                                        );
+                                    }
                                 }
                             });
                         }
@@ -2411,19 +2470,23 @@ app
     else {
         var user = req.user;
         var surveyid = escapeHtml(req.body.surveyid);
-        var widget_id = req.body.widgteid;
+        var widgetid = req.body.widgteid;
 
         pg.connect(conString, function(err, client, done) {
             if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
             else {
-                var query = 'SELECT id FROM surveymania.survey_headers WHERE id = ' + surveyid + ' AND organization_id = ' + user.organization;
+                var query = 'SELECT w.id FROM surveymania.widgets w INNER JOIN surveymania.questions q ON w.question_id = q.id'
+                    + ' INNER JOIN surveymania.survey_sections ss ON q.survey_section_id = ss.id'
+                    + ' INNER JOIN surveymania.survey_headers sh ON ss.header_id = sh.id' 
+                    + ' WHERE ss.header_id = ' + surveyid + ' AND sh.organization_id = ' + user.organization + ' AND w.id = ' + widgetid;
+
                 client.query(query, function(err, result) {
                     done();
-                    if (err) res.redirect('/404-notfound');
+                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                     else {
                         if (!result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                         else {
-                            var query = 'DELETE FROM surveymania.widget WHERE id = ' + widget_id;
+                            var query = 'DELETE FROM surveymania.widgets WHERE id = ' + widgetid;
                             client.query(query, function(err, result) {
                                 done();
                                 if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
