@@ -168,7 +168,7 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
             }
             else if($item.id == 3) // Slider
             {
-                $scope.questionList[i].push({'index': $index+($scope.currentListNumber*100), 'type':$item.id, 'title':$item.title, 'min':'', 'max':'', 'step':'', 'video':[], 'image':[]});
+                $scope.questionList[i].push({'index': $index+($scope.currentListNumber*100), 'type':$item.id, 'title':$item.title, 'min':'0', 'max':'50', 'step':'5', 'video':[], 'image':[]});
             }
             else if($item.id == 4) // Branchement
             {
@@ -176,7 +176,7 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
             }
             else if($item.id == 5) // Question numérique
             {
-                $scope.questionList[i].push({'index': $index+($scope.currentListNumber*100), 'type':$item.id, 'title':$item.title, 'min':'', 'max':'', 'video':[], 'image':[]});
+                $scope.questionList[i].push({'index': $index+($scope.currentListNumber*100), 'type':$item.id, 'title':$item.title, 'min':'0', 'max':'100', 'video':[], 'image':[]});
             }
             else if($item.id == 6) // Choix multiple
             {
@@ -1622,11 +1622,11 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
     $scope.detailledInformations;
     $scope.surveyEstimatedTime;
     $scope.comments = null;
+    $scope.widgets = null;
 
     /* Charts vars */
-    $scope.chartsWidth = 800;
-    $scope.chartsHeight = 600;
-    $scope.grdata = null;
+    $scope.chartsWidth = 400;
+    $scope.chartsHeight = 300;
     $scope.sections;
     $scope.parameterSections;
     $scope.sectionQuestionArray;
@@ -1698,6 +1698,13 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                     $location.path("/organizationPanel");
                 });
 
+            $http.post('/app/results/getWidgets', {surveyid: $scope.surveyid})
+                .success(function (data, status, header, config) {
+                    $scope.widgets = data.widgets;
+                })
+                .error(function (data, status, header, config) {
+                    $location.path("/organizationPanel");
+                });
 
             $http.post('/app/survey/getComments', {survey: $scope.surveyid})
                 .success(function (data, status, header, config) {
@@ -1784,7 +1791,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
         } else {
             document.getElementById('modelSelection').style.display = "none";
         }
-        $scope.updateChartData();
+        $scope.updatePreviewChart();
     }
 
     $scope.showAddParameter = function () {
@@ -1823,7 +1830,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
             
             $scope.parameterSelectSection();
             $scope.hideAddParameter();
-            $scope.updateChartData();
+            $scope.updatePreviewChart();
         }
     }
 
@@ -1844,10 +1851,10 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
             $scope.parameterSections.push(param.section);
             param.section.question_array.push(param.question);
         }
-        $scope.updateChartData();
+        $scope.updatePreviewChart();
     }
 
-    $scope.updateChartData = function () {
+    $scope.updatePreviewChart = function () {
         if ($scope.selectedQuestion != null && $scope.selectedQuestion.question.question_order != "default") {
             for (var i = 0; i < $scope.parameters.length; ++i) {
                 checked = document.querySelectorAll('input[name="param' + $scope.parameters[i].question.question.question_order + '"]:checked');
@@ -1857,43 +1864,98 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                     $scope.parameters[i].selectedValues.push(checked[j].value);
             }
 
-            $http.post('/app/results/doQuery', {surveyid: $scope.surveyid, questionid: $scope.selectedQuestion.question.id, parameters: $scope.parameters})
+            var formatedParameters = [];
+            for (var i = 0; i < $scope.parameters.length; ++i) {
+                formatedParameters.push({questionid: $scope.parameters[i].question.question.id, description: $scope.parameters[i].question.question.description, selectedValues: []});
+                for (var j = 0; j < $scope.parameters[i].selectedValues.length; ++j) {
+                    formatedParameters[i].selectedValues.push({id: $scope.parameters[i].selectedValues[j]})
+
+                    var val = '';
+                    for (var k = 0; k < $scope.parameters[i].question.options.length; ++k) {
+                        if ($scope.parameters[i].question.options[k].id == $scope.parameters[i].selectedValues[j]) {
+                            val = $scope.parameters[i].question.options[k].choice_name;
+                            break;
+                        }
+                    }
+                    formatedParameters[i].selectedValues[j].choice_name = val;
+                }
+            }
+
+            $http.post('/app/results/doQuery', {surveyid: $scope.surveyid, questionid: $scope.selectedQuestion.question.id, parameters: formatedParameters})
                 .success(function (data, status, header, config) {
-                    $scope.grdata = data;
-                    $scope.drawChart();
+                    document.getElementById('masterChartPreview').innerHTML = '<div id="chartPreview"></div>';
+                    $scope.drawChart($scope.selectedQuestion.question, formatedParameters, data.answers, $scope.selectedModel, 'chartPreview', 'csvPreview');
                 })
-                .error(function (data, status, headers, config) {
-                    $scope.grdata = null;
-                    $scope.drawChart();
-                });
-        } else {
-            $scope.grdata = null;
-            $scope.drawChart();
         }
     }
 
-    $scope.drawChart = function () {
-        document.getElementById('master_chart_div').innerHTML = '<div id="chart_div"></div><div id="toolbar_div"></div>';
-        if ($scope.grdata != null) {
-            if ($scope.selectedQuestion.question.type_name == "QCM") {
+    $scope.saveWidget = function () {
+        if ($scope.selectedQuestion != null && $scope.selectedQuestion.question.question_order != "default") {
+            var selModel = $scope.selectedModel;
+            if ($scope.selectedQuestion.question.type_name == "Ouverte" || $scope.selectedQuestion.question.type_name == "Numérique" || $scope.selectedQuestion.question.type_name == "Slider")
+                selModel = '';
+
+            $http.post('/app/results/saveWidget', {surveyid: $scope.surveyid, questionid: $scope.selectedQuestion.question.id, parameters: $scope.parameters, chartType: selModel})
+                .success(function (data, status, header, config) {
+                    $http.post('/app/results/getWidgets', {surveyid: $scope.surveyid})
+                        .success(function (data, status, header, config) {
+                            $scope.widgets = data.widgets;
+                        })
+                        .error(function (data, status, header, config) {
+                            $location.path("/organizationPanel");
+                        });
+                });
+        }
+    }
+
+    $scope.deleteWidget = function (id) {
+        $http.post('/app/results/deleteWidget', {surveyid: $scope.surveyid, widgteid: id})
+            .success(function (data, status, header, config) {
+                $http.post('/app/results/getWidgets', {surveyid: $scope.surveyid})
+                    .success(function (data, status, header, config) {
+                        $scope.widgets = data.widgets;
+                    })
+                    .error(function (data, status, header, config) {
+                        $location.path("/organizationPanel");
+                    });
+            });
+    }
+
+    /* Draw every widget on page load */
+    $scope.$on('ngRepeatFinished', function(ngRepeatFinishedEvent) {
+        $scope.widgets.forEach(function(widget, index, array) {
+            console.log(widget);
+            $http.post('/app/results/doQuery', {surveyid: $scope.surveyid, questionid: widget.question_id, parameters: widget.parameters})
+                .success(function (data, status, header, config) {
+                    var chartID = 'chartDiv' + widget.id;
+                    var csvID = 'csvDiv' + widget.id;
+                    $scope.drawChart(widget, widget.parameters, data.answers, widget.charttype, chartID, csvID);
+                });
+        });
+    });
+
+    /* Generic functions to draw chart everywhere */
+    $scope.drawChart = function (question, parameters, answers, model, chartDivID, csvDivID) {
+        if (answers != null) {
+            if (question.type_name == "QCM") {
                 var d = [];
-                for (var i = 0; i < $scope.grdata.answers.length; ++i) {
+                for (var i = 0; i < answers.length; ++i) {
                     if (d.length == 0) {
-                        d.push({opt: $scope.grdata.answers[i].choice_name, nb: 1});
+                        d.push({opt: answers[i].choice_name, nb: 1});
                     } else {
                         for (var j = 0; j < d.length; ++j) {
-                            if (d[j].opt == $scope.grdata.answers[i].choice_name) {
+                            if (d[j].opt == answers[i].choice_name) {
                                 d[j].nb++;
                                 break;
                             } else if (j == d.length - 1) {
-                                d.push({opt: $scope.grdata.answers[i].choice_name, nb: 1});
+                                d.push({opt: answers[i].choice_name, nb: 1});
                                 break;
                             }
                         }
                     }
                 }
 
-                if ($scope.selectedModel == "Camembert") {
+                if (model == "Camembert") {
                     var table = new google.visualization.DataTable();
                     table.addColumn('string', 'Topping');
                     table.addColumn('number', 'Slices');
@@ -1902,16 +1964,16 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                     }
 
                     var options = {
-                        'title': $scope.selectedQuestion.question.description + ' (' + $scope.grdata.answers.length + ' réponses)',
+                        'title': question.description + ' (' + answers.length + ' réponses)',
                         'width': $scope.chartsWidth,
                         'height': $scope.chartsHeight,
                         'backgroundColor': { fill:'transparent' }
                     };
 
-                    var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+                    var chart = new google.visualization.PieChart(document.getElementById(chartDivID));
                     chart.draw(table, options);
-                    $scope.drawToolbar(options.title, d, $scope.parameters);
-                } else if ($scope.selectedModel == "Donut") {
+                    $scope.generateCSV(options.title, d, parameters, csvDivID);
+                } else if (model == "Donut") {
                     var table = new google.visualization.DataTable();
                     table.addColumn('string', 'Topping');
                     table.addColumn('number', 'Slices');
@@ -1920,17 +1982,17 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                     }
 
                     var options = {
-                        'title': $scope.selectedQuestion.question.description + ' (' + $scope.grdata.answers.length + ' réponses)',
+                        'title': question.description + ' (' + answers.length + ' réponses)',
                         'width': $scope.chartsWidth,
                         'height': $scope.chartsHeight,
                         'pieHole': 0.4,
                         'backgroundColor': { fill:'transparent' }
                     };
 
-                    var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+                    var chart = new google.visualization.PieChart(document.getElementById(chartDivID));
                     chart.draw(table, options);
-                    $scope.drawToolbar(options.title, d, $scope.parameters);
-                } else if ($scope.selectedModel == "Histogramme") {
+                    $scope.generateCSV(options.title, d, parameters, csvDivID);
+                } else if (model == "Histogramme") {
                     var table = new google.visualization.DataTable();
                     table.addColumn('string');
                     table.addColumn('number');
@@ -1939,17 +2001,17 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                     }
 
                     var options = {
-                        'title': $scope.selectedQuestion.question.description + ' (' + $scope.grdata.answers.length + ' réponses)',
+                        'title': question.description + ' (' + answers.length + ' réponses)',
                         'width': $scope.chartsWidth,
                         'height': $scope.chartsHeight,
                         'legend': 'none',
                         'backgroundColor': { fill:'transparent' }
                     };
 
-                    var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+                    var chart = new google.visualization.ColumnChart(document.getElementById(chartDivID));
                     chart.draw(table, options);
-                    $scope.drawToolbar(options.title, d, $scope.parameters);
-                } else if ($scope.selectedModel == "Tableau") {
+                    $scope.generateCSV(options.title, d, parameters, csvDivID);
+                } else if (model == "Tableau") {
                     var table = new google.visualization.DataTable();
                     table.addColumn('string', 'Réponse');
                     table.addColumn('number', 'Nombre');
@@ -1958,26 +2020,26 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                     }
 
                     var options = {
-                        'title': $scope.selectedQuestion.question.description + ' (' + $scope.grdata.answers.length + ' réponses)',
+                        'title': question.description + ' (' + answers.length + ' réponses)',
                         'showRowNumber': true
                     };
 
-                    var chart = new google.visualization.Table(document.getElementById('chart_div'));
+                    var chart = new google.visualization.Table(document.getElementById(chartDivID));
                     chart.draw(table, options);
-                    $scope.drawToolbar(options.title, d, $scope.parameters);
+                    $scope.generateCSV(options.title, d, parameters, csvDivID);
                 }                
-            } else if ($scope.selectedQuestion.question.type_name == "Numérique" || $scope.selectedQuestion.question.type_name == "Slider") {
+            } else if (question.type_name == "Numérique" || question.type_name == "Slider") {
                 var d = [];
-                for (var i = 0; i < $scope.grdata.answers.length; ++i) {
+                for (var i = 0; i < answers.length; ++i) {
                     if (d.length == 0) {
-                        d.push({opt: $scope.grdata.answers[i].answer_num, nb: 1});
+                        d.push({opt: answers[i].answer_num, nb: 1});
                     } else {
                         for (var j = 0; j < d.length; ++j) {
-                            if (d[j].opt == $scope.grdata.answers[i].answer_num) {
+                            if (d[j].opt == answers[i].answer_num) {
                                 d[j].nb++;
                                 break;
                             } else if (j == d.length - 1) {
-                                d.push({opt: $scope.grdata.answers[i].answer_num, nb: 1});
+                                d.push({opt: answers[i].answer_num, nb: 1});
                                 break;
                             }
                         }
@@ -1994,7 +2056,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                 }
 
                 var options = {
-                    'title': $scope.selectedQuestion.question.description + ' (' + $scope.grdata.answers.length + ' réponses)',
+                    'title': question.description + ' (' + answers.length + ' réponses)',
                     'hAxis': {title: 'Valeur'},
                     'vAxis': {title: 'Nombre'},
                     'legend': 'none',
@@ -2003,13 +2065,13 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                     'backgroundColor': { fill:'transparent' }
                 };
 
-                var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
+                var chart = new google.visualization.ScatterChart(document.getElementById(chartDivID));
                 chart.draw(table, options);
-                $scope.drawToolbar(options.title, d, $scope.parameters);
-            } else if ($scope.selectedQuestion.question.type_name == "Ouverte") {
+                $scope.generateCSV(options.title, d, parameters, csvDivID);
+            } else if (question.type_name == "Ouverte") {
                 var d = [];
-                for (var i = 0; i < $scope.grdata.answers.length; ++i) {
-                    var words = $scope.grdata.answers[i].answer_text.replace(/([ .,;()"«»!?:]+)/g, ' ').split(' ');
+                for (var i = 0; i < answers.length; ++i) {
+                    var words = answers[i].answer_text.replace(/([ .,;()"«»!?:]+)/g, ' ').split(' ');
 
                     for (var j = 0; j < words.length; ++j) {
                         if (d.length == 0) {
@@ -2047,51 +2109,47 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                     table.addRow([d[i].opt, d[i].nb]);
 
                 var options = {
-                    'title': $scope.selectedQuestion.question.description + ' (' + $scope.grdata.answers.length + ' réponses)',
+                    'title': question.description + ' (' + answers.length + ' réponses)',
                     'text_color': '#000000',
                     'width': $scope.chartsWidth,
                     'height': $scope.chartsHeight
                 };
 
-                var chart = new gviz_word_cumulus.WordCumulus(document.getElementById('chart_div'));
+                var chart = new gviz_word_cumulus.WordCumulus(document.getElementById(chartDivID));
                 chart.draw(table, options);
-                $scope.drawToolbar(options.title, d, $scope.parameters);
+                $scope.generateCSV(options.title, d, parameters, csvDivID);
             }
         }
     }
 
-    $scope.drawToolbar = function (title, table, parameters) {
+    $scope.generateCSV = function (title, table, parameters, csvDivID) {
         if (table.length > 0) {
             var csvData = title + '\n\n';
-            for (var i = 0; i < parameters.length; ++i) {
-                if (parameters[i].selectedValues.length > 0) {
-                    csvData += parameters[i].question.question.description + ' : ';
-                    for (var j = 0; j < parameters[i].selectedValues.length; ++j) {
-                        if (j > 0)
-                            csvData += ' \\ ';
-                        var val = '';
-                        for (var k = 0; k < parameters[i].question.options.length; ++k) {
-                            if (parameters[i].question.options[k].id == parameters[i].selectedValues[j]) {
-                                val = parameters[i].question.options[k].choice_name;
-                                break;
-                            }
+            if (parameters != null) {
+                for (var i = 0; i < parameters.length; ++i) {
+                    if (parameters[i].selectedValues.length > 0) {
+                        csvData += parameters[i].description + ' : ';
+                        for (var j = 0; j < parameters[i].selectedValues.length; ++j) {
+                            if (j > 0)
+                                csvData += ' \\ ';
+                            csvData += parameters[i].selectedValues[j].choice_name;
                         }
-                        csvData += val;
+                        csvData += '\n';
                     }
-                    csvData += '\n';
                 }
+                csvData += '\n\n';
             }
 
-            csvData += '\n\n';
             csvData += 'Name,Weight\n';
             for (var i = 0; i < table.length; ++i)
                 csvData += table[i].opt + ',' + table[i].nb + '\n';
 
-            document.getElementById('toolbar_div').innerHTML = '<a style="color: black" download="data.csv" href="data:text/csv;charset=utf-8,%EF%BB%BF' + encodeURI(csvData) + '">Télécharger au format CSV</a>';
+            document.getElementById(csvDivID).innerHTML = '<a style="color: black" download="data.csv" href="data:text/csv;charset=utf-8,%EF%BB%BF' + encodeURI(csvData) + '">Télécharger au format CSV</a>';
        } else {
-            document.getElementById('toolbar_div').innerHTML = '';
+            document.getElementById(csvDivID).innerHTML = '';
        }
     }
+    /* End of generic functions to draw chart everywhere */
 }]);
 
 surveyManiaControllers.controller('Ranking', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
