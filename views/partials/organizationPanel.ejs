@@ -68,7 +68,7 @@
                         <i ng-if="orgaSurvey.stopped == true">Sondage terminé</i>
                     </td>
                     <td><i class="fa fa-print" ng-click="printQrCode(orgaSurvey.surveyid, orgaSurvey.surveyname)"></i></td>
-                    <td><i ng-if="orgaSurvey.stopped == true" class="fa fa-pie-chart" ng-click="redirectToSurvey(orgaSurvey.surveyid)"></i></td>
+                    <td><i ng-if="orgaSurvey.publied == true" class="fa fa-pie-chart" ng-click="redirectToSurvey(orgaSurvey.surveyid)"></i></td>
                 </tr>
             </tbody>
         </table>
