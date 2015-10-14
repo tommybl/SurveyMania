@@ -84,6 +84,16 @@ surveyManiaApp.config(['$routeProvider',
             controller: '',
             navigationPart: 'ranking'
         }).
+        when('/games', {
+            templateUrl: '/app/games',
+            controller: '',
+            navigationPart: 'games'
+        }).
+        when('/game/:gameid', {
+            templateUrl: function(params){ return '/app/game/' + params.gameid; },
+            controller: '',
+            navigationPart: function(params){ return 'game/' + params.gameid; }
+        }).
         when('/401-unauthorized', {
             templateUrl: '/401-unauthorized',
             controller: '',

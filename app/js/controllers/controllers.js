@@ -2134,6 +2134,137 @@ surveyManiaControllers.controller('Ranking', ['$scope', '$http', '$window', '$lo
         .error(function (data, status, headers, config) {});
 }]);
 
+surveyManiaControllers.controller('GamesController', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
+    var options = {
+      useEasing : true, 
+      useGrouping : true, 
+      separator : '', 
+      decimal : '.', 
+      prefix : '', 
+      suffix : '' 
+    };
+
+    $http.get('/app/games/get')
+        .success(function (data, status, headers, config) {
+            if (data.error == undefined) {
+                $scope.games = data.games;
+                console.log($scope.games);
+            }
+        })
+        .error(function (data, status, headers, config) {});
+
+    $http.get('/app/user/get/points')
+        .success(function (data, status, headers, config) {
+            if (data.error == undefined) {
+                $scope.game_user = data.user;
+                console.log($scope.game_user);
+            }
+        })
+        .error(function (data, status, headers, config) {});
+
+    $http.post('/app/getUser/')
+        .success(function (data, status, headers, config) {
+            console.log(data);
+            if (data.error == undefined) {
+                $scope.user = data.user;
+                var count_width = $.fn.textWidth($scope.user.owner_points + '', 'Arial', 23);
+                console.log(count_width);
+                $("#user_points_count").width(count_width);
+                setTimeout(function(){ 
+                    var demo = new CountUp("user_points_count", 0, $scope.user.owner_points, 0, 2.5, options);
+                    demo.start();
+                 }, 2000);
+            }
+            else $scope.verifErrMess = data.error + '. ' + data.message;
+        })
+        .error(function (data, status, headers, config) {
+            $scope.verifErrMess = data.error + '. ' + data.message;
+        });
+}]);
+
+surveyManiaControllers.controller('GameController', ['$scope', '$http', '$window', '$location', '$routeParams', function($scope, $http, $window, $location, $routeParams) {
+    var options = {
+      useEasing : true, 
+      useGrouping : true, 
+      separator : '', 
+      decimal : '.', 
+      prefix : '', 
+      suffix : '' 
+    };
+
+    $scope.gameid = $routeParams.gameid;
+    $http.get('/app/games/get')
+        .success(function (data, status, headers, config) {
+            if (data.error == undefined) {
+                $scope.game = data.games[$scope.gameid - 1];
+                console.log($scope.game);
+            }
+        })
+        .error(function (data, status, headers, config) {});
+    $http.get('/app/user/get/points')
+        .success(function (data, status, headers, config) {
+            if (data.error == undefined) {
+                $scope.game_user = data.user;
+                console.log($scope.game_user);
+            }
+        })
+        .error(function (data, status, headers, config) {});
+
+    $http.post('/app/getUser/')
+        .success(function (data, status, headers, config) {
+            console.log(data);
+            if (data.error == undefined) {
+                $scope.user = data.user;
+                var count_width = $.fn.textWidth($scope.user.owner_points + '', 'Arial', 23);
+                console.log(count_width);
+                $("#user_points_count").width(count_width);
+                setTimeout(function(){ 
+                    var demo = new CountUp("user_points_count", 0, $scope.user.owner_points, 0, 2.5, options);
+                    demo.start();
+                }, 500);
+            }
+            else $scope.verifErrMess = data.error + '. ' + data.message;
+        })
+        .error(function (data, status, headers, config) {
+            $scope.verifErrMess = data.error + '. ' + data.message;
+        });
+
+    $http.get('/app/game/' + $scope.gameid + '/ranking')
+        .success(function (data, status, headers, config) {
+            if (data.error == undefined) {
+                $scope.ranking_users = data.users;
+                console.log($scope.ranking_users);
+                if (data.user != undefined) $scope.rank_user_id = data.user;
+
+                for (var i = 0; i < $scope.ranking_users.length; i++) {
+                    var tmp_rank = i + 1;
+
+                    if (tmp_rank == 1) {
+                        var rank_row = '<tr class="odd gradeX"><td class="center ranking-top-1">' + tmp_rank + '</td><td class="center">' + $scope.ranking_users[i]['name'] + ' ' + $scope.ranking_users[i]['lastname'] + '</td><td class="center">' + $scope.ranking_users[i]['score'] + '</td></tr>';
+                    }
+                    else if (tmp_rank == 2) {
+                        var rank_row = '<tr class="odd gradeX"><td class="center ranking-top-2">' + tmp_rank + '</td><td class="center">' + $scope.ranking_users[i]['name'] + ' ' + $scope.ranking_users[i]['lastname'] + '</td><td class="center">' + $scope.ranking_users[i]['score'] + '</td></tr>';
+                    }
+                    else if (tmp_rank == 3) {
+                        var rank_row = '<tr class="odd gradeX"><td class="center ranking-top-3">' + tmp_rank + '</td><td class="center">' + $scope.ranking_users[i]['name'] + ' ' + $scope.ranking_users[i]['lastname'] + '</td><td class="center">' + $scope.ranking_users[i]['score'] + '</td></tr>';
+                    }
+                    else {
+                        var rank_row = '<tr class="odd gradeX"><td class="center">' + tmp_rank + '</td><td class="center">' + $scope.ranking_users[i]['name'] + ' ' + $scope.ranking_users[i]['lastname'] + '</td><td class="center">' + $scope.ranking_users[i]['score'] + '</td></tr>';
+                    }
+                    $("#ranking-table").append(rank_row);
+                    if ($scope.rank_user_id != undefined && $scope.rank_user_id == $scope.ranking_users[i]['user_id']) {
+                        $("#game_user_rank").html(tmp_rank + '');
+                    }
+                }
+
+                $('#dataTables-example').DataTable({
+                        responsive: true
+                });
+            }
+        })
+        .error(function (data, status, headers, config) {});
+}]);
+
 
 surveyManiaControllers.controller('OrganizationPanel', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
     $scope.categories = [];

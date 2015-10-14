@@ -29,6 +29,15 @@
         </script>
     </head>
     <body ng-controller="GlobalController">
+        <div id="fb-root"></div>
+        <script>(function(d, s, id) {
+          var js, fjs = d.getElementsByTagName(s)[0];
+          if (d.getElementById(id)) return;
+          js = d.createElement(s); js.id = id;
+          js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.5&appId=749545525092512";
+          fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));</script>
+
         <div id="wrapper">
             <div id="page-wrapper" class="view-container">
                 <header>
@@ -43,6 +52,7 @@
                             <li role="presentation" ng-show="isOrganization" ng-class="{active:(navigationPart==='account/pro/shop-admins')}"><a href="/#/account/pro/shop-admins">Administrateurs</a></li>
                             <li role="presentation" ng-show="isOrganization" ng-class="{active:(navigationPart==='createSurvey')}"><a href="/#/createSurvey">Create a survey</a></li>
                             <li role="presentation" ng-class="{active:(navigationPart==='ranking')}"><a href="/#/ranking">Ranking</a></li>
+                            <li role="presentation" ng-show="isLogged" ng-class="{active:(navigationPart==='games')}"><a href="/#/games">Mini-jeux</a></li>
                         </ul>
                         <div style="float: right; margin-right: 10px; margin-top:5px;">
                             <button id="logoutBtn" ng-show="isLogged" ng-click="logout()" class="btn btn-default">Logout</button>
