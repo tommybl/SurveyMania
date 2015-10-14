@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<div class="row-centered" ng-controller="GameController" style="padding-top: 20px">
+<div class="row-centered" ng-controller="GameController" style="padding-top: 20px" id="game-page-scope">
     <div class="col-xs-10 col-sm-10 col-md-8 col-lg-6 col-centered">
         <h1>Mini jeu - {{game.name}} &nbsp; 
             <i class="fa fa-lock" ng-if="game_user[0].user_points < game.points_req" style="color: #fa8144"></i>
@@ -8,10 +8,10 @@
             <span id="games-my-points" style="float: right; font-size: 20px; margin-top: 15px">Mes points | <span id="user_points_count" style="display: inline-block; font-family: Arial; font-weight: bold">0</span></span>
         </h1>
         <hr>
-        <div class="game-description" >
+        <div class="game-description" id="game-description-stats">
             <div ng-if="game_user[0].user_points < game.points_req">
                 <div style="float:right; font-size: 50px; margin-top: 5px"><i class="fa fa-users" style="color: #999;"></i> <span id="game_user_rank">--</span>e</div>
-                <div style="float:right; font-size: 50px; margin-top: 5px; margin-right: 40px"><i class="fa fa-trophy" style="color: #d14836;"></i> --</div>
+                <div style="float:right; font-size: 50px; margin-top: 5px; margin-right: 40px"><i class="fa fa-trophy" style="color: #d14836;"></i> <span id="game_user_big_score">--</span></div>
                 <span style="color: #f5c950;">Points requis: </span> {{game.points_req}} <br>
                 <span style="color: #f5c950;">Points restants: </span> {{game.points_req - game_user[0].user_points}} <br>
                 <div ng-click="openFbShareBut(game.id_game)" style="background: #3a5795; border-radius: 3px; width: 33px; overflow: hidden; cursor: pointer; margin-top: 10px; padding: 8px 8px 0 0; display: inline-block"><i class="fa fa-facebook fa-lg" style="color: #fff; cursor: pointer; float: right"></i></div>
@@ -21,10 +21,10 @@
             </div>
             <div ng-if="game.user_id != undefined">
                 <div style="float:right; font-size: 50px; margin-top: 5px"><i class="fa fa-users" style="color: #999;"></i> <span id="game_user_rank">--</span>e</div>
-                <div style="float:right; font-size: 50px; margin-top: 5px; margin-right: 40px"><i class="fa fa-trophy" style="color: #f5c950;"></i> {{game.score}}</div>
+                <div style="float:right; font-size: 50px; margin-top: 5px; margin-right: 40px"><i class="fa fa-trophy" style="color: #f5c950;"></i> <span id="game_user_big_score">{{game.score}}</span></div>
                 <span style="color: #f5c950;">Points requis: </span> {{game.points_req}} <br>
-                <span style="color: #f5c950;">Points gagnés: </span> {{game.points}} <br>
-                <span style="color: #f5c950;">Meilleur score: </span> {{game.score}} {{game.type}} <br>
+                <span style="color: #f5c950;">Points gagnés: </span> <span id="game_user_points">{{game.points}}</span> <br>
+                <span style="color: #f5c950;">Meilleur score: </span> <span id="game_user_score">{{game.score}}</span> {{game.type}} <br>
                 <div ng-click="openFbShareBut(game.id_game)" style="background: #3a5795; border-radius: 3px; width: 33px; overflow: hidden; cursor: pointer; margin-top: 10px; padding: 8px 8px 0 0; display: inline-block"><i class="fa fa-facebook fa-lg" style="color: #fff; cursor: pointer; float: right"></i></div>
                 <i class="fa fa-envelope" style="color: #fff; cursor: pointer; font-size: 23px; position: relative; top: -2px; left: 10px" data-toggle="modal" data-target="#myModalMail" ></i>
                 <!-- <div class="fb-share-button" data-href="http://localhost:1337/#/game/{{game.id_game}}" data-layout="button" style="margin-top: 10px"></div> --> <hr>
@@ -32,10 +32,10 @@
             </div>
             <div ng-if="game_user[0].user_points >= game.points_req && game.user_id == undefined">
                 <div style="float:right; font-size: 50px; margin-top: 5px"><i class="fa fa-users" style="color: #999;"></i> <span id="game_user_rank">--</span>e</div>
-                <div style="float:right; font-size: 50px; margin-top: 5px; margin-right: 40px"><i class="fa fa-trophy" style="color: #d14836;"></i> --</div>
+                <div style="float:right; font-size: 50px; margin-top: 5px; margin-right: 40px"><i class="fa fa-trophy" style="color: #d14836;"></i> <span id="game_user_big_score">--</span></div>
                 <span style="color: #f5c950;">Points requis: </span> {{game.points_req}} <br>
-                <span style="color: #f5c950;">Points gagnés: </span> -- <br>
-                <span style="color: #f5c950;">Meilleur score: </span> -- <br>
+                <span style="color: #f5c950;">Points gagnés: </span> <span id="game_user_points">--</span> <br>
+                <span style="color: #f5c950;">Meilleur score: </span> <span id="game_user_score">--</span> <br>
                 <div ng-click="openFbShareBut(game.id_game)" style="background: #3a5795; border-radius: 3px; width: 33px; overflow: hidden; cursor: pointer; margin-top: 10px; padding: 8px 8px 0 0; display: inline-block"><i class="fa fa-facebook fa-lg" style="color: #fff; cursor: pointer; float: right"></i></div>
                 <i class="fa fa-envelope" style="color: #fff; cursor: pointer; font-size: 23px; position: relative; top: -2px; left: 10px" data-toggle="modal" data-target="#myModalMail" ></i>
                 <!-- <div class="fb-share-button" data-href="http://localhost:1337/#/game/{{game.id_game}}" data-layout="button" style="margin-top: 10px"></div> --> <hr>

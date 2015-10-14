@@ -2263,6 +2263,7 @@ surveyManiaControllers.controller('GameController', ['$scope', '$http', '$window
         .success(function (data, status, headers, config) {
             if (data.error == undefined) {
                 $scope.game = data.games[$scope.gameid - 1];
+                $scope.oldgame = $.extend({}, $scope.game);
                 console.log($scope.game);
             }
         })
@@ -2271,6 +2272,7 @@ surveyManiaControllers.controller('GameController', ['$scope', '$http', '$window
         .success(function (data, status, headers, config) {
             if (data.error == undefined) {
                 $scope.game_user = data.user;
+                $scope.oldgameuser = $.extend({}, $scope.game_user[0]);
                 console.log($scope.game_user);
             }
         })
@@ -2322,16 +2324,90 @@ surveyManiaControllers.controller('GameController', ['$scope', '$http', '$window
                         $("#game_user_rank").html(tmp_rank + '');
                     }
                 }
-
-                $('#dataTables-example').DataTable({
-                        responsive: true
-                });
             }
         })
         .error(function (data, status, headers, config) {});
 
     $scope.openFbShareBut = function (gameid) {
         window.open('http://www.facebook.com/sharer/sharer.php?u=http://localhost:1337/#/game/' + gameid + '&title=surveymania', 'sharewin', 'height=500,width=500');
+    };
+
+    var div_score_big = $('#game_user_big_score');
+    var div_rank = $('#game_user_rank');
+    var div_score = $('#game_user_score');
+    var div_points = $('#game_user_score');
+
+    $scope.validateScore = function (score, points) {
+        console.log("toto");
+        $http.post('/app/game/post/score', {score: score, points: points, game: $scope.game})
+            .success(function (data, status, headers, config) {
+                console.log(data);
+                if (data.action == 'updated') {
+                    setTimeout(function(){
+                            $scope.oldgame.score = $scope.game.score;
+                            $scope.oldgame.points = $scope.game.points;
+                            $scope.game.score = score;
+                            $scope.game.points = points;
+                            $scope.oldgameuser.user_points = $scope.game_user[0].user_points;
+                            $scope.game_user[0].user_points = $scope.game_user[0].user_points + ($scope.game.points - $scope.oldgame.points);
+                            div_score_big.html($scope.game.score);
+                            div_score.html($scope.game.score);
+                            div_points.html($scope.game.points);
+                            $scope.$apply();
+                    }, 1000);
+                    $('#game-description-stats').fadeOut(1000, function(){
+                        $(this).fadeIn(1000, function(){
+                            setTimeout(function(){ 
+                                var demo = new CountUp("user_points_count", $scope.oldgameuser.user_points, $scope.game_user[0].user_points, 0, 2.5, options);
+                                demo.start();
+                        }, 500);
+                        });
+                    });
+
+
+                    $http.get('/app/game/' + $scope.gameid + '/ranking')
+                        .success(function (data, status, headers, config) {
+                            if (data.error == undefined) {
+                                $("#ranking-table").html(' ');
+                                $scope.ranking_users = data.users;
+                                console.log($scope.ranking_users);
+                                if (data.user != undefined) $scope.rank_user_id = data.user;
+
+                                for (var i = 0; i < $scope.ranking_users.length; i++) {
+                                    var tmp_rank = i + 1;
+
+                                    if (tmp_rank == 1) {
+                                        var rank_row = '<tr class="odd gradeX"><td class="center ranking-top-1">' + tmp_rank + '</td><td class="center">' + $scope.ranking_users[i]['name'] + ' ' + $scope.ranking_users[i]['lastname'] + '</td><td class="center">' + $scope.ranking_users[i]['score'] + '</td></tr>';
+                                    }
+                                    else if (tmp_rank == 2) {
+                                        var rank_row = '<tr class="odd gradeX"><td class="center ranking-top-2">' + tmp_rank + '</td><td class="center">' + $scope.ranking_users[i]['name'] + ' ' + $scope.ranking_users[i]['lastname'] + '</td><td class="center">' + $scope.ranking_users[i]['score'] + '</td></tr>';
+                                    }
+                                    else if (tmp_rank == 3) {
+                                        var rank_row = '<tr class="odd gradeX"><td class="center ranking-top-3">' + tmp_rank + '</td><td class="center">' + $scope.ranking_users[i]['name'] + ' ' + $scope.ranking_users[i]['lastname'] + '</td><td class="center">' + $scope.ranking_users[i]['score'] + '</td></tr>';
+                                    }
+                                    else {
+                                        var rank_row = '<tr class="odd gradeX"><td class="center">' + tmp_rank + '</td><td class="center">' + $scope.ranking_users[i]['name'] + ' ' + $scope.ranking_users[i]['lastname'] + '</td><td class="center">' + $scope.ranking_users[i]['score'] + '</td></tr>';
+                                    }
+                                    $("#ranking-table").append(rank_row);
+                                    if ($scope.rank_user_id != undefined && $scope.rank_user_id == $scope.ranking_users[i]['user_id']) {
+                                        $("#game_user_rank").html(tmp_rank + '');
+                                    }
+                                }
+                            }
+                        })
+                        .error(function (data, status, headers, config) {});
+                }
+                else if (data.action == 'notupdated') {
+
+                }
+                else if (data.action == 'created') {
+
+                }
+                $('#phaser-example').html(' ');
+                $('#phaser-example').hide();
+                $('#phaser-example-img').show();
+            })
+            .error(function (data, status, headers, config) {console.log(data)});
     };
 }]);
 

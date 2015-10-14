@@ -1,5 +1,7 @@
 function launch_phaser_game() {
 
+var scope_page = $('#game-page-scope').scope();
+
 var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-example', { preload: preload, create: create, update: update });
 
 function preload() {
@@ -15,7 +17,7 @@ var bricks;
 
 var ballOnPaddle = true;
 
-var lives = 10;
+var lives = 3;
 var score = 0;
 
 var scoreText;
@@ -148,6 +150,7 @@ function gameOver () {
     introText.text = 'Game Over!';
     introText.visible = true;
 
+    scope_page.validateScore(score, Math.floor(score/2));
 }
 
 function ballHitBrick (_ball, _brick) {

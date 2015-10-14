@@ -2682,6 +2682,69 @@ app
     }
 })
 
+.post('/app/game/post/score', function (req, res) {
+    if(req.user.usertypenumber != 1 && req.user.usertypenumber != 2) {res.status(401).json({code: 401, error: "Unauthorized", message: "Unauthorized"}); return;}
+    else {
+        var score = req.body.score;
+        var game = req.body.game;
+        var points = req.body.points;
+        if (game.user_id != undefined) {
+            if (points > game.points) {
+                console.log("update");
+                pg.connect(conString, function(err, client, done) {
+                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                    else {
+                        var points_win = points - game.points;
+                        var query = 'UPDATE surveymania.user_games SET score = ' + score + ', points = ' + points + ' WHERE user_id = ' + game.user_id + ' AND game_id = ' + game.id_game;
+                        client.query(query, function(err, result) {
+                            done();
+                            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                            else {
+                                var query = 'UPDATE surveymania.users SET points = points + ' + points_win + ' WHERE id = ' + game.user_id;
+                                client.query(query, function(err, result) {
+                                    done();
+                                    if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                    else {
+                                        res.json({code: 200, action: "updated", message: "Score updated"});
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+            else {
+                res.json({code: 200, action: "notupdated", message: "Score not updated"});
+            }
+        }
+        else {
+            pg.connect(conString, function(err, client, done) {
+                if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                else {
+                    console.log("created");
+                    var dateNow = moment().format("YYYY-MM-DD HH:mm:ss");
+                    var query = 'INSERT INTO surveymania.user_games(user_id, game_id, recieved_dt, score, points) VALUES (' + req.user.id + ', ' + game.id_game + ', \'' + dateNow + '\', ' + score + ', ' + points + ');'
+                    client.query(query, function(err, result) {
+                        done();
+                        if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                        else {
+
+                            var query = 'UPDATE surveymania.users SET points = points + ' + points + ' WHERE id = ' + game.user_id;
+                            client.query(query, function(err, result) {
+                                done();
+                                if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                                else {
+                                    res.json({code: 200, action: "created", message: "Score created"});
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    }
+})
+
 .get('/app/category/get', function (req, res) {
     if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) {res.status(401).json({code: 401, error: "Unauthorized", message: "Unauthorized"}); return;}
     else {
