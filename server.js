@@ -2641,6 +2641,47 @@ app
     }
 })
 
+.get('/game/get/mail', function (req, res) {
+    res.setHeader("Content-Type", "text/html");
+    res.render('partials/gameMail');
+})
+
+.post('/app/games/share/mail', function (req, res) {
+    if(req.user.usertypenumber != 1 && req.user.usertypenumber != 2) {res.status(401).json({code: 401, error: "Unauthorized", message: "Unauthorized"}); return;}
+    else {
+        var mailContacts = req.body.mailContacts.split(';');
+        var mailContent = req.body.mailContent;
+        var mailGame = req.body.mailGame;
+        var mailImage = req.body.mailImage;
+        console.log(mailContacts);
+        console.log(mailContent);
+        console.log(mailGame);
+        console.log(mailImage);
+        for (var i = 0; i < mailContacts.length; i++) {
+            var mailOptions = {
+                from: 'webmaster@surveymania.com',
+                to: mailContacts[i],
+                subject: 'Essaye de me battre au mini-jeu ' + mailGame + ' !',
+                html: mailContent,
+                attachments: [
+                    {   // filename and content type is derived from path
+                        path: 'http://localhost:1337/img/surveymania.png'
+                    },
+                    {   // filename and content type is derived from path
+                        path: 'http://localhost:1337/' + mailImage
+                    }
+                ]
+            };
+            transporter.sendMail(mailOptions, function(error, info){
+                if(error) console.log(error);
+                else console.log('Message sent: ' + info.response);
+            });
+        }
+        res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+        res.json({code: 200, message: "Share par mail bien réalisé"});
+    }
+})
+
 .get('/app/category/get', function (req, res) {
     if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) {res.status(401).json({code: 401, error: "Unauthorized", message: "Unauthorized"}); return;}
     else {

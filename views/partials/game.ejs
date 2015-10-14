@@ -14,7 +14,9 @@
                 <div style="float:right; font-size: 50px; margin-top: 5px; margin-right: 40px"><i class="fa fa-trophy" style="color: #d14836;"></i> --</div>
                 <span style="color: #f5c950;">Points requis: </span> {{game.points_req}} <br>
                 <span style="color: #f5c950;">Points restants: </span> {{game.points_req - game_user[0].user_points}} <br>
-                <div class="fb-share-button" data-href="http://localhost:1337/#/game/{{game.id_game}}" data-layout="button" style="margin-top: 10px"></div> <br><hr>
+                <div ng-click="openFbShareBut(game.id_game)" style="background: #3a5795; border-radius: 3px; width: 33px; overflow: hidden; cursor: pointer; margin-top: 10px; padding: 8px 8px 0 0; display: inline-block"><i class="fa fa-facebook fa-lg" style="color: #fff; cursor: pointer; float: right"></i></div>
+                <i class="fa fa-envelope" style="color: #fff; cursor: pointer; font-size: 23px; position: relative; top: -2px; left: 10px" data-toggle="modal" data-target="#myModalMail" ></i>
+                <!-- <div class="fb-share-button" data-href="http://localhost:1337/#/game/{{game.id_game}}" data-layout="button" style="margin-top: 10px"></div> --> <hr>
                 <p>{{game.description}}</p>
             </div>
             <div ng-if="game.user_id != undefined">
@@ -23,7 +25,9 @@
                 <span style="color: #f5c950;">Points requis: </span> {{game.points_req}} <br>
                 <span style="color: #f5c950;">Points gagnés: </span> {{game.points}} <br>
                 <span style="color: #f5c950;">Meilleur score: </span> {{game.score}} {{game.type}} <br>
-                <div class="fb-share-button" data-href="http://localhost:1337/#/game/{{game.id_game}}" data-layout="button" style="margin-top: 10px"></div> <br><hr>
+                <div ng-click="openFbShareBut(game.id_game)" style="background: #3a5795; border-radius: 3px; width: 33px; overflow: hidden; cursor: pointer; margin-top: 10px; padding: 8px 8px 0 0; display: inline-block"><i class="fa fa-facebook fa-lg" style="color: #fff; cursor: pointer; float: right"></i></div>
+                <i class="fa fa-envelope" style="color: #fff; cursor: pointer; font-size: 23px; position: relative; top: -2px; left: 10px" data-toggle="modal" data-target="#myModalMail" ></i>
+                <!-- <div class="fb-share-button" data-href="http://localhost:1337/#/game/{{game.id_game}}" data-layout="button" style="margin-top: 10px"></div> --> <hr>
                 <p>{{game.description}}</p>
             </div>
             <div ng-if="game_user[0].user_points >= game.points_req && game.user_id == undefined">
@@ -32,7 +36,9 @@
                 <span style="color: #f5c950;">Points requis: </span> {{game.points_req}} <br>
                 <span style="color: #f5c950;">Points gagnés: </span> -- <br>
                 <span style="color: #f5c950;">Meilleur score: </span> -- <br>
-                <div class="fb-share-button" data-href="http://localhost:1337/#/game/{{game.id_game}}" data-layout="button" style="margin-top: 10px"></div> <br><hr>
+                <div ng-click="openFbShareBut(game.id_game)" style="background: #3a5795; border-radius: 3px; width: 33px; overflow: hidden; cursor: pointer; margin-top: 10px; padding: 8px 8px 0 0; display: inline-block"><i class="fa fa-facebook fa-lg" style="color: #fff; cursor: pointer; float: right"></i></div>
+                <i class="fa fa-envelope" style="color: #fff; cursor: pointer; font-size: 23px; position: relative; top: -2px; left: 10px" data-toggle="modal" data-target="#myModalMail" ></i>
+                <!-- <div class="fb-share-button" data-href="http://localhost:1337/#/game/{{game.id_game}}" data-layout="button" style="margin-top: 10px"></div> --> <hr>
                 <p>{{game.description}}</p>
             </div>
         </div>
@@ -68,6 +74,27 @@
                         </div>
                     </div>
                     <!-- /.col-lg-12 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="myModalMail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" ng-controller="GameMailController">
+        <div class="modal-dialog row-centered">
+            <div class="modal-content col-xs-6 col-sm-5 col-md-4 col-lg-3 col-centered signup">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Partagez votre score par mail</h4>
+                </div>
+                <div class="modal-body">
+                    <div id="mails-success" class="alert alert-success alert-dismissible fade in" role="alert" ng-show="mailErrMess!=undefined">
+                        <button type="button" class="close" ng-click="mailErrMess=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <span ng-bind-html="mailErrMess"></span>
+                    </div>
+                    <form ng-submit="GameMailSubmit(game.name, game.image_path)">
+                        <textarea ng-model="emailContacts" rows="5" name="emailContacts" placeholder="Entrez les emails de vos contacts, séparés par un point-virgule ';'" class="form-control" ></textarea> <br>
+                        <input type="submit" value="Envoyer" class="btn btn-primary" />
+                    </form>
                 </div>
             </div>
         </div>
