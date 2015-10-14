@@ -1648,7 +1648,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                     $scope.detailledInformations = data;
                     $scope.detailledInformations.averageAnswerTimeMinutes = Math.floor(($scope.detailledInformations.averageAnswerTime / 1000) / 60);
                     $scope.detailledInformations.averageAnswerTimeSeconds = Math.round(($scope.detailledInformations.averageAnswerTime / 1000) - ($scope.detailledInformations.averageAnswerTimeMinutes * 60));
-                    if (!$scope.survey.surveytime.days)
+                    if ($scope.survey.surveytime != null && !$scope.survey.surveytime.days)
                         $scope.survey.surveytime.days = 0;
                 })
                 .error(function (data, status, header, config) {

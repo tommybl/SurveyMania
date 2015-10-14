@@ -8,7 +8,7 @@
         <div><b>Instruction supplémentaire : </b>{{survey.instructions}}</div>
         <div><b>Temps de réponse éstimé : </b>{{surveyEstimatedTime}} minutes</div>
         <div><b>Publié le : </b>{{survey.publication_date}}</div>
-        <div><b>Stoppé le : </b>{{survey.stopped_date}} ({{survey.surveytime.days}} jours)</div>
+        <div ng-show="survey.stopped_date != null"><b>Stoppé le : </b>{{survey.stopped_date}} ({{survey.surveytime.days}} jours)</div>
         <div><b>Créé par : </b>{{survey.name}}</div>
         <div><b>Points : </b>{{survey.points}}</div>
         <br/>
