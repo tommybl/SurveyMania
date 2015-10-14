@@ -12,11 +12,12 @@
             <div class="col-md-12">{{shopadmin.admin_email}}</div>
             <hr class="col-md-12"> -->
             <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4" style="margin-bottom: 30px">
-                <h3>{{game.name}} &nbsp; 
+                <h3>&nbsp; {{game.name}}&nbsp; 
                     <i class="fa fa-lock" ng-if="game_user[0].user_points < game.points_req" style="color: #fa8144"></i>
                     <i class="fa fa-check" ng-if="game.user_id != undefined" style="color: #1fa67a"></i>
                     <i class="fa fa-gamepad" ng-if="game_user[0].user_points >= game.points_req && game.user_id == undefined" style="color: #74afec"></i>
-                    <i class="fa fa-facebook-square" style="color: #3a5795; float: right; font-size: 20px; margin-top: 5px; cursor: pointer" ng-click="openFbShareBut(game.id_game)"></i>
+                    <i class="fa fa-facebook-square" style="color: #3a5795; float: right; font-size: 20px; margin: 5px 10px 0 10px; cursor: pointer;" ng-click="openFbShareBut(game.id_game)"></i>
+                    <i class="fa fa-envelope" style="color: #aaa; float: right; cursor: pointer; margin-top: 5px; font-size: 20px;" data-toggle="modal" data-target="#myModalMail" ng-click="game_current(game)"></i>
                     <!-- <div class="fb-share-button" data-href="http://localhost:1337/#/game/{{game.id_game}}" data-layout="icon" style="float: right"></div> -->
                 </h3>
                 <div>
@@ -59,19 +60,17 @@
             <div class="modal-content col-xs-6 col-sm-5 col-md-4 col-lg-3 col-centered signup">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Identifiez-vous !</h4>
+                    <h4 class="modal-title" id="myModalLabel">Partagez votre score par mail</h4>
                 </div>
                 <div class="modal-body">
-                    <div id="login-error" class="alert alert-danger alert-dismissible fade in" role="alert" ng-show="loginErrMess!=undefined">
-                        <button type="button" class="close" ng-click="loginErrMess=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                        <span ng-bind-html="loginErrMess"></span>
+                    <div id="mails-success" class="alert alert-success alert-dismissible fade in" role="alert" ng-show="mailErrMess!=undefined">
+                        <button type="button" class="close" ng-click="mailErrMess=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <span ng-bind-html="mailErrMess"></span>
                     </div>
-                    <form ng-submit="submit()">
-                        <input ng-model="user.email" type="text" name="email" placeholder="Email" class="form-control" /> <br>
-                        <input ng-model="user.password" type="password" name="password" placeholder="Password" class="form-control" /> <br>
-                        <input type="submit" value="S'identifier" class="btn btn-primary" />
-                    </form><br>
-                    <p><a href="#/accounts/reset/new" class="link_primary">Mot de passe oublié ?</a><p>
+                    <form ng-submit="GameMailSubmit(game_curr)">
+                        <textarea ng-model="emailContacts" rows="5" name="emailContacts" placeholder="Entrez les emails de vos contacts, séparés par un point-virgule ';'" class="form-control" ></textarea> <br>
+                        <input type="submit" value="Envoyer" class="btn btn-primary" />
+                    </form>
                 </div>
             </div>
         </div>
