@@ -776,10 +776,10 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
             || $scope.user.firstname == '' || $scope.user.lastname == '')) || 
             (document.getElementById('professionnal').checked && ($scope.user.email == '' || $scope.user.password == '' || $scope.user.password2 == '' 
             || $scope.user.firmname == '' || $scope.user.firmdescription == '')))
-            return $scope.signupErrMess = 'Please provide all needed informations!';
+            return $scope.signupErrMess = 'Veuillez remplir tous les champs obligatoires !';
 
         if($scope.isValidEmail || $scope.isValidConfirmPwd || $scope.isValidPwd || $scope.isValidFirstName || $scope.isValidLastName || $scope.isValidPhoneNumber)
-            return $scope.signupErrMess = 'Please correct the errors below';
+            return $scope.signupErrMess = 'Veuillez corriger les erreurs !';
 
         var password = CryptoJS.SHA256($scope.user.password).toString();
         var newuser = {
@@ -804,17 +804,17 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
         if (newuser.logo_skip == false) {
             var splits = newuser.logo_img.split(/:(.+)?/);
             console.log(splits[0]);
-            if (splits[0] != 'data') return $scope.signupErrMess = 'Bad logo image format!';
+            if (splits[0] != 'data') return $scope.signupErrMess = 'Mauvais format de logo !';
             splits = splits[1].split(/\/(.+)?/);
             console.log(splits[0]);
-            if (splits[0] != 'image') return $scope.signupErrMess = 'Bad logo image format!';
+            if (splits[0] != 'image') return $scope.signupErrMess = 'Mauvais format de logo !';
             splits = splits[1].split(/;(.+)?/);
             console.log(splits[0]);
-            if (splits[0] != 'png' && splits[0] != 'jpeg') return $scope.signupErrMess = 'Bad logo image format!';
+            if (splits[0] != 'png' && splits[0] != 'jpeg') return $scope.signupErrMess = 'Mauvais format de logo !';
             else newuser.logo_type = (splits[0] == 'png') ? 'png' : 'jpg';
             splits = splits[1].split(/,(.+)?/);
             console.log(splits[0]);
-            if (splits[0] != 'base64') return $scope.signupErrMess = 'Bad logo image format!';
+            if (splits[0] != 'base64') return $scope.signupErrMess = 'Mauvais format de logo !';
             newuser.logo_img = splits[1];
         }
 
@@ -822,7 +822,7 @@ surveyManiaControllers.controller('SignupController', ['$scope', '$http', '$wind
         .success(function (data, status, headers, config) {
             if (data.error == undefined) {
                 console.log(data);
-                $scope.signupSuccMess = "Your account has been successfully created. An email has been sent, please follow its intructions to finish your inscription.";
+                $scope.signupSuccMess = "Votre compte à été créé avec succes. Un email vous a été envoyé, suivez les instructions pour finaliser votre inscription.";
             }
             else $scope.signupErrMess = data.error + '. ' + data.message;
         })
