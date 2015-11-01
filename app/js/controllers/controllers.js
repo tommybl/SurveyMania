@@ -2449,6 +2449,16 @@ surveyManiaControllers.controller('OrganizationPanel', ['$scope', '$http', '$win
     $scope.isValidCategoryColor = true;
     $scope.orgaSurveys = [];
 
+    $scope.actionErrMess = undefined;
+    $scope.actionSuccMess = undefined;
+    $scope.shopadmins = [];
+    $scope.shopadminDel = undefined;
+    $scope.user = {email: "", firstname: "", lastname: ""};
+
+    $scope.isValidEmail = false;
+    $scope.isValidFirstName = false;
+    $scope.isValidLastName = false;
+
     $http.post('/app/category/get')
         .success(function (data, status, header, config) {
             $scope.categories = data.categories;
@@ -2458,6 +2468,93 @@ surveyManiaControllers.controller('OrganizationPanel', ['$scope', '$http', '$win
         .success(function (data, status, headers, config) {
             $scope.orgaSurveys = data.orgaSurveys;
     });
+
+    $scope.email_check = function(){$scope.isValidEmail = !(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test($scope.user.email));}
+    $scope.firstName_check = function(){$scope.isValidFirstName = (!(/^[A-zÀ-ú-']{2,}$/.test($scope.user.firstname)) || !$scope.user.firstname.length);}
+    $scope.lastName_check = function(){$scope.isValidLastName = (!(/^[A-zÀ-ú-']{2,}$/.test($scope.user.lastname)) || !$scope.user.lastname.length);}
+
+    $scope.getAdmin = function (shopadminId) {
+        for (var i = 0; i < $scope.shopadmins.length; i++) {
+            if ($scope.shopadmins[i].admin_id == shopadminId) return $scope.shopadmins[i];
+        }
+        return undefined;
+    };
+
+    $scope.getIndex = function () {
+        for (var i = 0; i < $scope.shopadmins.length; i++) {
+            if ($scope.shopadmins[i].admin_id == $scope.shopadminDel.admin_id) return i;
+        }
+        return -1;
+    };
+
+    $scope.hide_modal = function(name) {
+        $('#' + name).modal('hide');
+    };
+
+    $scope.get_shopadmins = function()
+    {
+        $http.get('/app/account/pro/get/shopadmins')
+        .success(function (data, status, headers, config) {
+            console.log(data);
+            if (data.error == undefined) {
+                if (data.shopadmins != undefined) $scope.shopadmins = data.shopadmins;
+            }
+            else $scope.actionErrMess = data.error + '. ' + data.message;
+        })
+        .error(function (data, status, headers, config) {
+            console.log(data);
+            $scope.actionErrMess = data.error + '. ' + data.message;
+        });
+    };
+
+    $scope.add_shopadmin = function()
+    {
+        if ($scope.isValidEmail || $scope.isValidFirstName || $scope.isValidLastName) return console.log("not valid");
+        $http.post('/app/account/pro/add/shopadmin', $scope.user)
+        .success(function (data, status, headers, config) {
+            console.log(data);
+            $('#modalAddAdmin').modal('hide');
+            if (data.error == undefined) {
+                if (data.shopadmin != undefined) {
+                    $scope.shopadmins.splice(0, 0, data.shopadmin);
+                    $scope.actionSuccMess = 'L\'administrateur de magasin a bien été ajouté. Un email lui a été envoyé avec ses identifiants de connexion.';
+                }
+            }
+            else $scope.actionErrMess = data.error + '. ' + data.message;
+        })
+        .error(function (data, status, headers, config) {
+            console.log(data);
+            $('#modalAddAdmin').modal('hide');
+            $scope.actionErrMess = data.error + '. ' + data.message;
+        });
+    };
+
+    $scope.delConfirm_shopadmin = function($id)
+    {
+        $scope.shopadminDel = $scope.getAdmin($id);
+        if ($scope.shopadminDel != undefined) $('#modalDelAdmin').modal('show');
+    };
+
+    $scope.del_shopadmin = function()
+    {
+        $http.post('/app/account/pro/del/shopadmin', {shopadminId: $scope.shopadminDel.admin_id})
+        .success(function (data, status, headers, config) {
+            console.log(data);
+            $('#modalDelAdmin').modal('hide');
+            if (data.error == undefined) {
+                index = $scope.getIndex();
+                $scope.shopadmins.splice(index, (index < 0) ? 0 : 1);
+                $scope.actionSuccMess = 'L\'administrateur de magasin a bien été supprimé';
+            }
+            else $scope.actionErrMess = data.error + '. ' + data.message;
+        })
+        .error(function (data, status, headers, config) {
+            console.log(data);
+            $('#modalDelAdmin').modal('hide');
+            $scope.actionErrMess = data.error + '. ' + data.message;
+        });
+    };
+    $scope.get_shopadmins();
 
     $scope.publishSurvey = function($id, elem)
     {
@@ -2575,7 +2672,7 @@ surveyManiaControllers.directive('categoryRender', function ($timeout) {
     }
 });
 
-surveyManiaControllers.controller('ShopAdmins', ['$scope', '$http', '$window', function($scope, $http, $window) {
+/*surveyManiaControllers.controller('ShopAdmins', ['$scope', '$http', '$window', function($scope, $http, $window) {
     $scope.actionErrMess = undefined;
     $scope.actionSuccMess = undefined;
     $scope.shopadmins = [];
@@ -2665,4 +2762,4 @@ surveyManiaControllers.controller('ShopAdmins', ['$scope', '$http', '$window', f
         });
     };
     $scope.get_shopadmins();
-}]);
+}]);*/

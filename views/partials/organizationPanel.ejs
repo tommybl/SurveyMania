@@ -8,70 +8,169 @@
     });
 </script>
 
-<div ng-controller="OrganizationPanel" class="col-md-12 row-centered">
-    <div id="no-print" class="col-md-6 col-centered">
-        <h1>Catégories</h1>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Nom</th>
-                    <th>Couleur</th>
-                </tr>
-            </thead>
+<div ng-controller="OrganizationPanel" class="row-centered">
+    <div class="col-md-12" style="margin-bottom: 30px;">
+        <div class="validate-pro col-xs-10 col-sm-10 col-md-8 col-lg-6 col-centered">
+            <h1>Ajouter ou supprimer un administrateur de magasin </h1>
+            <h3><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalAddAdmin"><i class="fa fa-plus"></i> Ajouter un admin</button></h3>
+            <hr>
+            <div id="action-success" class="alert alert-success alert-dismissible fade in" role="alert" ng-show="actionSuccMess!=undefined">
+                <button type="button" class="close" ng-click="actionSuccMess=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <span>{{actionSuccMess}}</span>
+            </div>
+            <div id="action-error" class="alert alert-danger alert-dismissible fade in" role="alert" ng-show="actionErrMess!=undefined">
+                <button type="button" class="close" ng-click="actionErrMess=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <span>{{actionErrMess}}</span>
+            </div>
 
-            <tbody>
-                <tr ng-repeat="category in categories" value="50" category-render="ngRepeatFinished">
-                    <td><input value="{{category.name}}" onChange="angular.element(this).scope().updateCategoryName(this)" required/></td>
-                    <td><input value="{{category.color}}" onChange="angular.element(this).scope().updateCategoryColor(this)" class="categoryColorPicker" id="catNaFoLi{{category.name}}" required/></td>
-                </tr>
-            </tbody>
-        </table>
+            <input type="search" ng-model="q" placeholder="Filtrer les comptes" class="form-control" style="width: 300px" /> <br> 
+            <div class="row account-pro" style="padding: 0 20px">
+                <div class="animate-repeat" ng-repeat="shopadmin in shopadmins | filter:q as results"> 
+                    <h3>Administrateur <strong>{{shopadmin.admin_firstname}} {{shopadmin.admin_lastname}}</strong>
+                        <button type="button" class="btn btn-default button-cancel" ng-click="delConfirm_shopadmin(shopadmin.admin_id)" style="float: right; margin-top: 20px; margin-right: 30%"><i class="fa fa-times"></i></button></h3>
+                    <div class="col-md-12">{{shopadmin.admin_email}}</div>
+                    <hr class="col-md-12">
+                </div>
+                <div class="col col-md-12 animate-repeat" ng-if="results.length == 0">
+                    <strong>Aucun administrateurs de magasin trouvés !</strong>
+                </div>
+            </div>
 
-        <h3>Ajouter une catégorie</h3>
-        <form ng-submit="addCategory()">
-            <label>Nom de la catégorie</label> <span class="link_primary">*</span>
-            <input ng-model="newCategory.name" type="text" placeholder="name" class="form-control" ng-change="categoryNameCheck()" required/>
-            <span class="error" ng-show="!isValidCategoryName">Le nom d'une catégorie doit contenir entre 2 et 25 caractères</span>
-            <br>
-            <label>Couleur de la catégorie</label> <span class="link_primary">*</span>
-            <input id="addCatColorPicker" ng-model="newCategory.color" ng-change="categoryColorCheck()"/>
-            <span class="error" ng-show="!isValidCategoryColor">La couleur doit correspondre au format hexadécimal (ex : "#A14DEA")</span>
-            <br>
-            <input type="submit" value="Ajouter" class="btn btn-primary" />
-        </form>
-        <br/><br/>
+            <div class="modal fade" id="modalAddAdmin" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+                <div class="modal-dialog row-centered">
+                    <div class="modal-content col-xs-6 col-sm-5 col-md-4 col-lg-3 col-centered signup">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModalLabel">Ajoutez un admin magasin !</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div id="addAdmin-success" class="alert alert-success alert-dismissible fade in" role="alert" ng-show="addAdminSuccMess!=undefined">
+                                <button type="button" class="close" ng-click="addAdminSuccMess=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                <span>{{addAdminSuccMess}}</span>
+                            </div>
+                            <div id="addAdmin-error" class="alert alert-danger alert-dismissible fade in" role="alert" ng-show="addAdminErrMess!=undefined">
+                                <button type="button" class="close" ng-click="addAdminErrMess=undefined"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                <span>{{addAdminErrMess}}</span>
+                            </div>
+                            <form name="myForm" ng-submit="add_shopadmin()">
+                                <div class="col-sm-12">
+                                    <label>Indiquez l'adresse e-mail</label> <span class="link_primary">*</span>
+                                    <input ng-change="email_check()" ng-model="user.email" type="text" placeholder="email@provider.com" class="form-control" required/>
+                                    <span class="error" ng-show="isValidEmail">Le mail indiqué est invalide</span>
+                                </div>
+                                <div class="col-sm-12" style="clear:both">
+                                    <label>Indiquez le prénom</label> <span class="link_primary">*</span>
+                                    <input type="text" placeholder="Prénom" class="form-control" name="firstname" ng-model="user.firstname" ng-change="firstName_check()" required="true"/>
+                                    <span class="error" ng-show="isValidFirstName">Le prénom de doit contenir que des lettres et des traits d'union et doit être composé au minimum de 2 caractères</span>
+                                </div>
+                                <div class="col-sm-12">
+                                    <label>Indiquez le nom</label> <span class="link_primary">*</span>
+                                    <input type="text" placeholder="Nom" class="form-control" name="lastname" ng-model="user.lastname" ng-change="lastName_check()" required="true"/>
+                                    <span class="error" ng-show="isValidLastName">Le prénom de doit contenir que des lettres et des traits d'union</span>
+                                </div>
+                                
+                                <div class="col-sm-2" style="clear:both;">
+                                    <input type="submit" class="btn btn-primary" value="Ajouter"/>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="modalDelAdmin" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+                <div class="modal-dialog row-centered">
+                    <div class="modal-content col-xs-6 col-sm-5 col-md-4 col-lg-3 col-centered signup">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModalLabel">Suppression de compte !</h4>
+                        </div>
+                        <div class="modal-body">
+                                <div class="col-sm-12">
+                                    <label>Êtes-vous sûr de vouloir supprimer ce compte administrateur de magasin ?<br><br>
+                                        <span style="font-size: 18px!important; font-weight: bold!important">'{{shopadminDel.admin_email}}'</span> <br><br>
+                                        Cette action est irreversible.</label>
+                                </div>
+                                <div class="col-sm-5">
+                                    <button type="button" class="btn btn-primary" ng-click="hide_modal('modalDelAdmin')"  style="width: 120px"><i class="fa fa-times"></i> Annuler</button>
+                                </div>
+                                <div class="col-sm-1"></div>
+                                <div class="col-sm-5">
+                                    <button type="button" class="btn btn-primary" ng-click="del_shopadmin()"  style="width: 120px"><i class="fa fa-check"></i> Supprimer</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="col-md-6 col-centered" style="margin:auto;display:block">
-        <div id="qrimage" class="section-to-print" style="visibility:hidden;height:1px;"></div>
-        <h1>Sondages</h1>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Nom du sondage</th>
-                    <th>Points</th>
-                    <th>Informations</th>
-                    <th>Publier</th>
-                    <th>Imprimer</th>
-                    <th>Résultats</th>
-                </tr>
-            </thead>
+    <div class="col-md-12">
+        <div id="no-print" class="col-md-6 col-centered">
+            <h1>Catégories</h1>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Couleur</th>
+                    </tr>
+                </thead>
 
-            <tbody>
-                <tr ng-repeat="orgaSurvey in orgaSurveys | orderBy:'surveyname'">
-                    <td>{{orgaSurvey.surveyname}}</td>
-                    <td>{{orgaSurvey.points}}</td>
-                    <td>{{orgaSurvey.infos}}</td>
-                    <td>
-                        <i ng-if="orgaSurvey.publied == false" class="fa fa-check" ng-click="publishSurvey(orgaSurvey.surveyid, orgaSurvey)"> Publier</i>
-                        <i ng-if="orgaSurvey.publied == true && orgaSurvey.stopped == false" class="fa fa-close" ng-click="stopSurvey(orgaSurvey.surveyid, orgaSurvey)"> Stopper</i>
-                        <i ng-if="orgaSurvey.stopped == true">Sondage terminé</i>
-                    </td>
-                    <td><i class="fa fa-print" ng-click="printQrCode(orgaSurvey.surveyid, orgaSurvey.surveyname)"></i></td>
-                    <td><i ng-if="orgaSurvey.publied == true" class="fa fa-pie-chart" ng-click="redirectToSurvey(orgaSurvey.surveyid)"></i></td>
-                </tr>
-            </tbody>
-        </table>
+                <tbody>
+                    <tr ng-repeat="category in categories" value="50" category-render="ngRepeatFinished">
+                        <td><input value="{{category.name}}" onChange="angular.element(this).scope().updateCategoryName(this)" required/></td>
+                        <td><input value="{{category.color}}" onChange="angular.element(this).scope().updateCategoryColor(this)" class="categoryColorPicker" id="catNaFoLi{{category.name}}" required/></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Ajouter une catégorie</h3>
+            <form ng-submit="addCategory()">
+                <label>Nom de la catégorie</label> <span class="link_primary">*</span>
+                <input ng-model="newCategory.name" type="text" placeholder="name" class="form-control" ng-change="categoryNameCheck()" required/>
+                <span class="error" ng-show="!isValidCategoryName">Le nom d'une catégorie doit contenir entre 2 et 25 caractères</span>
+                <br>
+                <label>Couleur de la catégorie</label> <span class="link_primary">*</span>
+                <input id="addCatColorPicker" ng-model="newCategory.color" ng-change="categoryColorCheck()"/>
+                <span class="error" ng-show="!isValidCategoryColor">La couleur doit correspondre au format hexadécimal (ex : "#A14DEA")</span>
+                <br>
+                <input type="submit" value="Ajouter" class="btn btn-primary" />
+            </form>
+            <br/><br/>
+        </div>
+
+        <div class="col-md-6 col-centered" style="margin:auto;display:block">
+            <div id="qrimage" class="section-to-print" style="visibility:hidden;height:1px;"></div>
+            <h1>Sondages</h1>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nom du sondage</th>
+                        <th>Points</th>
+                        <th>Informations</th>
+                        <th>Publier</th>
+                        <th>Imprimer</th>
+                        <th>Résultats</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr ng-repeat="orgaSurvey in orgaSurveys | orderBy:'surveyname'">
+                        <td>{{orgaSurvey.surveyname}}</td>
+                        <td>{{orgaSurvey.points}}</td>
+                        <td>{{orgaSurvey.infos}}</td>
+                        <td>
+                            <i ng-if="orgaSurvey.publied == false" class="fa fa-check" ng-click="publishSurvey(orgaSurvey.surveyid, orgaSurvey)"> Publier</i>
+                            <i ng-if="orgaSurvey.publied == true && orgaSurvey.stopped == false" class="fa fa-close" ng-click="stopSurvey(orgaSurvey.surveyid, orgaSurvey)"> Stopper</i>
+                            <i ng-if="orgaSurvey.stopped == true">Sondage terminé</i>
+                        </td>
+                        <td><i class="fa fa-print" ng-click="printQrCode(orgaSurvey.surveyid, orgaSurvey.surveyname)"></i></td>
+                        <td><i ng-if="orgaSurvey.publied == true" class="fa fa-pie-chart" ng-click="redirectToSurvey(orgaSurvey.surveyid)"></i></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
