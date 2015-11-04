@@ -2440,7 +2440,7 @@ app
                         if (!result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                         else {
                             var query = 'INSERT INTO surveymania.widgets (question_id, chartType, cardOrder) VALUES'
-                                + ' (' + questionid + ', \'' + escapeHtml(chartType) + '\', 1) RETURNING id';
+                                + ' (' + questionid + ', \'' + escapeHtml(chartType) + '\', 1000) RETURNING id';
 
                             client.query(query, function(err, result) {
                                 done();
@@ -2500,6 +2500,33 @@ app
                                     }
                                 }
                             });
+                        }
+                    }
+                });
+            }
+        });
+    }
+})
+
+.post('/app/results/saveWidgetsOrder', function (req, res) {
+    if(req.user.usertypenumber != 3 && req.user.usertypenumber != 4) res.status(500).json({code: 500});
+    else {
+        var user = req.user;
+        var widgets = req.body.widgets;
+
+        pg.connect(conString, function(err, client, done) {
+            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+            else {
+                var query = '';
+                for (var i = 0; i < widgets.length; ++i)
+                    query += 'UPDATE surveymania.widgets SET cardOrder = ' + widgets[i].cardorder + ' WHERE id = ' + widgets[i].id + '; ';
+                client.query(query, function(err, result) {
+                    done();
+                    if (err) res.redirect('/404-notfound');
+                    else {
+                        if (!result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                        else {
+                            res.status(200).json({code: 200, message: "OK"});
                         }
                     }
                 });

@@ -1667,7 +1667,7 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
     $scope.selectedModel = "Camembert";
     $scope.parameters = [];
     $scope.uselessWords = ['', 'de', 'le', 'et', 'en', 'la', 'au', 'des', 'à', 'que', 'un', 'une', 'y', 'les', 'le', 'aux', 'par', 'ce', 'ces', 'cet', 'cette', 'ses', 'son', 'sa', 'ses', 'ça', 'ca', 'dans', 'il', 'est', 'a', 'du', 'afin', 'mais', 'd\'un', 'qu\'un'];
-    
+
     $http.post('/app/survey/getSurvey', {survey: $scope.surveyid, prev: true})
         .success(function (data, status, header, config) {
             $scope.survey = data.survey;
@@ -1951,6 +1951,34 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                         $location.path("/organizationPanel");
                     });
             });
+    }
+
+    $scope.reorderWidgets = function (elem, target) {
+        var divList = document.getElementById("savedCharts").children;
+        var idList = [];
+        for (var i = 0; i < divList.length; ++i)
+            idList.push(divList[i].id.substring(14));
+
+        elem = elem.substring(14);
+        target = target.substring(14);
+        var elemItem;
+        var targetItem;
+
+        for (var i = 0; i < $scope.widgets.length; ++i) {
+            if (idList.indexOf($scope.widgets[i].id.toString()) > idList.indexOf(target))
+                $scope.widgets[i].cardorder++;
+
+            if ($scope.widgets[i].id == elem)
+                elemItem = $scope.widgets[i];
+
+            if ($scope.widgets[i].id == target)
+                targetItem = $scope.widgets[i];
+        }
+
+        elemItem.cardorder = targetItem.cardorder;
+        targetItem.cardorder++;
+        $scope.$apply();
+        $http.post('/app/results/saveWidgetsOrder', {widgets: $scope.widgets});
     }
 
     /* Draw every widget on page load */
