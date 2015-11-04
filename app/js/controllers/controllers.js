@@ -2091,7 +2091,8 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                         'title': question.description + ' (' + answers.length + ' réponses)',
                         'width': $scope.chartsWidth,
                         'height': $scope.chartsHeight,
-                        'backgroundColor': { fill:'transparent' }
+                        'backgroundColor': { fill:'transparent' },
+                        'chartArea' : {left: 20, top: 50, width: "62%", height: "100%"}
                     };
 
                     var chart = new google.visualization.PieChart(document.getElementById(chartDivID));
@@ -2110,7 +2111,8 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                         'width': $scope.chartsWidth,
                         'height': $scope.chartsHeight,
                         'pieHole': 0.4,
-                        'backgroundColor': { fill:'transparent' }
+                        'backgroundColor': { fill:'transparent' },
+                        'chartArea' : {left: 20, top: 50, width: "62%", height: "100%"}
                     };
 
                     var chart = new google.visualization.PieChart(document.getElementById(chartDivID));
@@ -2129,7 +2131,8 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                         'width': $scope.chartsWidth,
                         'height': $scope.chartsHeight,
                         'legend': 'none',
-                        'backgroundColor': { fill:'transparent' }
+                        'backgroundColor': { fill:'transparent' },
+                        'chartArea' : {left: 20, top: 50, width: "62%", height: "100%"}
                     };
 
                     var chart = new google.visualization.ColumnChart(document.getElementById(chartDivID));
@@ -2145,7 +2148,8 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
 
                     var options = {
                         'title': question.description + ' (' + answers.length + ' réponses)',
-                        'showRowNumber': true
+                        'showRowNumber': true,
+                        'chartArea' : {left: 20, top: 50, width: "62%", height: "100%"}
                     };
 
                     var chart = new google.visualization.Table(document.getElementById(chartDivID));
@@ -2186,7 +2190,8 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                     'legend': 'none',
                     'width': $scope.chartsWidth,
                     'height': $scope.chartsHeight,
-                    'backgroundColor': { fill:'transparent' }
+                    'backgroundColor': { fill:'transparent' },
+                    'chartArea' : {left: 20, top: 50, width: "62%", height: "100%"}
                 };
 
                 var chart = new google.visualization.ScatterChart(document.getElementById(chartDivID));
@@ -2236,7 +2241,8 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                     'title': question.description + ' (' + answers.length + ' réponses)',
                     'text_color': '#000000',
                     'width': $scope.chartsWidth,
-                    'height': $scope.chartsHeight
+                    'height': $scope.chartsHeight,
+                    'chartArea' : {left: 20, top: 50, width: "62%", height: "100%"}
                 };
 
                 var chart = new gviz_word_cumulus.WordCumulus(document.getElementById(chartDivID));
