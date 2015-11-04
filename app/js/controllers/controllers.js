@@ -1365,7 +1365,7 @@ surveyManiaControllers.controller('MySurveysController', ['$scope', '$http', '$w
     });
 }]);
 
-surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', '$window', '$sce', '$location', function($scope, $http, $window, $sce, $location) {
+surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', '$window', '$sce', '$location', /*'vcRecaptchaService',*/ function($scope, $http, $window, $sce, $location/*, vcRecaptchaService*/) {
     $scope.url = $window.location.hash.split('/');
     $scope.surveyid = $scope.url[$scope.url.length - 1];
     $scope.survey;
@@ -1395,11 +1395,22 @@ surveyManiaControllers.controller('SurveyAnswerController', ['$scope', '$http', 
 
     $scope.getNextSection = function () {
         if ($scope.startPageDisplayed) {
-            $('#startPage').fadeOut(800, function () {
-                $scope.startPageDisplayed = false;
-                $scope.surveyAnswerProgression = 0;
-                $scope.getNextSectionContent();
-            });
+            var captchaForm = $("#captcha-form").serialize().split("g-recaptcha-response=")[1];
+            $http.post('/app/validateCaptcha', {captcha: captchaForm})
+                .success(function (data, status, header, config) {
+                    if (data.success) {
+                        $('#startPage').fadeOut(800, function () {
+                            $("#captcha-error").hide();
+                            $scope.startPageDisplayed = false;
+                            $scope.surveyAnswerProgression = 0;
+                            $scope.getNextSectionContent();
+                        });
+                    }
+                    else $("#captcha-error").show();
+                })
+                .error(function (data, status, header, config) {
+                    $("#captcha-error").show();
+                });
         } else {
             $('#answer').fadeOut(800, function () {
                 $scope.surveyAnswerProgression = 0;

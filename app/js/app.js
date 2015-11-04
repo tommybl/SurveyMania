@@ -1,6 +1,6 @@
 'use strict';
 
-var surveyManiaApp = angular.module('surveyManiaApp', ['ngRoute', 'surveyManiaConfig', 'surveyManiaControllers', 'surveyManiaServices', 'surveyManiaFilters', 'ngSanitize', 'ngAnimate', 'ngDragDrop']);
+var surveyManiaApp = angular.module('surveyManiaApp', ['ngRoute', 'surveyManiaConfig', 'surveyManiaControllers', 'surveyManiaServices', 'surveyManiaFilters', 'ngSanitize', 'ngAnimate', 'ngDragDrop', /*'vcRecaptcha'*/]);
 
 surveyManiaApp.config(['$routeProvider',
     function($routeProvider) {

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 
 <div id="surveyAnswer" ng-controller="SurveyAnswerController" class="col-md-12">
+
 	<div class="col-md-8 col-md-offset-2 master">
 		
         <!-- Error div -->
@@ -46,6 +47,14 @@
             		<div><h3>Instruction supplémentaire : </h3>{{survey.instructions}}</div>
             		<!--<div><b>Par : </b>{{survey.name}}</div>-->
                     <br/>
+                    <br>
+                    <form id="captcha-form">
+                        <div class="g-recaptcha" data-sitekey="6LdYQRATAAAAAMoNSdiKsQZ5Jh4BsamNEgVvkfhd"></div>
+                    <form>
+                    <br>
+                    <div class="alert alert-danger" id="captcha-error" role="alert" style="width: 304px" hidden>
+                      <a href="#" class="alert-link">Captcha non traité !</a>
+                    </div>
                     <img src="img/logo-thales.png" style="position:absolute;bottom:15px;left:15px;"/>
             		<button class="btn btn-primary btn-absolute-right" ng-click="getNextSection()">Commencer >></button>
                 </div>
