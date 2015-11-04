@@ -51,12 +51,13 @@
                     <form id="captcha-form">
                         <div class="g-recaptcha" data-sitekey="6LdYQRATAAAAAMoNSdiKsQZ5Jh4BsamNEgVvkfhd"></div>
                     <form>
-                    <br>
-                    <div class="alert alert-danger" id="captcha-error" role="alert" style="width: 304px" hidden>
+                    <div class="alert alert-danger" id="captcha-error" role="alert" style="width: 304px; margin-top: 10px" hidden>
                       <a href="#" class="alert-link">Captcha non traité !</a>
                     </div>
-                    <img src="img/logo-thales.png" style="position:absolute;bottom:15px;left:15px;"/>
-            		<button class="btn btn-primary btn-absolute-right" ng-click="getNextSection()">Commencer >></button>
+                    <div style="position:absolute;bottom:0;left:0; width: 100%; height: 85px; background: rgba(255,255,255,0.5)">
+                      <img src="img/logo-thales.png" style="position:absolute;bottom:15px;left:15px;"/>
+            		  <button class="btn btn-primary btn-absolute-right" ng-click="getNextSection()">Commencer >></button>
+                    </div>
                 </div>
             </div>
   		</div>
