@@ -2,7 +2,14 @@
 <div ng-controller="AccountController">
 	<div id="profil_bg" class="col-md-12">
 		<div id="default_profil" ng-click="tab_hide()">
-			<img id="profil_img" src="img/default_profil.png" alt="image de profil"/>
+			<% if(user.owner_pic == null){ %>
+			   <img id="profil_img" src="img/default_profil.png" alt="image de profil" ng-click="showFileChoser();"/>
+			 <% } else{ %>  
+			   <img id="profil_img" src="<%= user.owner_pic %>" alt="image de profil" ng-click="showFileChoser();"/>
+			<% } %>
+			<form id="form_profile_pic">
+				<input type="file" name="profile_pic" id="profile_pic" accept="image/*" style="position:absolute; left: -200px" onchange="angular.element(this).scope().changeProfilePic();">
+			</form>
 			<div id="account_user_points"><span id="user_points_count" style="display: inline-block">0</span> <span style="font-weight: normal!important">POINTS</span></div>
 			<p id="profil_name"><%= user.owner_firstname %> <%= user.owner_lastname %></p>
 		</div>

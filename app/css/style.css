@@ -834,3 +834,17 @@ blockquote {
   display: inline-block;
   margin-left: 50px;
 }
+
+#profil_img {
+  cursor: pointer;
+  border: solid 2px transparent;
+  padding: 3px;
+  max-width: 161px;
+  max-height: 161px;
+  width: auto;
+  height: auto;
+}
+
+#profil_img:hover {
+  border: solid 2px #f5c950;
+}

@@ -796,12 +796,15 @@ app
     if(req.user.usertypenumber != 1 && req.user.usertypenumber != 2 && req.user.usertypenumber != 3 && req.user.usertypenumber != 4) {res.status(401).json({code: 401, error: "Unauthorized", message: "Unauthorized"}); return;}
     pg.connect(conString, function(err, client, done) {
         if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
-        var query = 'SELECT owner.id AS owner_id, owner.user_organization AS owner_organization, owner.email AS owner_email, owner.password AS owner_password, owner.name AS owner_firstname, owner.lastname AS owner_lastname, owner.adress AS owner_adress, owner.postal AS owner_postal, owner.town AS owner_town, owner.country AS owner_country, owner.telephone AS owner_tel, owner.user_type AS owner_type, owner.points AS owner_points ' +
+        var query = 'SELECT owner.id AS owner_id, owner.user_organization AS owner_organization, owner.profile_pic AS owner_pic, owner.email AS owner_email, owner.password AS owner_password, owner.name AS owner_firstname, owner.lastname AS owner_lastname, owner.adress AS owner_adress, owner.postal AS owner_postal, owner.town AS owner_town, owner.country AS owner_country, owner.telephone AS owner_tel, owner.user_type AS owner_type, owner.points AS owner_points ' +
                     'FROM surveymania.users owner WHERE owner.id = ' + req.user.id;
         client.query(query, function(err, result) {
             done();
             if (err) console.log(err);
             else if (result.rows.length) {
+                if (result.rows[0].owner_pic != null)
+                    result.rows[0].owner_pic = result.rows[0].owner_pic.toString();
+                //console.log(result.rows[0]);
                 res.setHeader('Content-Type', 'application/json; charset=UTF-8');
                 res.json({code: 200, user: result.rows[0]});
             }
@@ -834,7 +837,7 @@ app
     var user = req.user;
     pg.connect(conString, function(err, client, done) {
         if (err) return console.log(err);
-        var query = 'SELECT owner.id AS owner_id, owner.email AS owner_email, owner.name AS owner_firstname, owner.lastname AS owner_lastname, owner.adress AS owner_adress, owner.postal AS owner_postal, owner.town AS owner_town, owner.country AS owner_country, owner.telephone AS owner_tel, owner.user_type AS owner_type, owner.points AS owner_points ' +
+        var query = 'SELECT owner.id AS owner_id, owner.email AS owner_email, owner.profile_pic AS owner_pic, owner.name AS owner_firstname, owner.lastname AS owner_lastname, owner.adress AS owner_adress, owner.postal AS owner_postal, owner.town AS owner_town, owner.country AS owner_country, owner.telephone AS owner_tel, owner.user_type AS owner_type, owner.points AS owner_points ' +
                     'FROM surveymania.users owner WHERE owner.id = ' + req.user.id;
         client.query(query, function(err, result) {
             done();
@@ -2855,6 +2858,28 @@ app
                                 }
                             });
                         }
+                    }
+                });
+            }
+        });
+    }
+})
+
+.post('/app/account/set/profilepic', function (req, res) {
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    if(req.user.usertypenumber != 1 && req.user.usertypenumber != 2 && req.user.usertypenumber != 3 && req.user.usertypenumber != 4) {res.status(401).json({code: 401, error: "Unauthorized", message: "Unauthorized"}); return;}
+    else {
+        var pic = req.body.pic;
+        //console.log(pic);
+        pg.connect(conString, function(err, client, done) {
+            if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+            else {
+                var query = 'UPDATE surveymania.users SET profile_pic=\'' + pic + '\' WHERE id=' + req.user.id;
+                client.query(query, function(err, result) {
+                    done();
+                    if(err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
+                    else {
+                        res.json({code: 200, message: "Profile pic updated"});
                     }
                 });
             }
