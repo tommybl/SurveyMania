@@ -211,6 +211,7 @@ CREATE TABLE  surveymania.users (
   points INT NOT NULL DEFAULT 0,
   verified BOOLEAN NOT NULL,
   verified_dt TIMESTAMP NULL DEFAULT NULL,
+  profile_pic BYTEA,
   PRIMARY KEY (id),
   CONSTRAINT fk_user_type
     FOREIGN KEY (user_type)

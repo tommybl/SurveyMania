@@ -903,6 +903,37 @@ surveyManiaControllers.controller('AccountController', ['$scope', '$rootScope', 
     if ($rootScope.showInfosBubble) {
         $rootScope.showInfosBubble = false;
 
+        $scope.showFileChoser = function () {
+            console.log("show");
+            $("#profile_pic").click();
+        };
+
+        $scope.changeProfilePic = function () {
+            console.log("change");
+            console.log($("#profile_pic").val());
+            var fileInput = document.getElementById('profile_pic');
+            var file = fileInput.files[0];
+            var imageType = /image.*/;
+
+            if (file.type.match(imageType) && file.size < 2000000) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    $scope.profile_pic = reader.result;
+                    //console.log($scope.profile_pic);
+                    $http.post('/app/account/set/profilepic', {pic: $scope.profile_pic})
+                    .success(function (data, status, headers, config) {
+                        console.log(data);
+                        if (data.error == undefined) {
+                            $("#profil_img").attr("src",$scope.profile_pic);
+                        }
+                    })
+                    .error(function (data, status, headers, config) {});
+                }
+                reader.readAsDataURL(file); 
+            }
+            else alert("Veuillez choisir un fichier de type image, de moins de 2 Mo");
+        };
+
         var bounceShow = new Bounce();
         bounceShow.scale({
             from: { x: 0, y: 0 },
