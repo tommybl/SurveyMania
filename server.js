@@ -292,7 +292,7 @@ app
                                             console.log("err19"); 
                                             res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                                         } else {
-                                            res.status(200).json({code: 200, message: "Survey successfully created"});
+                                            res.status(200).json({code: 200, message: "Survey successfully created", survey_id: header_id});
                                         }
                                     }
                                 );

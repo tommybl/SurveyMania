@@ -124,6 +124,25 @@ surveyManiaControllers.controller('DragAndDrop', ['$scope', '$routeParams', '$ti
             });
         }
 
+        $scope.previsualiserSurvey = function ()
+        {
+            $scope.getRequiredSections();
+            $scope.updateSectionList();
+
+            $http.post('/app/account/admin/validate/survey', {name: $scope.survey.name, description: $scope.survey.description, instructions: $scope.survey.instructions, points: $scope.survey.points, category: $scope.survey.category, list: $scope.questionList, sections: $scope.sectionList})
+            .success(function (data, status, headers, config) {
+                console.log(data);
+                if (data.error == undefined) {
+                    $scope.verifSuccMess = "Le sondage a bien été enregistré.";
+                    $location.path("/previsualisation/" + data.survey_id);
+                }
+                else $scope.verifErrMess = data.error + '. ' + data.message;
+            })
+            .error(function (data, status, headers, config) {
+                console.log(data);
+            });
+        }
+
         $scope.switchList = function ($listNumber)
         {
             var i = parseInt($listNumber) - 1;
