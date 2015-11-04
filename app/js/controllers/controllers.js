@@ -1945,12 +1945,45 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
     /* Draw every widget on page load */
     $scope.$on('ngRepeatFinished', function(ngRepeatFinishedEvent) {
         $scope.widgets.forEach(function(widget, index, array) {
-            console.log(widget);
             $http.post('/app/results/doQuery', {surveyid: $scope.surveyid, questionid: widget.question_id, parameters: widget.parameters})
                 .success(function (data, status, header, config) {
                     var chartID = 'chartDiv' + widget.id;
                     var csvID = 'csvDiv' + widget.id;
                     $scope.drawChart(widget, widget.parameters, data.answers, widget.charttype, chartID, csvID);
+
+                    var parameterContent = '';
+                    if (widget.parameters.length == 0)
+                        parameterContent = '<i class="fa fa-exclamation-circle"></i> Aucun paramètre ajouté';
+                    else {
+                        for (var i = 0; i < widget.parameters.length; ++i) {
+                            var param = widget.parameters[i];
+                            if (param.selectedValues.length != 0) {
+                                if (i > 0)
+                                    parameterContent += "<br/><br/>";
+                                parameterContent += '<i class="fa fa-question-circle"></i> ' + param.description + '<br/><small><i>(';
+
+                                for (var j = 0; j < param.selectedValues.length; ++j) {
+                                    if (j > 0)
+                                        parameterContent += ', ';
+                                    parameterContent += param.selectedValues[j].choice_name;
+                                }
+                                parameterContent += ')</i></small>';
+                            }
+                        }
+                    }
+
+                    $('#tooltipp' + widget.id).qtip({
+                        content: {
+                            text: parameterContent
+                        },
+                        position: {
+                            my: 'center left',
+                            at: 'center right'
+                        },
+                        style: {
+                            classes: 'qtip-tipsy qtip-shadow'
+                        }
+                    });
                 });
         });
     });
