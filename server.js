@@ -816,7 +816,7 @@ app
     pg.connect(conString, function(err, client, done) {
         if (err) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
         var query = 'SELECT orga.id AS organization_id, orga.description AS organization_description, orga.adress AS organization_adress, orga.postal AS organization_postal, ' +
-                    'orga.town AS organization_town, orga.country AS organization_country, orga.telephone AS organization_tel, orga.name AS organization_name ' +
+                    'orga.town AS organization_town, orga.logo_path AS organization_logo, orga.country AS organization_country, orga.telephone AS organization_tel, orga.name AS organization_name ' +
                     'FROM surveymania.organizations orga WHERE orga.id = ' + req.body.userOrganization;
         client.query(query, function(err, result) {
             done();
