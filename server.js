@@ -41,6 +41,8 @@ var transporter = nodemailer.createTransport({
     }
 });
 
+var captchaSecret = "6LdYQRATAAAAAH7D2VE5phz7E5X8DtDISZ_6wYY7";
+
 var JsonFormatter = {
     stringify: function (cipherParams) {
         return cipherParams.ciphertext.toString(CryptoJS.enc.Base64) + cipherParams.salt.toString();
@@ -95,6 +97,29 @@ app
 .get('/home', function (req, res) {
     res.setHeader("Content-Type", "text/html");
     res.render('partials/home');
+})
+
+.post('/app/validateCaptcha', function (req, res) {
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    res.setHeader('Accept', 'application/json');
+
+    if (req.body.captcha == undefined) {
+        res.status(500).json({code: 500, error: "Internal server error", message: "Invalid captcha request"});
+        return;
+    }
+
+    request.post(
+        'https://www.google.com/recaptcha/api/siteverify',
+        { form: { secret: captchaSecret, response: req.body.captcha } },
+        function (error, response, body) {
+            body = JSON.parse(body);
+            if (error == null && response.statusCode == 200 && body.success == true) {
+                res.status(200).json({code: 200, success: true});
+            }
+            else res.status(200).json({code: 200, success: false, body: body});
+        }
+    );
+
 })
 
 .get('/app/createSurvey', function (req, res) {
