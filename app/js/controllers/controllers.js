@@ -2248,8 +2248,8 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
                 var options = {
                     'title': question.description + ' (' + answers.length + ' réponses)',
                     'text_color': '#000000',
-                    'width': $scope.chartsWidth,
-                    'height': $scope.chartsHeight,
+                    'width': 290,
+                    'height': 290,
                     'chartArea' : {left: 20, top: 50, width: "62%", height: "100%"}
                 };
 
@@ -2288,6 +2288,10 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
        }
     }
     /* End of generic functions to draw chart everywhere */
+
+    $scope.$on("$destroy", function(){
+        $(".qtip").remove();
+    });
 }]);
 
 surveyManiaControllers.controller('Ranking', ['$scope', '$http', '$window', '$location', function($scope, $http, $window, $location) {
