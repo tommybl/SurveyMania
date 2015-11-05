@@ -95,7 +95,7 @@
     </div>
 
     <div id="savedCharts">
-        <div id="masterChartDiv{{widget.id}}" class="col-md-3" style="margin-right: 8%; margin-top: 10px; margin-bottom: 20px; padding: 10px 10px 10px 10px;border: 1px solid grey"
+        <div id="masterChartDiv{{widget.id}}" class="col-md-3" style="min-height: 376px; margin-right: 8%; margin-top: 10px; margin-bottom: 20px; padding: 10px 10px 10px 10px; border: 1px solid grey"
              ng-repeat="widget in widgets | orderBy:['cardorder', 'id']" category-render="ngRepeatFinished"
              draggable="true" ondragstart="drag(event)" ondrop="drop(event, this)" ondragover="allowDrop(event)">
             <i id="tooltipp{{widget.id}}" class="fa fa-info-circle fa-2x" style="position: absolute; top : 13px; right: 20px; z-index: 999999"></i>

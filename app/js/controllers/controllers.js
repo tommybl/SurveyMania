@@ -1992,24 +1992,32 @@ surveyManiaControllers.controller('ResultsController', ['$scope', '$http', '$win
 
         elem = elem.substring(14);
         target = target.substring(14);
-        var elemItem;
-        var targetItem;
 
-        for (var i = 0; i < $scope.widgets.length; ++i) {
-            if (idList.indexOf($scope.widgets[i].id.toString()) > idList.indexOf(target))
-                $scope.widgets[i].cardorder++;
+        if (idList.indexOf(elem) != idList.indexOf(target)) {
+            var elemItem;
+            var targetItem;
 
-            if ($scope.widgets[i].id == elem)
-                elemItem = $scope.widgets[i];
+            for (var i = 0; i < $scope.widgets.length; ++i) {
+                if (idList.indexOf($scope.widgets[i].id.toString()) > idList.indexOf(target))
+                    $scope.widgets[i].cardorder++;
 
-            if ($scope.widgets[i].id == target)
-                targetItem = $scope.widgets[i];
+                if ($scope.widgets[i].id == elem)
+                    elemItem = $scope.widgets[i];
+
+                if ($scope.widgets[i].id == target)
+                    targetItem = $scope.widgets[i];
+            }
+
+            if (idList.indexOf(elem) > idList.indexOf(target)) {
+                elemItem.cardorder = targetItem.cardorder;
+                targetItem.cardorder++;
+            } else if (idList.indexOf(elem) < idList.indexOf(target)) {
+                elemItem.cardorder = targetItem.cardorder + 1;
+            }
+
+            $scope.$apply();
+            $http.post('/app/results/saveWidgetsOrder', {widgets: $scope.widgets});
         }
-
-        elemItem.cardorder = targetItem.cardorder;
-        targetItem.cardorder++;
-        $scope.$apply();
-        $http.post('/app/results/saveWidgetsOrder', {widgets: $scope.widgets});
     }
 
     /* Draw every widget on page load */

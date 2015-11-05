@@ -2443,7 +2443,7 @@ app
                         if (!result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
                         else {
                             var query = 'INSERT INTO surveymania.widgets (question_id, chartType, cardOrder) VALUES'
-                                + ' (' + questionid + ', \'' + escapeHtml(chartType) + '\', 1000) RETURNING id';
+                                + ' (' + questionid + ', \'' + escapeHtml(chartType) + '\', 1) RETURNING id';
 
                             client.query(query, function(err, result) {
                                 done();
@@ -2527,10 +2527,7 @@ app
                     done();
                     if (err) res.redirect('/404-notfound');
                     else {
-                        if (!result.rows.length) res.status(500).json({code: 500, error: "Internal server error", message: "Error running query"});
-                        else {
-                            res.status(200).json({code: 200, message: "OK"});
-                        }
+                        res.status(200).json({code: 200, message: "OK"});
                     }
                 });
             }
