@@ -48,6 +48,8 @@ The application allows shop owner and administrators to access statistics regard
 
 ![alt tag](screenshots/14.png)
 
+![alt tag](screenshots/15.png)
+
 ## Install and run the application
 
 1) Git, Node.js and npm installation
