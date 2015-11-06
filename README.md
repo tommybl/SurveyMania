@@ -4,6 +4,8 @@
 
 **Team**  `Clément Bourdin (project manager), Pierre Sabot, Tommy Lopes`
 
+![alt text](https://github.com/tommybl/SurveyMania/blob/master/app/img/surveymania.png "SurveyMania")
+
 ## Install and run the application
 
 1) Git, Node.js and npm installation
@@ -34,5 +36,5 @@
 
 
 
-![alt text](https://github.com/tommybl/SurveyMania/blob/master/app/img/surveymania.png "SurveyMania")
+
 
