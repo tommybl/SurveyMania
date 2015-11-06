@@ -14,8 +14,7 @@ As part of the Free Project for Innovation and Communication at EPITA, I am part
 
 SurveyMania is a website destined to shops for creating online surveys by rewarding its users. After the creation of a survey by a shop, it is spread thanks to a QRcode that clients need to flash for accessing it. After what customers can answer the survey via their smartphone or computer to obtain points or discounts distributed by the shop.  
 These discounts are created as bar codes that the customer will use on his next checkout.  
-The application allows shop owner and administrators to access statistics regarding the habits of the users and their products, in order to improve their services.  
-Customers also have the possibility to answer surveys throught mini-games to improve user satisfaction by introducing gamification.
+The application allows shop owner and administrators to access statistics regarding the habits of the users and their products, in order to improve their services. Customers also have the possibility to answer surveys throught mini-games to improve user satisfaction by introducing gamification.
 
 ![alt tag](screenshots/1.png)
 
