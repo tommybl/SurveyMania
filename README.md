@@ -16,10 +16,37 @@ SurveyMania is a website destined to shops for creating online surveys by reward
 These discounts are created as bar codes that the customer will use on his next checkout.  
 The application allows shop owner and administrators to access statistics regarding the habits of the users and their products, in order to improve their services. Customers also have the possibility to answer surveys throught mini-games to improve user satisfaction by introducing gamification.
 
+![alt text](https://github.com/tommybl/SurveyMania/blob/master/app/img/surveymania.png "SurveyMania")
+
 ![alt tag](screenshots/1.png)
 
+![alt tag](screenshots/0.png)
 
-![alt text](https://github.com/tommybl/SurveyMania/blob/master/app/img/surveymania.png "SurveyMania")
+![alt tag](screenshots/2.png)
+
+![alt tag](screenshots/3.png)
+
+![alt tag](screenshots/4.png)
+
+![alt tag](screenshots/5.png)
+
+![alt tag](screenshots/6.png)
+
+![alt tag](screenshots/7.png)
+
+![alt tag](screenshots/8.png)
+
+![alt tag](screenshots/9.png)
+
+![alt tag](screenshots/10.png)
+
+![alt tag](screenshots/11.png)
+
+![alt tag](screenshots/12.png)
+
+![alt tag](screenshots/13.png)
+
+![alt tag](screenshots/14.png)
 
 ## Install and run the application
 
