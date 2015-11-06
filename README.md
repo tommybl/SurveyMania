@@ -2,18 +2,20 @@
 
 **SurveyMania**  `EPITA 2016 - MTI PLIC - bourdi_c / sabot_p / lopes_t`
 
-**Team**  `Clément Bourdin (project manager), Pierre Sabot, Tommy Lopes`  
+**Team**  `Clément Bourdin (PM), Pierre Sabot, Tommy Lopes`  
 
 > Survey Creation / AngularJS / Node.js / MongoDB / Group of 3
 
 * Project management, Conception, Design, Programming
-* PHP5, MySQL, Imagick Library
-* Solo Project
+* Node.js, AngularJS, Bootstrap, PostgreSQL, MongoDB, Web technologies
+* Group of 3
 
-As part of a main project at EPITA for PHP learning, I had to create a 500px Like (leader in online photography community) in 1 month, with the most functionalities and without using any framework.
+As part of the Free Project for Innovation and Communication at EPITA, I am part of a 3-member team working on this project. The task is to imagine, create and realize an innovative project in new technologies for web and mobile.
 
-The final result was really satisfying, hosting a lot of functionalities:  
-`Social community, hosting pictures, managing account and pictures, applying filters (30 possibilities) and transformations, comments, likes, favourites, following users (with news feed), sharing pictures on social networks etc.`
+SurveyMania is a website destined to shops for creating online surveys by rewarding its users. After the creation of a survey by a shop, it is spread thanks to a QRcode that clients need to flash for accessing it. After what customers can answer the survey via their smartphone or computer to obtain points or discounts distributed by the shop.  
+These discounts are created as bar codes that the customer will use on his next checkout.  
+The application allows shop owner and administrators to access statistics regarding the habits of the users and their products, in order to improve their services.  
+Customers also have the possibility to answer surveys throught mini-games to improve user satisfaction by introducing gamification.
 
 ![alt tag](screenshots/1.png)
 
