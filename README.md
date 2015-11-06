@@ -2,7 +2,7 @@
 
 **SurveyMania**  `EPITA 2016 - MTI PLIC - bourdi_c / sabot_p / lopes_t`
 
-**Team**  `Clément Bourdin (project manager), Pierre Sabot, Tommy Lopes`
+**Team**  `Clément Bourdin (project manager), Pierre Sabot, Tommy Lopes`  
 
 
 ![alt text](https://github.com/tommybl/SurveyMania/blob/master/app/img/surveymania.png "SurveyMania")
