@@ -30,7 +30,7 @@
 
     $ nodejs server.js
   
-7) Open the application in a browser at http://localhost:1337/
+7) Open the application in a browser at http://localhost:1337/
 
 
 
