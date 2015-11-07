@@ -16,6 +16,40 @@ SurveyMania is a website destined to shops for creating online surveys by reward
 These discounts are created as bar codes that the customer will use on his next checkout.  
 The application allows shop owner and administrators to access statistics regarding the habits of the users and their products, in order to improve their services. Customers also have the possibility to answer surveys throught mini-games to improve user satisfaction by introducing gamification.
 
+### Install and run the application
+
+1) Git, Node.js and npm installation
+
+    $ sudo apt-get install git nodejs-legacy npm
+    
+2) Bower installation
+
+    $ sudo npm install -g bower
+    
+3) PostGreSQL installation
+
+    $ sudo apt-get install postgresql
+    
+3) MongoDB installation
+
+    $ sudo apt-get install mongodb
+  
+4) Getting the projet
+
+    $ git clone https://github.com/tommybl/SurveyMania.git
+    
+5) Don't forget to configure postgresql database found in bdd directory
+
+6) Don't forget to launch mongodb server
+  
+7) Launch node.js server
+
+    $ nodejs server.js
+  
+8) Open the application in a browser at http://localhost:1337/
+
+### Screenshots
+
 ![alt text](https://github.com/tommybl/SurveyMania/blob/master/app/img/surveymania.png "SurveyMania")
 
 ![alt tag](screenshots/1.png)
@@ -49,36 +83,3 @@ The application allows shop owner and administrators to access statistics regard
 ![alt tag](screenshots/14.png)
 
 ![alt tag](screenshots/15.png)
-
-## Install and run the application
-
-1) Git, Node.js and npm installation
-
-    $ sudo apt-get install git nodejs-legacy npm
-    
-2) Bower installation
-
-    $ sudo npm install -g bower
-    
-3) PostGreSQL installation
-
-    $ sudo apt-get install postgresql
-  
-4) Getting the projet
-
-    $ git clone https://github.com/tommybl/SurveyMania.git
-  
-5) Going to project root
-
-    $ cd SurveyMania
-  
-6) Server launching
-
-    $ nodejs server.js
-  
-7) Open the application in a browser at http://localhost:1337/
-
-
-
-
-
